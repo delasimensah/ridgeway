@@ -1,0 +1,28 @@
+---
+description: Before implementing, read the listed project docs for the task type. They override generic habits.
+alwaysApply: true
+---
+
+# Mandatory project docs (read before implementing)
+
+**Use the Read tool on the paths below** when your task matches a category. **Do not contradict** these docs or `.cursor/rules`. If unsure, read the doc first.
+
+- **Product / what to build:** `docs/product/product-requirements.md`
+- **Architecture / Convex:** `docs/product/system-design.md` and `docs/product/convex-design.md` when those files exist. Until then, do not invent tables or permission rules beyond the product requirements.
+- **Components (structure, UI building, web Mantine patterns):** `docs/component-building-guide.md`, `docs/component-organization-guide.md`
+- **Imports / exports:** `docs/import-patterns-guide.md`, `docs/export-patterns-guide.md`
+- **Forms:** `docs/forms-guide.md`
+- **Data fetching:** Convex `useQuery` / `useMutation` from `convex/react`.
+- **Responsive web UI:** `docs/responsive-design-guide.md`
+- **Tests (placement, naming, what to test):** `docs/testing-strategy.md`
+- **Git / branches / commits / PRs:** `docs/git-and-pr-guidelines.md`
+
+**App-specific structure (when adding screens, hooks, services, or files):**
+
+- Web: `apps/web-app/docs/project-structure.md`, `apps/web-app/docs/developer-decision-guide.md`
+- Mobile: `apps/mobile-app/docs/project-structure.md`, `apps/mobile-app/docs/developer-decision-guide.md`
+- Shared package: `packages/shared/docs/contributing-guide.md`
+
+**Planning a new feature:** `docs/product/product-requirements.md`. Also read `docs/product/system-design.md` and `docs/product/linear-tickets.md` when they exist.
+
+You may read only the sections relevant to the task; do not skip reading when the task clearly falls in a category above.

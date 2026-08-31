@@ -1,0 +1,46 @@
+---
+description: Mandatory placement of hooks and services. Follow exactly. Source: project-structure.md and developer-decision-guide.md.
+alwaysApply: true
+---
+
+# Hooks and Services Organization — MANDATORY
+
+Follow the documented structure exactly. Do not place hooks or services in the wrong location.
+
+Product data lives in Convex. Use `useQuery` / `useMutation` from `convex/react` in screens.
+
+## Hooks
+
+### Rule: Every hook lives in a category subfolder
+
+- **Path pattern:** `hooks/[category]/useHookName.ts`
+- **Never** place a hook file directly under `hooks/` (e.g. `hooks/useDebouncedValue.ts` is **wrong**).
+
+### Hook categories (choose exactly one)
+
+- **Authentication extras** → `hooks/auth/` (client session helpers only; sign-in uses Convex Auth)
+- **Navigation** → `hooks/navigation/`
+- **Shared utility** → `hooks/shared/` (debounce, local storage, and similar)
+
+### Barrel export
+
+- Only `hooks/index.ts` (top-level) exports hooks.
+- Export from the category path: `export { useHookName } from "./[category]/useHookName";`
+- **No** `index.ts` inside category folders.
+
+---
+
+## Services
+
+Client extras only (toasts, navigation helpers). Do not put Convex queries in `services/`.
+
+- **Path pattern:** `services/[category]/serviceName.ts`
+- Export from `services/index.ts` only.
+
+---
+
+## Before adding a hook or service
+
+1. Decide the **category**.
+2. Create the file at `hooks/[category]/useName.ts` or `services/[category]/name.ts`.
+3. Add the export to the top-level barrel.

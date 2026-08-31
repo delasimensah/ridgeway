@@ -1,0 +1,6 @@
+{
+  "buildCommand": "turbo run build --filter=@ridgeway/web-app",
+  "outputDirectory": "apps/web-app/.next",
+  "installCommand": "yarn install --frozen-lockfile",
+  "framework": "nextjs"
+}
