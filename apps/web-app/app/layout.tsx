@@ -3,7 +3,6 @@ import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 import "./globals.css";
 
-import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
 import type { Metadata } from "next";
 import React from "react";
@@ -24,21 +23,19 @@ interface RootLayoutProps {
 
 const RootLayout = ({ children }: RootLayoutProps) => {
   return (
-    <ConvexAuthNextjsServerProvider>
-      <html
-        lang="en"
-        className={appfont.variable}
-        {...mantineHtmlProps}
-        suppressHydrationWarning
-      >
-        <head>
-          <ColorSchemeScript />
-        </head>
-        <body className="font-regular bg-black">
-          <Providers>{children}</Providers>
-        </body>
-      </html>
-    </ConvexAuthNextjsServerProvider>
+    <html
+      lang="en"
+      className={appfont.variable}
+      {...mantineHtmlProps}
+      suppressHydrationWarning
+    >
+      <head>
+        <ColorSchemeScript />
+      </head>
+      <body className="font-regular bg-black">
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 };
 

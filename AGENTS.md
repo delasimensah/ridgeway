@@ -1,6 +1,6 @@
 # Agent instructions for Ridgeway
 
-This is a **Turborepo** with a **Next.js** web app, an **Expo** mobile app, a **shared** package, and a **Convex** backend. Use **official documentation** so implementations stay current.
+This is a **Turborepo** with a **Next.js** web app, an **Expo** mobile app, a **shared** package, and a **Convex** backend. Convex packages and `convex/` are in the repo. Do not import Convex in the apps until it is wired.
 
 ## Compliance (do this before coding)
 
@@ -64,7 +64,7 @@ Prefer these official sources. Add them as **@Docs** in Cursor (Settings → Ind
 
 ## Hard rules for this product
 
-- Product data uses Convex `useQuery` / `useMutation`.
+- Product data will use Convex `useQuery` / `useMutation` after Convex is added. Do not import Convex in the apps until then.
 - Permission checks belong at the top of every public Convex function. The client is not trusted.
 - Owner A must never read Owner B’s rows. Work orders are never silently deleted.
 - Zustand is only for client session extras, not buildings or tickets.

@@ -7,7 +7,7 @@ alwaysApply: true
 
 Follow the documented structure exactly. Do not place hooks or services in the wrong location.
 
-Product data lives in Convex. Use `useQuery` / `useMutation` from `convex/react` in screens.
+Product data will live in Convex after it is wired. Do not import `convex/react` or Convex Auth in the apps until then.
 
 ## Hooks
 
@@ -18,7 +18,7 @@ Product data lives in Convex. Use `useQuery` / `useMutation` from `convex/react`
 
 ### Hook categories (choose exactly one)
 
-- **Authentication extras** → `hooks/auth/` (client session helpers only; sign-in uses Convex Auth)
+- **Authentication extras** → `hooks/auth/` (client session helpers only)
 - **Navigation** → `hooks/navigation/`
 - **Shared utility** → `hooks/shared/` (debounce, local storage, and similar)
 
@@ -32,7 +32,7 @@ Product data lives in Convex. Use `useQuery` / `useMutation` from `convex/react`
 
 ## Services
 
-Client extras only (toasts, navigation helpers). Do not put Convex queries in `services/`.
+Client extras only (toasts, navigation helpers). Do not put Convex queries in `services/`. Do not import Convex in the apps until it is wired.
 
 - **Path pattern:** `services/[category]/serviceName.ts`
 - Export from `services/index.ts` only.

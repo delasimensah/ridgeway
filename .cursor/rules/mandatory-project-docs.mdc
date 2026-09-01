@@ -12,7 +12,7 @@ alwaysApply: true
 - **Components (structure, UI building, web Mantine patterns):** `docs/component-building-guide.md`, `docs/component-organization-guide.md`
 - **Imports / exports:** `docs/import-patterns-guide.md`, `docs/export-patterns-guide.md`
 - **Forms:** `docs/forms-guide.md`
-- **Data fetching:** Convex `useQuery` / `useMutation` from `convex/react`.
+- **Data fetching:** Convex is not wired in the apps yet. Do not import `convex/react` until it is.
 - **Responsive web UI:** `docs/responsive-design-guide.md`
 - **Tests (placement, naming, what to test):** `docs/testing-strategy.md`
 - **Git / branches / commits / PRs:** `docs/git-and-pr-guidelines.md`

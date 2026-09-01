@@ -1,14 +1,11 @@
 import "react-native-reanimated";
 import "../global.css";
 
-import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { ConvexReactClient } from "convex/react";
 import { useFonts } from "expo-font";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { cssInterop } from "nativewind";
 import { useEffect } from "react";
@@ -35,16 +32,6 @@ export { ErrorBoundary } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL ?? "", {
-  unsavedChangesWarning: false,
-});
-
-const secureStorage = {
-  getItem: SecureStore.getItemAsync,
-  setItem: SecureStore.setItemAsync,
-  removeItem: SecureStore.deleteItemAsync,
-};
-
 const RootLayout = () => {
   const [loaded, error] = useFonts({
     ...FONT_LOADING_MAP,
@@ -67,29 +54,27 @@ const RootLayout = () => {
   return (
     <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
-        <ConvexAuthProvider client={convex} storage={secureStorage}>
-          <BottomSheetModalProvider>
-            <Stack
-              screenOptions={{
-                ...defaultStackScreenOptions,
-                ...screenPresets.noHeader,
-              }}
-            >
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(main-app)" />
-            </Stack>
-            <BottomSheetsManager />
-            <Toast
-              config={{
-                active: (props) => <ActiveToast {...props} />,
-                neutral: (props) => <NeutralToast {...props} />,
-                success: (props) => <SuccessToast {...props} />,
-                error: (props) => <ErrorToast {...props} />,
-              }}
-            />
-          </BottomSheetModalProvider>
-        </ConvexAuthProvider>
+        <BottomSheetModalProvider>
+          <Stack
+            screenOptions={{
+              ...defaultStackScreenOptions,
+              ...screenPresets.noHeader,
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(main-app)" />
+          </Stack>
+          <BottomSheetsManager />
+          <Toast
+            config={{
+              active: (props) => <ActiveToast {...props} />,
+              neutral: (props) => <NeutralToast {...props} />,
+              success: (props) => <SuccessToast {...props} />,
+              error: (props) => <ErrorToast {...props} />,
+            }}
+          />
+        </BottomSheetModalProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

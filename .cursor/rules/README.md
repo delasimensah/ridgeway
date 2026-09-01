@@ -20,7 +20,7 @@ Rules guide the agent for this monorepo.
 ## ESLint (web + mobile)
 
 - Inside **`components/`**: no `@/components/...` (relative paths for components).
-- **Barrels only** for `@/constants`, `@/hooks`, `@/utils`, `@/services`, `shared`. Convex generated API uses `convex/_generated/api`.
+- **Barrels only** for `@/constants`, `@/hooks`, `@/utils`, `@/services`, `shared`. When Convex is wired, generated API uses `convex/_generated/api`.
 
 ## Entry point
 

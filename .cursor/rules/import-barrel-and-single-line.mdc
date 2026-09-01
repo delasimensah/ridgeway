@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Imports: Barrel Only, One Line Per Module
 
-**Barrel paths only** for `@/constants`, `@/hooks`, `@/utils`, `@/assets`, `@/services`, **`shared`**. Convex generated API uses `convex/_generated/api`.
+**Barrel paths only** for `@/constants`, `@/hooks`, `@/utils`, `@/assets`, `@/services`, **`shared`**. When Convex is wired, generated API uses `convex/_generated/api`.
 
 - **✅** `import { COLORS } from "@/constants";` — **❌** `@/constants/colors`
 - **✅** `import { x } from "shared";` — **❌** `shared/...`
