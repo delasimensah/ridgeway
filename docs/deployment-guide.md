@@ -304,12 +304,10 @@ If you prefer the dashboard over the CLI:
 
 1. Go to [vercel.com/new](https://vercel.com/new) and import your GitHub repository
 2. Set these fields before deploying:
-   - **Root Directory**: `apps/web-app` (or your app folder)
+   - **Root Directory**: `.` (empty). Import will default to `apps/web-app`. Clear that so the root `vercel.json` is used.
    - **Framework Preset**: Next.js
-   - **Build Command**: `yarn turbo run build --filter=@your-app-package-name`
-   - **Output Directory**: `.next`
-   - **Install Command**: `yarn install`
-3. Add environment variables under the Environment Variables section before clicking Deploy
+   - Leave Build, Output, and Install as `vercel.json` unless the dashboard is empty
+3. Skip environment variables until Convex is wired. Then add `NEXT_PUBLIC_CONVEX_URL` and redeploy.
 
 **Reference**: [Vercel Monorepo Guide](https://vercel.com/docs/monorepos)
 
@@ -456,9 +454,15 @@ eas project:init
 
 **"Build failed" on Vercel:**
 
-- Check Root Directory is set to `apps/web-app`
-- Verify build command uses `yarn turbo run build --filter=@ridgeway/web-app`
-- Check environment variables are set
+- Check Root Directory is `.` (repo root), not `apps/web-app`, so the root `vercel.json` is used
+- Verify `vercel.json` `buildCommand` uses `turbo run build --filter=@ridgeway/web-app`
+- Check environment variables are set when Convex is wired
+
+**Next.js build succeeds, then Vercel fails at "Deploying outputs..." with "Cannot patch preview comments when immutable static file upload is enabled":**
+
+- That is a Vercel Comments bug with Next 16.3 immutable static uploads, not an app compile error. You already run Next 16.3.3; the "upgrade to canary.32" line is stale.
+- `apps/web-app/next.config.ts` sets `supportsImmutableAssets: false` so deploy can finish. Push that change, then Redeploy.
+- Or in Vercel: Settings → General → Vercel Toolbar (or Comments) → Off for Preview, then Redeploy.
 
 **"Module not found" errors:**
 
