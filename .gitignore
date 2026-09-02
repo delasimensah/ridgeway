@@ -31,6 +31,9 @@ yarn-error.log*
 .env.local
 .env.*.local
 
+# Local access-list draft for Bitwarden or 1Password
+ACCESS-LIST.md
+
 # Coverage
 coverage/
 
