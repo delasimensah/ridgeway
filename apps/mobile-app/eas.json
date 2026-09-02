@@ -22,10 +22,12 @@
       "distribution": "internal",
       "env": {
         "APP_VARIANT": "staging"
-      }
+      },
+      "channel": "preview"
     },
     "production": {
       "autoIncrement": true,
+      "channel": "production",
       "android": {
         "image": "latest"
       },

@@ -79,8 +79,6 @@ yarn dev
 
 ```bash
 yarn dev                    # Start development server
-yarn dev:go                 # Start with Expo Go
-yarn dev:build              # Start with development build
 ```
 
 ### **Code Quality**
@@ -165,7 +163,7 @@ yarn build:dev:ios      # iOS
 **Then use:**
 
 ```bash
-yarn dev:build    # Start with development client
+yarn dev    # Start with development client
 ```
 
 **See**: [Deployment Guide](../../docs/deployment-guide.md) for detailed instructions.

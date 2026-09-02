@@ -43,7 +43,7 @@
   "resolutions": {
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "@react-native/jest-preset": "0.86.2"
+    "@react-native/jest-preset": "0.86.3"
   },
   "packageManager": "yarn@1.22.22",
   "engines": {

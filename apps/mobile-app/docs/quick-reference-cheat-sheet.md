@@ -216,8 +216,6 @@ import { COLORS } from "@/constants";
 
 ```bash
 yarn dev                    # Start development server
-yarn dev:go                 # Start with Expo Go
-yarn dev:build              # Start with development build
 ```
 
 ### **Code Quality**

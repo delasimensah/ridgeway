@@ -172,23 +172,15 @@ After you have at least one development build installed (Android and/or iOS):
    yarn dev
    ```
 
-   or:
+   Open the installed app on the device/emulator and use the list-view map as above.
 
-   ```bash
-   yarn dev:build
-   ```
-
-   Both start the dev server for the development client. Open the installed app on the device/emulator and use the list-view map as above.
-
-**Note:** `yarn dev:go` starts Expo Go. The list-view map will not work in Expo Go; use a development build and `yarn dev` (or `yarn dev:build`) instead.
+This app uses a development build. Expo Go is not a supported path.
 
 ---
 
 ## Script reference (from `package.json`)
 
 - `yarn dev` — Start dev server for development client (requires existing dev build).
-- `yarn dev:build` — Same as `yarn dev`.
-- `yarn dev:go` — Start with Expo Go (map will not work; dev build required for maps).
 - `yarn build:android:dev` — Build Android development client.
 - `yarn build:ios-device:dev` — Build iOS development client for physical device.
 - `yarn build:ios-simulator:dev` — Build iOS development client for simulator.

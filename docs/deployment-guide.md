@@ -111,7 +111,7 @@ yarn build:dev:ios-simulator
 
 1. Download the build from the EAS Dashboard or terminal link
 2. Install on device/simulator
-3. Run `yarn dev:build` to start development server
+3. Run `yarn dev` to start development server
 4. Open the development build app and connect to dev server
 
 **Reference**: [Expo Development Builds](https://docs.expo.dev/develop/development-builds/introduction/)
@@ -356,12 +356,8 @@ Required at the monorepo root. Update `--filter` and `outputDirectory` to match 
 ### **Mobile App Scripts**
 
 ```bash
-# Development (Expo Go)
-yarn dev              # Start with Expo Go
-yarn dev:go          # Same as above
-
-# Development (Dev Client)
-yarn dev:build       # Start with development build
+# Development
+yarn dev              # Start with development client
 
 # Development Builds
 yarn build:dev:android
