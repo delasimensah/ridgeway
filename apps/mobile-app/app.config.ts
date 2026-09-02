@@ -1,5 +1,12 @@
 import type { ConfigContext, ExpoConfig } from "expo/config";
 
+const ASSET_PATHS = {
+  appIcon: "./assets/icons/icon.png",
+  splashIcon: "./assets/icons/splash-icon.png",
+};
+
+const BRAND_COLOR = "#208AEF";
+
 const IS_DEV = process.env.APP_VARIANT === "development";
 const IS_STAGING = process.env.APP_VARIANT === "staging";
 
@@ -31,7 +38,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: getAppName(),
   slug: "ridgeway",
-  owner: "dm-studios",
   version: "1.0.0",
   orientation: "portrait",
   scheme: "ridgeway",
@@ -39,16 +45,40 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     ...config.ios,
     bundleIdentifier: getUniqueIdentifier(),
+    icon: ASSET_PATHS.appIcon,
     supportsTablet: true,
   },
   android: {
     ...config.android,
     package: getUniqueIdentifier(),
     adaptiveIcon: {
-      backgroundColor: "#ffffff",
+      foregroundImage: ASSET_PATHS.appIcon,
+      backgroundColor: BRAND_COLOR,
     },
+    predictiveBackGestureEnabled: false,
+    softwareKeyboardLayoutMode: "resize",
   },
-  plugins: ["expo-router", "expo-secure-store", "expo-font", "expo-image"],
+  plugins: [
+    "expo-router",
+    "expo-secure-store",
+    "expo-font",
+    "expo-image",
+    [
+      "expo-splash-screen",
+      {
+        ios: {
+          backgroundColor: BRAND_COLOR,
+          image: ASSET_PATHS.splashIcon,
+          resizeMode: "cover",
+        },
+        android: {
+          backgroundColor: BRAND_COLOR,
+          image: ASSET_PATHS.splashIcon,
+          imageWidth: 150,
+        },
+      },
+    ],
+  ],
   experiments: {
     typedRoutes: true,
   },
@@ -64,4 +94,5 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       projectId: "f2660fce-f32a-43b2-be0f-94f2a08a2c22",
     },
   },
+  owner: "dm-studios",
 });

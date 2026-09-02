@@ -117,6 +117,10 @@ yarn build:preview:android # Android only
 yarn build:production      # Both platforms
 yarn build:production:ios  # iOS only
 yarn build:production:android # Android only
+
+# OTA updates
+yarn update:preview
+yarn update:production
 ```
 
 ### **App Store Submission**
@@ -128,23 +132,9 @@ yarn submit:ios        # Submit to App Store
 
 ---
 
-## 📱 Development Options
+## 📱 Development Builds
 
-### **Expo Go (Default - Quick Start)**
-
-For rapid development without custom native modules:
-
-```bash
-yarn dev          # Start with Expo Go
-```
-
-- Works immediately
-- No build required
-- Limited to Expo SDK modules
-
-### **Development Build (Advanced)**
-
-For apps with custom native modules or full feature testing:
+This app uses a development client. Expo Go is not a supported path.
 
 **First time setup:**
 
@@ -153,11 +143,12 @@ cd apps/mobile-app
 eas build:configure    # Connect to Expo project
 ```
 
-**Create development build:**
+**Create a development build:**
 
 ```bash
 yarn build:dev:android  # Android
 yarn build:dev:ios      # iOS
+yarn build:dev:ios-simulator  # iOS Simulator
 ```
 
 **Then use:**
@@ -165,6 +156,8 @@ yarn build:dev:ios      # iOS
 ```bash
 yarn dev    # Start with development client
 ```
+
+`APP_VARIANT=development` sets the name to Ridgeway(Dev) and the identifier to `com.dmstudios.ridgeway.dev`. Preview uses `.staging`. Production uses `com.dmstudios.ridgeway`.
 
 **See**: [Deployment Guide](../../docs/deployment-guide.md) for detailed instructions.
 

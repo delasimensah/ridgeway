@@ -11,8 +11,7 @@
 
 export const ASSETS = {
   icons: {
-    // Add your icon assets here
-    // appIcon: require("../assets/icons/app-icon.png"),
+    appIcon: require("../assets/icons/icon.png"),
   },
   images: {
     // Add your image assets here

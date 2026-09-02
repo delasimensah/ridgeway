@@ -30,7 +30,7 @@ yarn install
 
 ```bash
 yarn dev:web      # http://localhost:3001
-yarn dev:mobile   # Expo QR code
+yarn dev:mobile   # development client (needs a Ridgeway(Dev) native app)
 ```
 
 ## Commands
