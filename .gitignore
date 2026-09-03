@@ -50,8 +50,10 @@ coverage/
 # Vercel
 .vercel
 
-# EAS
-.eas/
+# EAS local cache. Workflow YAML in apps/mobile-app/.eas/workflows/ is committed.
+**/.eas/*
+!**/.eas/workflows/
+!**/.eas/workflows/**
 
 # Convex generated (created by `npx convex dev`)
 convex/_generated/

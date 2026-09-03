@@ -25,6 +25,7 @@
     "build:production:ios": "eas build --platform ios --profile production",
     "submit:android": "eas submit --platform android --profile production",
     "submit:ios": "eas submit --platform ios --profile production",
+    "workflow:preview": "eas workflow:run .eas/workflows/preview.yml",
     "update:preview": "eas update --channel preview",
     "update:production": "eas update --channel production",
     "android": "APP_VARIANT=development expo run:android",
