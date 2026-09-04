@@ -38,9 +38,13 @@ jobs:
       refresh_ad_hoc_provisioning_profile: true
   notify:
     name: Notify on Slack
-    after: [build_android, build_ios]
+    after: [get_android_build, get_ios_build, build_android, build_ios]
     type: slack
     environment: preview
     params:
       webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
-      message: "Preview builds are ready - Android: ${{ after.build_android.status }}, iOS: ${{ after.build_ios.status }}"
+      message: |
+        Preview builds — Android: ${{ after.build_android.status }}, iOS: ${{ after.build_ios.status }}
+        Workflow: ${{ workflow.url }}
+        Android: https://expo.dev/accounts/dm-studios/projects/ridgeway/builds/${{ after.build_android.outputs.build_id || after.get_android_build.outputs.build_id }}
+        iOS: https://expo.dev/accounts/dm-studios/projects/ridgeway/builds/${{ after.build_ios.outputs.build_id || after.get_ios_build.outputs.build_id }}
