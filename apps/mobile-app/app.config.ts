@@ -47,6 +47,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: getUniqueIdentifier(),
     icon: ASSET_PATHS.appIcon,
     supportsTablet: true,
+    infoPlist: {
+      ...config.ios?.infoPlist,
+      ITSAppUsesNonExemptEncryption: false,
+    },
   },
   android: {
     ...config.android,
