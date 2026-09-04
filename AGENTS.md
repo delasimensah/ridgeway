@@ -2,6 +2,10 @@
 
 This is a **Turborepo** with a **Next.js** web app, an **Expo** mobile app, a **shared** package, and a **Convex** backend. Convex packages and `convex/` are in the repo. Do not import Convex in the apps until it is wired.
 
+## Where we left off
+
+Read **`STATUS.md`** at the repo root before planning or implementing. It is the phase checklist (workshop vs product). Update it when you finish a phase or change the next action. Do not put secrets in `STATUS.md`.
+
 ## Compliance (do this before coding)
 
 - **`.cursor/rules/mandatory-project-docs.mdc`** — Always applied. For your task type, **read the listed `docs/...` files** (and app docs) with the Read tool before implementing.
