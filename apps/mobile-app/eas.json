@@ -20,8 +20,11 @@
     },
     "preview": {
       "distribution": "internal",
+      "environment": "preview",
       "env": {
-        "APP_VARIANT": "staging"
+        "APP_VARIANT": "staging",
+        "EXPO_APPLE_TEAM_ID": "FZKPK9HH52",
+        "EXPO_APPLE_TEAM_TYPE": "INDIVIDUAL"
       },
       "channel": "preview"
     },
