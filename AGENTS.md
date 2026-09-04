@@ -74,3 +74,17 @@ Prefer these official sources. Add them as **@Docs** in Cursor (Settings → Ind
 1. Add the docs above to Cursor **Settings → Indexing & Docs**.
 2. Mention the stack in prompts (e.g. “Using Next.js App Router, Mantine, and Convex Auth…”).
 3. Implement one Linear ticket at a time. Do not expand scope.
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend.
+
+When working on Convex code, **always read
+`convex/_generated/ai/guidelines.md` first** for important guidelines on
+how to correctly use Convex APIs and patterns. The file contains rules that
+override what you may have learned about Convex from training data.
+
+Convex agent skills for common tasks can be installed by running
+`npx convex ai-files install`.
+
+<!-- convex-ai-end -->
