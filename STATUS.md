@@ -10,9 +10,9 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Workshop complete → **next is system design**
-- **Last updated:** 4 Sep 2026
-- **Blocked / open:** none for setup. Product tables wait for system design.
+- **Current phase:** System design locked → **next is screen design**
+- **Last updated:** 5 Sep 2026
+- **Blocked / open:** none. `docs/product/system-design.md` and `docs/product/convex-design.md` are written and the open architecture calls are decided, with the reasons recorded in section 15 of the system design. Two things land with the first build slice rather than now: Vitest for the `convex/` folder, and the `convex-helpers` dependency behind the wrapped function declarations.
 
 ---
 
@@ -47,7 +47,7 @@
 
 ## Product path (after workshop)
 
-- [ ] System design (tables, permissions, risks) — practice pack 06; grow Convex schema here
+- [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [ ] Screen design / UX Pilot exports (07)
 - [ ] Linear build tickets with design links (08)
 - [ ] Build slices, demos, TestFlight / Play testing (09)
@@ -58,7 +58,7 @@
 
 ## Next action (one line)
 
-Start system design for Ridgeway (Convex schema and permissions). Do not invent product tables until that document exists.
+Start screen design. Build tickets need screen links, so no product tables or Convex functions until screens exist.
 
 ---
 
