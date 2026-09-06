@@ -10,9 +10,9 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Screen design locked → **next is Linear build tickets**
+- **Current phase:** Linear tickets written → **next is RIDGE-1 (staff sign-in)**
 - **Last updated:** 6 Sep 2026
-- **Blocked / open:** none. UX Pilot HTML is in `docs/ui-design/ridgeway/exports/` by role. Suggested category and urgency reuse the File a repair selects, so there is no extra screen. Two things still land with the first build slice: Vitest for the `convex/` folder, and the `convex-helpers` dependency behind the wrapped function declarations.
+- **Blocked / open:** none. Review RIDGE-1 in Linear before In Progress. Vitest for `convex/` and the `convex-helpers` wrappers land on RIDGE-1. Suggested category and urgency reuse the File a repair selects (RIDGE-17), so there is no extra screen.
 
 ---
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [ ] Linear build tickets with design links (08)
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1 Todo; RIDGE-2–18 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,13 +58,14 @@
 
 ## Next action (one line)
 
-Write Linear build tickets with links to the HTML exports. Product schema and Convex functions start with the first build slice.
+Approve [RIDGE-1](https://linear.app/dm-studios/issue/RIDGE-1/staff-can-sign-in-on-the-website), move it In Progress, and implement staff sign-in. Product schema and Convex functions start there.
 
 ---
 
 ## Pointers
 
 - Product requirements: `docs/product/product-requirements.md`
+- Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
 - Access list (private): `ACCESS-LIST.md`
 - Practice pack (process paper): `project-template/docs/client-delivery/practice/ridgeway/`
