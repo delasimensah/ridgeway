@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+        }
+        .sidebar {
+            background-color: #F7F5F0;
+        }
+        .border-beige {
+            border-color: #E8E4DA;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 sidebar border-r border-beige flex flex-col fixed h-full">
+        <div class="p-6">
+            <h1 class="text-[24px] font-bold tracking-tight">Ridgeway</h1>
+        </div>
+        
+        <nav class="flex-1 px-4 space-y-1">
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-house w-5"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-building w-5"></i>
+                <span>Buildings</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-wrench w-5"></i>
+                <span>Repairs</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] bg-[#1A3636] text-white font-semibold">
+                <i class="fa-solid fa-money-bill-transfer w-5"></i>
+                <span>Rent</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-beige">
+            <div class="flex items-center gap-3 px-4 py-2">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Ama Boateng" class="w-8 h-8 rounded-full">
+                <div class="flex flex-col">
+                    <span class="text-[14px] font-semibold">Ama Boateng</span>
+                    <span class="text-[12px] text-[#677D6A]">Staff</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-12 max-w-[1200px]">
+        <header class="mb-12">
+            <h2 class="text-[32px] font-bold mb-8">Rent · March 2024</h2>
+            
+            <!-- Summary Strip (Copilot style) -->
+            <div class="bg-white border border-beige rounded-[8px] shadow-sm p-10 flex items-center justify-start gap-24">
+                <div>
+                    <p class="text-[13px] font-bold text-[#677D6A] uppercase tracking-wider mb-2">Collected</p>
+                    <p class="text-[42px] font-bold">GH₵ 86,400</p>
+                </div>
+                <div class="w-[1px] h-16 bg-beige"></div>
+                <div>
+                    <p class="text-[13px] font-bold text-[#677D6A] uppercase tracking-wider mb-2">Outstanding</p>
+                    <p class="text-[42px] font-bold text-[#D6BD98]">GH₵ 12,150</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filters & Table -->
+        <section>
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex gap-2 p-1 bg-[#F7F5F0] rounded-[8px] border border-beige">
+                    <button class="px-4 py-1.5 rounded-[6px] bg-white shadow-sm text-[14px] font-bold">All</button>
+                    <button class="px-4 py-1.5 rounded-[6px] text-[#677D6A] hover:text-[#1A3636] text-[14px] font-bold transition-colors">Late</button>
+                </div>
+                <a href="monthly-owner-summary.html" class="text-[14px] font-bold text-[#1A3636] hover:text-[#40534C] underline underline-offset-4">
+                    Draft September summary
+                </a>
+            </div>
+
+            <div class="bg-white border border-beige rounded-[8px] shadow-sm overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-[#F7F5F0] border-b border-beige">
+                        <tr>
+                            <th class="px-6 py-4 text-[13px] font-bold uppercase tracking-wider text-[#677D6A]">Unit</th>
+                            <th class="px-6 py-4 text-[13px] font-bold uppercase tracking-wider text-[#677D6A]">Tenant</th>
+                            <th class="px-6 py-4 text-[13px] font-bold uppercase tracking-wider text-[#677D6A]">Amount</th>
+                            <th class="px-6 py-4 text-[13px] font-bold uppercase tracking-wider text-[#677D6A]">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-beige">
+                        <tr class="hover:bg-[#F7F5F0] transition-colors cursor-pointer">
+                            <td class="px-6 py-5 font-bold">B12</td>
+                            <td class="px-6 py-5 text-[15px]">Akosua Darko</td>
+                            <td class="px-6 py-5 text-[15px] font-semibold">GH₵ 4,500</td>
+                            <td class="px-6 py-5">
+                                <span class="px-3 py-1 bg-[#F7F5F0] border border-beige rounded-[4px] text-[12px] font-bold text-[#1A3636]">PAID</span>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-[#F7F5F0] transition-colors cursor-pointer">
+                            <td class="px-6 py-5 font-bold">A4</td>
+                            <td class="px-6 py-5 text-[15px]">Kofi Mensah</td>
+                            <td class="px-6 py-5 text-[15px] font-semibold">GH₵ 3,200</td>
+                            <td class="px-6 py-5">
+                                <span class="px-3 py-1 bg-[#F7F5F0] border border-beige rounded-[4px] text-[12px] font-bold text-[#7F2020]">LATE</span>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-[#F7F5F0] transition-colors cursor-pointer">
+                            <td class="px-6 py-5 font-bold">C8</td>
+                            <td class="px-6 py-5 text-[15px]">Yaa Asantewaa</td>
+                            <td class="px-6 py-5 text-[15px] font-semibold">GH₵ 2,800</td>
+                            <td class="px-6 py-5">
+                                <span class="px-3 py-1 bg-[#F7F5F0] border border-beige rounded-[4px] text-[12px] font-bold text-[#1A3636]">PAID</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

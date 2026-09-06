@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's jobs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            color: #677D6A;
+        }
+        .nav-item.active {
+            color: #1A3636;
+        }
+        .skeleton {
+            background-color: #F3F1ED;
+            border-radius: 4px;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .card-skeleton {
+            border: 1px solid #E8E4DA;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header id="header" class="px-4 pt-6 pb-2">
+        <div class="skeleton h-4 w-24 mb-2"></div>
+        <div class="skeleton h-8 w-40"></div>
+    </header>
+
+    <main class="flex-1 px-4 py-4">
+        <div class="card-skeleton">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <div class="skeleton h-3 w-32 mb-2"></div>
+                    <div class="skeleton h-5 w-48"></div>
+                </div>
+                <div class="skeleton h-6 w-16"></div>
+            </div>
+            <div class="skeleton h-3 w-40"></div>
+        </div>
+
+        <div class="card-skeleton">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <div class="skeleton h-3 w-28 mb-2"></div>
+                    <div class="skeleton h-5 w-36"></div>
+                </div>
+                <div class="skeleton h-6 w-16"></div>
+            </div>
+            <div class="skeleton h-3 w-40"></div>
+        </div>
+    </main>
+
+    <nav id="tab-bar" class="h-16 bg-white border-t border-[#E8E4DA] flex items-center px-4 sticky bottom-0">
+        <a href="jobs.html" class="nav-item active">
+            <i class="fa-solid fa-briefcase text-lg mb-1"></i>
+            <span class="text-[11px] font-bold">Jobs</span>
+        </a>
+        <a href="account.html" class="nav-item">
+            <i class="fa-solid fa-user text-lg mb-1"></i>
+            <span class="text-[11px] font-medium">Account</span>
+        </a>
+    </nav>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update status</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .status-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border: 1px solid #E8E4DA;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        .status-option.selected {
+            border-color: #1A3636;
+            background-color: #F9F8F6;
+        }
+        .status-chip {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .status-assigned { background-color: #40534C; color: #FFFFFF; }
+        .status-scheduled { background-color: #D6BD98; color: #1A3636; }
+        .status-done { background-color: #1A3636; color: #FFFFFF; }
+        .cta-button {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-weight: 600;
+            width: 100%;
+        }
+        .cta-primary {
+            background-color: #1A3636;
+            color: #FFFFFF;
+        }
+        .cta-primary:active {
+            background-color: #40534C;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header id="header" class="px-4 py-4 border-b border-[#E8E4DA] flex items-center justify-between">
+        <a href="job-detail.html" class="w-10 h-10 flex items-center justify-start text-[#1A3636]">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </a>
+        <h1 class="text-lg font-bold">Update status</h1>
+        <div class="w-10"></div>
+    </header>
+
+    <main class="flex-1 px-4 py-6 overflow-y-auto">
+        <div id="status-list">
+            <div class="status-option selected" data-status="assigned">
+                <div class="flex items-center gap-3">
+                    <span class="status-chip status-assigned">Assigned</span>
+                    <span class="font-semibold">Current status</span>
+                </div>
+                <i class="fa-solid fa-circle-check text-[#1A3636]"></i>
+            </div>
+
+            <div class="status-option" data-status="scheduled">
+                <div class="flex items-center gap-3">
+                    <span class="status-chip status-scheduled">Scheduled</span>
+                </div>
+                <div class="w-5 h-5 rounded-full border border-[#E8E4DA]"></div>
+            </div>
+
+            <div class="status-option" data-status="done">
+                <div class="flex items-center gap-3">
+                    <span class="status-chip status-done">Done</span>
+                </div>
+                <div class="w-5 h-5 rounded-full border border-[#E8E4DA]"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="footer" class="p-4 border-t border-[#E8E4DA] bg-white">
+        <button id="save-btn" class="cta-button cta-primary">
+            Save status
+        </button>
+    </footer>
+
+    <script>
+        let currentSelected = 'assigned';
+        const order = ['assigned', 'scheduled', 'done'];
+
+        document.querySelectorAll('.status-option').forEach((opt) => {
+            opt.addEventListener('click', () => {
+                const status = opt.dataset.status;
+                if (order.indexOf(status) < order.indexOf('assigned')) return;
+                currentSelected = status;
+                document.querySelectorAll('.status-option').forEach((row) => {
+                    row.classList.toggle('selected', row.dataset.status === status);
+                });
+            });
+        });
+
+        document.getElementById('save-btn').addEventListener('click', () => {
+            window.location.href = currentSelected === 'done' ? 'completion-photo.html' : 'job-detail.html';
+        });
+    </script>
+</body>
+</html>

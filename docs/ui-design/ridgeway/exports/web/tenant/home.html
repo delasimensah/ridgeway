@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+        }
+        .border-beige {
+            border-color: #E8E4DA;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Bar -->
+    <header id="header" class="h-16 border-b border-beige px-8 flex items-center justify-between sticky top-0 bg-white z-10">
+        <div class="text-[20px] font-bold tracking-tight">Ridgeway</div>
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Akosua Darko" class="w-8 h-8 rounded-full">
+                <span class="font-semibold text-[14px]">Akosua Darko</span>
+            </div>
+            <button class="text-[#677D6A] text-[14px] hover:text-[#1A3636] transition-colors font-medium">Sign out</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 w-full max-w-[800px] mx-auto py-12 px-6">
+        
+        <!-- Welcome & Property Info -->
+        <header class="mb-12">
+            <h1 class="text-[32px] font-bold mb-2">Unit B12 · Ridge Court</h1>
+            <p class="text-[#677D6A] text-[18px]">14 Ridge Road, Cantonments</p>
+        </header>
+
+        <div class="space-y-8">
+            <!-- Action Buttons -->
+            <div class="flex gap-4">
+                <a href="file-repair.html" class="bg-[#1A3636] text-white px-6 py-3 rounded-[8px] font-semibold hover:bg-[#40534C] transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i>
+                    File a repair
+                </a>
+                <a href="rent.html" class="border border-beige px-6 py-3 rounded-[8px] font-semibold hover:bg-[#F7F5F0] transition-colors text-[#1A3636]">
+                    Rent
+                </a>
+                <a href="house-rules-chat.html" class="border border-beige px-6 py-3 rounded-[8px] font-semibold hover:bg-[#F7F5F0] transition-colors text-[#1A3636]">
+                    Ask house rules
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Next Rent Card -->
+                <section id="next-rent">
+                    <h2 class="text-[14px] font-bold text-[#677D6A] uppercase tracking-wider mb-4">Next rent</h2>
+                    <div class="bg-white border border-beige p-6 rounded-[8px] shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-[24px] font-bold mb-1">GH₵ 4,500</p>
+                                <p class="text-[14px] text-[#677D6A]">Due 5 Sep 2026</p>
+                            </div>
+                            <span class="px-3 py-1 bg-[#7F2020] text-white text-[12px] font-bold rounded-full">LATE</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Open Repairs Card -->
+                <section id="open-repairs">
+                    <h2 class="text-[14px] font-bold text-[#677D6A] uppercase tracking-wider mb-4">Open repairs</h2>
+                    <div class="bg-white border border-beige p-6 rounded-[8px] shadow-sm">
+                        <a href="repair-timeline.html" class="group">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold group-hover:text-[#40534C] transition-colors">Kitchen tap leak</p>
+                                    <p class="text-[14px] text-[#677D6A]">Reported 2 days ago</p>
+                                </div>
+                                <span class="px-3 py-1 bg-[#40534C] text-white text-[12px] font-bold rounded-full uppercase">Assigned</span>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+    </main>
+
+    <footer id="footer" class="py-12 border-t border-beige mt-12">
+        <div class="max-w-[800px] mx-auto px-6 text-[14px] text-[#677D6A]">
+            &copy; 2024 Ridgeway Property Group
+        </div>
+    </footer>
+
+</body>
+</html>

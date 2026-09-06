@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ridge Court · B12</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+        }
+        .sidebar {
+            background-color: #F7F5F0;
+        }
+        .border-beige {
+            border-color: #E8E4DA;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 sidebar border-r border-beige flex flex-col fixed h-full">
+        <div class="p-6">
+            <h1 class="text-[24px] font-bold tracking-tight">Ridgeway</h1>
+        </div>
+        
+        <nav class="flex-1 px-4 space-y-1">
+            <a href="home.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-house w-5"></i>
+                <span>Home</span>
+            </a>
+            <a href="building-list.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] bg-[#1A3636] text-white font-semibold">
+                <i class="fa-solid fa-building w-5"></i>
+                <span>Buildings</span>
+            </a>
+            <a href="repair-list.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-wrench w-5"></i>
+                <span>Repairs</span>
+            </a>
+            <a href="rent-list.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-money-bill-transfer w-5"></i>
+                <span>Rent</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-beige">
+            <div class="flex items-center gap-3 px-4 py-2">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Ama Boateng" class="w-8 h-8 rounded-full">
+                <div class="flex flex-col">
+                    <span class="text-[14px] font-semibold">Ama Boateng</span>
+                    <span class="text-[12px] text-[#677D6A]">Staff</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-12 max-w-[1200px]">
+        <header class="mb-12">
+            <a href="building-detail.html" class="text-[14px] font-semibold text-[#677D6A] hover:text-[#1A3636] flex items-center gap-2 mb-4 transition-colors">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Ridge Court
+            </a>
+            <div class="flex justify-between items-end">
+                <h2 class="text-[32px] font-bold">Ridge Court · B12</h2>
+                <div class="flex gap-4">
+                    <button onclick="window.location.href='end-lease.html'" class="px-6 py-2.5 rounded-[8px] border border-[#7F2020] text-[#7F2020] font-semibold hover:bg-[#7F2020]/5 transition-colors">
+                        End lease
+                    </button>
+                    <button class="bg-[#1A3636] text-white px-6 py-2.5 rounded-[8px] font-semibold hover:bg-[#40534C] transition-colors">
+                        Add repair
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Unit Info -->
+            <div class="lg:col-span-2 space-y-8">
+                <section class="bg-white border border-beige rounded-[8px] p-8 shadow-sm">
+                    <h3 class="text-[20px] font-bold mb-6">Lease & Rent</h3>
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <p class="text-[14px] text-[#677D6A] font-medium mb-1 uppercase tracking-wider">Tenant</p>
+                            <a href="tenant-detail.html" class="text-[18px] font-bold text-[#1A3636] hover:underline">Akosua Darko</a>
+                        </div>
+                        <div>
+                            <p class="text-[14px] text-[#677D6A] font-medium mb-1 uppercase tracking-wider">Monthly Rent</p>
+                            <p class="text-[18px] font-bold">GH₵ 4,500 <span class="text-[14px] text-[#677D6A] font-normal">due the 5th</span></p>
+                        </div>
+                        <div>
+                            <p class="text-[14px] text-[#677D6A] font-medium mb-1 uppercase tracking-wider">Lease Term</p>
+                            <p class="text-[18px] font-bold">1 Jan 2026 – 31 Dec 2027</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white border border-beige rounded-[8px] shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-beige flex justify-between items-center">
+                        <h3 class="text-[18px] font-bold">Open repairs</h3>
+                    </div>
+                    <table class="w-full text-left">
+                        <tbody class="divide-y divide-beige">
+                            <tr class="hover:bg-[#F7F5F0] transition-colors cursor-pointer" onclick="window.location.href='repair-detail.html'">
+                                <td class="px-6 py-4">
+                                    <p class="font-bold">Kitchen tap leak</p>
+                                    <p class="text-[14px] text-[#677D6A]">Reported 2 days ago</p>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="px-3 py-1 bg-[#40534C] text-white text-[12px] font-bold rounded-full">ASSIGNED</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+
+            <!-- Sidebar Info -->
+            <div class="space-y-6">
+                <div class="bg-[#F7F5F0] border border-beige rounded-[8px] p-6">
+                    <h4 class="text-[15px] font-bold mb-4 uppercase tracking-wider text-[#677D6A]">Quick stats</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-[13px] text-[#677D6A]">Rent Collected (YTD)</p>
+                            <p class="text-[20px] font-bold">GH₵ 54,000</p>
+                        </div>
+                        <div class="h-[1px] bg-beige"></div>
+                        <div>
+                            <p class="text-[13px] text-[#677D6A]">Maintenance Score</p>
+                            <p class="text-[20px] font-bold">Great</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

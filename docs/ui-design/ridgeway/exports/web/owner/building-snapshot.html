@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ridge Court Snapshot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+        }
+        .sidebar {
+            background-color: #F7F5F0;
+        }
+        .border-beige {
+            border-color: #E8E4DA;
+        }
+        .bg-sand {
+            background-color: #D6BD98;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 sidebar border-r border-beige flex flex-col fixed h-full">
+        <div class="p-6">
+            <h1 class="text-[24px] font-bold tracking-tight">Ridgeway</h1>
+        </div>
+        
+        <nav class="flex-1 px-4 space-y-1">
+            <a href="home.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-house w-5"></i>
+                <span>Home</span>
+            </a>
+            <a href="building-snapshot.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] bg-[#1A3636] text-white font-semibold">
+                <i class="fa-solid fa-building w-5"></i>
+                <span>Buildings</span>
+            </a>
+            <a href="open-issues.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-circle-exclamation w-5"></i>
+                <span>Issues</span>
+            </a>
+            <a href="rent.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-money-bill-transfer w-5"></i>
+                <span>Rent</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-beige">
+            <div class="flex items-center gap-3 px-4 py-2">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg" alt="Kwesi Mensah" class="w-8 h-8 rounded-full">
+                <div class="flex flex-col">
+                    <span class="text-[14px] font-semibold">Kwesi Mensah</span>
+                    <span class="text-[12px] text-[#677D6A]">Owner</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-12 max-w-[1200px]">
+        <header class="mb-12">
+            <a href="home.html" class="text-[#677D6A] hover:text-[#1A3636] transition-colors flex items-center gap-2 mb-4 text-[14px] font-medium">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Home
+            </a>
+            <h2 class="text-[32px] font-bold">Ridge Court</h2>
+            <p class="text-[#677D6A] mt-1">14 Ridge Road, Cantonments, Accra</p>
+        </header>
+
+        <!-- Summary Grid -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white border border-beige p-6 rounded-[8px] shadow-sm">
+                <p class="text-[14px] text-[#677D6A] font-medium mb-1">Occupancy</p>
+                <div class="flex items-baseline gap-2">
+                    <p class="text-[28px] font-bold">22</p>
+                    <p class="text-[16px] text-[#677D6A]">of 24 units</p>
+                </div>
+            </div>
+            <div class="bg-white border border-beige p-6 rounded-[8px] shadow-sm">
+                <p class="text-[14px] text-[#677D6A] font-medium mb-1">Open Repairs</p>
+                <p class="text-[28px] font-bold">4</p>
+            </div>
+            <div class="bg-white border border-beige p-6 rounded-[8px] shadow-sm">
+                <p class="text-[14px] text-[#677D6A] font-medium mb-1">Monthly Yield</p>
+                <p class="text-[28px] font-bold text-[#1A3636]">GH₵ 28,400</p>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Active Issues -->
+            <section id="building-issues">
+                <h3 class="text-[20px] font-bold mb-6">Open issues</h3>
+                <div class="space-y-4">
+                    <div class="bg-white border border-beige p-4 rounded-[8px] shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="font-bold">B12 leak</p>
+                            <p class="text-[14px] text-[#677D6A]">Tenant: Akosua Darko</p>
+                        </div>
+                        <span class="px-3 py-1 bg-[#40534C] text-white text-[12px] font-bold rounded-full">ASSIGNED</span>
+                    </div>
+                    <div class="bg-white border border-beige p-4 rounded-[8px] shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="font-bold">Shop 2 AC</p>
+                            <p class="text-[14px] text-[#677D6A]">Commercial Unit</p>
+                        </div>
+                        <span class="px-3 py-1 bg-[#677D6A] text-white text-[12px] font-bold rounded-full">RECEIVED</span>
+                    </div>
+                    <div class="bg-white border border-beige p-4 rounded-[8px] shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="font-bold">A4 lock</p>
+                            <p class="text-[14px] text-[#677D6A]">Tenant: Kwame Owusu</p>
+                        </div>
+                        <span class="px-3 py-1 bg-[#D6BD98] text-[#1A3636] text-[12px] font-bold rounded-full">SCHEDULED</span>
+                    </div>
+                    <div class="bg-white border border-beige p-4 rounded-[8px] shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="font-bold">C5 shower</p>
+                            <p class="text-[14px] text-[#677D6A]">Tenant: Ama Mensah</p>
+                        </div>
+                        <span class="px-3 py-1 bg-[#677D6A] text-white text-[12px] font-bold rounded-full">RECEIVED</span>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <a href="open-issues.html" class="text-[#1A3636] font-semibold text-[14px] flex items-center gap-2 hover:underline">
+                        View all issues across portfolio <i class="fa-solid fa-arrow-right text-[12px]"></i>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Rent Snapshot -->
+            <section id="building-rent">
+                <h3 class="text-[20px] font-bold mb-6">Upcoming rents</h3>
+                <div class="bg-white border border-beige rounded-[8px] shadow-sm overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-[#F7F5F0] border-b border-beige">
+                            <tr>
+                                <th class="px-6 py-4 text-[12px] font-bold text-[#677D6A] uppercase tracking-wider">Unit</th>
+                                <th class="px-6 py-4 text-[12px] font-bold text-[#677D6A] uppercase tracking-wider">Tenant</th>
+                                <th class="px-6 py-4 text-[12px] font-bold text-[#677D6A] uppercase tracking-wider">Amount</th>
+                                <th class="px-6 py-4 text-[12px] font-bold text-[#677D6A] uppercase tracking-wider text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-beige">
+                            <tr>
+                                <td class="px-6 py-4 text-[14px] font-medium">B12</td>
+                                <td class="px-6 py-4 text-[14px] text-[#677D6A]">Akosua Darko</td>
+                                <td class="px-6 py-4 text-[14px] font-bold">GH₵ 3,200</td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-[12px] font-bold text-[#D6BD98]">OUTSTANDING</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-[14px] font-medium">A2</td>
+                                <td class="px-6 py-4 text-[14px] text-[#677D6A]">Kojo Antwi</td>
+                                <td class="px-6 py-4 text-[14px] font-bold">GH₵ 2,800</td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-[12px] font-bold text-[#1A3636]">COLLECTED</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-[14px] font-medium">D1</td>
+                                <td class="px-6 py-4 text-[14px] text-[#677D6A]">Esi Boateng</td>
+                                <td class="px-6 py-4 text-[14px] font-bold">GH₵ 4,100</td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-[12px] font-bold text-[#1A3636]">COLLECTED</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+</body>
+</html>

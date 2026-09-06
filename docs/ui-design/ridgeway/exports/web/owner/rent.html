@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent Overview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+        }
+        .sidebar {
+            background-color: #F7F5F0;
+        }
+        .border-beige {
+            border-color: #E8E4DA;
+        }
+        .accent-sand {
+            color: #D6BD98;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 sidebar border-r border-beige flex flex-col fixed h-full">
+        <div class="p-6">
+            <h1 class="text-[24px] font-bold tracking-tight">Ridgeway</h1>
+        </div>
+        
+        <nav class="flex-1 px-4 space-y-1">
+            <a href="home.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-house w-5"></i>
+                <span>Home</span>
+            </a>
+            <a href="building-snapshot.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-building w-5"></i>
+                <span>Buildings</span>
+            </a>
+            <a href="open-issues.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-circle-exclamation w-5"></i>
+                <span>Issues</span>
+            </a>
+            <a href="rent.html" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] bg-[#1A3636] text-white font-semibold">
+                <i class="fa-solid fa-money-bill-transfer w-5"></i>
+                <span>Rent</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-beige">
+            <div class="flex items-center gap-3 px-4 py-2">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg" alt="Kwesi Mensah" class="w-8 h-8 rounded-full">
+                <div class="flex flex-col">
+                    <span class="text-[14px] font-semibold">Kwesi Mensah</span>
+                    <span class="text-[12px] text-[#677D6A]">Owner</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-12 max-w-[1200px]">
+        <header class="mb-12">
+            <h2 class="text-[32px] font-bold">Rent</h2>
+            <p class="text-[#677D6A] mt-1">Portfolio collection summary for this month</p>
+        </header>
+
+        <!-- Summary Cards -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white border border-beige p-8 rounded-[8px] shadow-sm">
+                <p class="text-[14px] text-[#677D6A] font-medium mb-1 uppercase tracking-wider">Collected</p>
+                <p class="text-[48px] font-bold text-[#1A3636]">GH₵ 41,200</p>
+                <div class="mt-4 flex items-center gap-2">
+                    <div class="h-2 flex-1 bg-[#F7F5F0] rounded-full overflow-hidden">
+                        <div class="h-full bg-[#1A3636]" style="width: 90.1%"></div>
+                    </div>
+                    <span class="text-[14px] font-bold text-[#1A3636]">90%</span>
+                </div>
+            </div>
+            <div class="bg-white border border-beige p-8 rounded-[8px] shadow-sm">
+                <p class="text-[14px] text-[#677D6A] font-medium mb-1 uppercase tracking-wider text-[#D6BD98]">Outstanding</p>
+                <p class="text-[48px] font-bold text-[#D6BD98]">GH₵ 4,500</p>
+                <p class="mt-4 text-[14px] text-[#677D6A]">Expected by end of month</p>
+            </div>
+        </section>
+
+        <!-- Building Breakdown Table -->
+        <section id="building-breakdown">
+            <h3 class="text-[20px] font-bold mb-6">Building Breakdown</h3>
+            <div class="bg-white border border-beige rounded-[8px] shadow-sm overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-[#F7F5F0] border-b border-beige">
+                        <tr>
+                            <th class="px-8 py-4 text-[12px] font-bold text-[#677D6A] uppercase tracking-wider">Building</th>
+                            <th class="px-8 py-4 text-[12px] font-bold text-[#677D6A] uppercase tracking-wider">Address</th>
+                            <th class="px-8 py-4 text-[12px] font-bold text-[#677D6A] uppercase tracking-wider">Collected</th>
+                            <th class="px-8 py-4 text-[12px] font-bold text-[#677D6A] uppercase tracking-wider text-right">Outstanding</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-beige">
+                        <tr>
+                            <td class="px-8 py-6 font-bold text-[16px]">Ridge Court</td>
+                            <td class="px-8 py-6 text-[14px] text-[#677D6A]">14 Ridge Road</td>
+                            <td class="px-8 py-6 text-[16px] font-bold">GH₵ 28,400</td>
+                            <td class="px-8 py-6 text-[16px] font-bold text-[#D6BD98] text-right">GH₵ 3,200</td>
+                        </tr>
+                        <tr>
+                            <td class="px-8 py-6 font-bold text-[16px]">Labone walk-up</td>
+                            <td class="px-8 py-6 text-[14px] text-[#677D6A]">32 Labone Crescent</td>
+                            <td class="px-8 py-6 text-[16px] font-bold">GH₵ 12,800</td>
+                            <td class="px-8 py-6 text-[16px] font-bold text-right">GH₵ 0</td>
+                        </tr>
+                        <tr>
+                            <td class="px-8 py-6 font-bold text-[16px]">Airport Residential house</td>
+                            <td class="px-8 py-6 text-[14px] text-[#677D6A]">8 Eighth Avenue</td>
+                            <td class="px-8 py-6 text-[16px] font-bold">GH₵ 0</td>
+                            <td class="px-8 py-6 text-[16px] font-bold text-[#D6BD98] text-right">GH₵ 1,300</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-[#F7F5F0] font-bold">
+                        <tr>
+                            <td class="px-8 py-6" colspan="2">Total Portfolio</td>
+                            <td class="px-8 py-6 text-[18px]">GH₵ 41,200</td>
+                            <td class="px-8 py-6 text-[18px] text-[#D6BD98] text-right">GH₵ 4,500</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

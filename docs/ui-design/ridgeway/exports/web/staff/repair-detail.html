@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repair Detail - B12 leak</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+        }
+        .sidebar {
+            background-color: #F7F5F0;
+        }
+        .border-beige {
+            border-color: #E8E4DA;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 sidebar border-r border-beige flex flex-col fixed h-full">
+        <div class="p-6">
+            <h1 class="text-[24px] font-bold tracking-tight">Ridgeway</h1>
+        </div>
+        
+        <nav class="flex-1 px-4 space-y-1">
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-house w-5"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-building w-5"></i>
+                <span>Buildings</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] bg-[#1A3636] text-white font-semibold">
+                <i class="fa-solid fa-wrench w-5"></i>
+                <span>Repairs</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-money-bill-transfer w-5"></i>
+                <span>Rent</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-beige">
+            <div class="flex items-center gap-3 px-4 py-2">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Ama Boateng" class="w-8 h-8 rounded-full">
+                <div class="flex flex-col">
+                    <span class="text-[14px] font-semibold">Ama Boateng</span>
+                    <span class="text-[12px] text-[#677D6A]">Staff</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-12 max-w-[1200px]">
+        <header class="mb-10 flex justify-between items-start">
+            <div>
+                <div class="flex items-center gap-2 text-[#677D6A] mb-2 text-[14px] font-medium">
+                    <a href="#" class="hover:text-[#1A3636]">Ridge Court</a>
+                    <span>·</span>
+                    <span>B12 leak</span>
+                </div>
+                <h2 class="text-[32px] font-bold">Repair: B12 leak</h2>
+            </div>
+            <div class="flex gap-3">
+                <button class="px-4 py-2 border border-beige rounded-[8px] text-[15px] font-semibold hover:bg-[#F7F5F0] transition-colors">
+                    Assign
+                </button>
+                <button class="bg-[#1A3636] text-white px-4 py-2 rounded-[8px] text-[15px] font-semibold hover:bg-[#40534C] transition-colors">
+                    Schedule
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-3 gap-12">
+            <!-- Left Column: Details & Timeline (Zendesk style) -->
+            <div class="col-span-2 space-y-12">
+                <!-- Metadata Card -->
+                <section class="bg-white border border-beige rounded-[8px] shadow-sm p-8">
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <p class="text-[13px] font-bold text-[#677D6A] uppercase tracking-wider mb-2">Tenant</p>
+                            <p class="text-[16px] font-semibold">Akosua Darko</p>
+                            <p class="text-[14px] text-[#677D6A]">Ridge Court · B12</p>
+                        </div>
+                        <div>
+                            <p class="text-[13px] font-bold text-[#677D6A] uppercase tracking-wider mb-2">Status</p>
+                            <span class="px-3 py-1 bg-[#40534C] text-white text-[12px] font-bold rounded-full">ASSIGNED</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Timeline -->
+                <section>
+                    <h3 class="text-[18px] font-bold mb-6">Timeline</h3>
+                    <div class="space-y-8 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-beige">
+                        <!-- Timeline Item 1 -->
+                        <div class="relative pl-10">
+                            <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-2 border-[#677D6A] flex items-center justify-center z-10">
+                                <div class="w-2 h-2 rounded-full bg-[#677D6A]"></div>
+                            </div>
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-bold">Repair received</p>
+                                    <p class="text-[14px] text-[#677D6A]">Reported by Akosua Darko via portal</p>
+                                </div>
+                                <p class="text-[13px] text-[#677D6A]">Today, 9:20 AM</p>
+                            </div>
+                        </div>
+                        <!-- Timeline Item 2 -->
+                        <div class="relative pl-10">
+                            <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-2 border-[#40534C] flex items-center justify-center z-10">
+                                <div class="w-2 h-2 rounded-full bg-[#40534C]"></div>
+                            </div>
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-bold">Assigned to Kojo Asante</p>
+                                    <p class="text-[14px] text-[#677D6A]">Assigned by Ama Boateng</p>
+                                </div>
+                                <p class="text-[13px] text-[#677D6A]">Today, 10:45 AM</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Sidebar info -->
+            <div class="space-y-8">
+                <section class="bg-[#F7F5F0] border border-beige rounded-[8px] p-6">
+                    <h4 class="text-[15px] font-bold mb-4">Contractor</h4>
+                    <div class="flex items-center gap-3">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" alt="Kojo Asante" class="w-10 h-10 rounded-full">
+                        <div>
+                            <p class="font-semibold text-[15px]">Kojo Asante</p>
+                            <p class="text-[13px] text-[#677D6A]">Plumbing specialist</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

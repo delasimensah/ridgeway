@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission denied</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .cta-button {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-weight: 600;
+            padding: 0 24px;
+        }
+        .cta-primary {
+            background-color: #1A3636;
+            color: #FFFFFF;
+        }
+        .cta-primary:active {
+            background-color: #40534C;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <main class="flex-1 px-8 py-20 flex flex-col items-center justify-center text-center">
+        <div class="mb-12">
+            <span class="text-2xl font-bold tracking-tight">Ridgeway</span>
+        </div>
+
+        <h1 class="text-xl font-bold mb-4">You don’t have permission to see this page.</h1>
+        <p class="text-[#677D6A] font-medium mb-12">Please contact your administrator if you believe this is an error.</p>
+        
+        <a href="../tenant/sign-in.html" class="cta-button cta-primary w-full">
+            Sign out
+        </a>
+    </main>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen tap leak</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+        }
+        .border-beige {
+            border-color: #E8E4DA;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Bar -->
+    <header id="header" class="h-16 border-b border-beige px-8 flex items-center justify-between sticky top-0 bg-white z-10">
+        <div class="text-[20px] font-bold tracking-tight">Ridgeway</div>
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Akosua Darko" class="w-8 h-8 rounded-full">
+                <span class="font-semibold text-[14px]">Akosua Darko</span>
+            </div>
+            <button class="text-[#677D6A] text-[14px] hover:text-[#1A3636] transition-colors font-medium">Sign out</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 w-full max-w-[640px] mx-auto py-12 px-6">
+        
+        <header class="mb-10">
+            <a href="home.html" class="text-[#677D6A] hover:text-[#1A3636] transition-colors inline-flex items-center gap-2 mb-6 text-[14px] font-medium">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to home
+            </a>
+            <div class="flex items-center justify-between">
+                <h1 class="text-[32px] font-bold">Kitchen tap leak</h1>
+                <span class="px-3 py-1 bg-[#40534C] text-white text-[12px] font-bold rounded-full uppercase">Assigned</span>
+            </div>
+        </header>
+
+        <div class="space-y-10">
+            <!-- Details -->
+            <section id="repair-details" class="bg-[#F7F5F0] p-6 rounded-[8px]">
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-[12px] font-bold text-[#677D6A] uppercase tracking-wider mb-1">Building</p>
+                        <p class="font-semibold">Ridge Court</p>
+                    </div>
+                    <div>
+                        <p class="text-[12px] font-bold text-[#677D6A] uppercase tracking-wider mb-1">Unit</p>
+                        <p class="font-semibold">B12</p>
+                    </div>
+                    <div>
+                        <p class="text-[12px] font-bold text-[#677D6A] uppercase tracking-wider mb-1">Category</p>
+                        <p class="font-semibold">Plumbing</p>
+                    </div>
+                    <div>
+                        <p class="text-[12px] font-bold text-[#677D6A] uppercase tracking-wider mb-1">Reported</p>
+                        <p class="font-semibold">22 Aug 2026</p>
+                    </div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-beige">
+                    <p class="text-[12px] font-bold text-[#677D6A] uppercase tracking-wider mb-2">Description</p>
+                    <p class="text-[16px] leading-relaxed">The tap in the kitchen is dripping constantly, even when tightened fully. It's wasting water and making a noise.</p>
+                </div>
+                <div class="mt-6">
+                    <p class="text-[12px] font-bold text-[#677D6A] uppercase tracking-wider mb-2">Uploaded photo</p>
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/default-placeholder.png" alt="Repair photo" class="w-24 h-24 object-cover rounded-[4px] border border-beige">
+                </div>
+            </section>
+
+            <!-- Timeline -->
+            <section id="timeline">
+                <h2 class="text-[14px] font-bold text-[#677D6A] uppercase tracking-wider mb-6">Activity timeline</h2>
+                <div class="space-y-0 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-beige">
+                    <!-- Step 2: Assigned -->
+                    <div class="relative pl-10 pb-8">
+                        <div class="absolute left-0 top-1 w-[24px] h-[24px] bg-[#40534C] border-4 border-white rounded-full z-10 shadow-sm"></div>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold">Assigned to staff</span>
+                                <span class="text-[12px] text-[#677D6A] font-medium">Today</span>
+                            </div>
+                            <p class="text-[14px] text-[#677D6A]">Ridgeway staff (Kojo Asante) has been assigned to this repair.</p>
+                        </div>
+                    </div>
+                    <!-- Step 1: Received -->
+                    <div class="relative pl-10">
+                        <div class="absolute left-0 top-1 w-[24px] h-[24px] bg-[#677D6A] border-4 border-white rounded-full z-10 shadow-sm"></div>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold">Repair received</span>
+                                <span class="text-[12px] text-[#677D6A] font-medium">2 days ago</span>
+                            </div>
+                            <p class="text-[14px] text-[#677D6A]">Akosua filed the repair request for "Kitchen tap leak".</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer id="footer" class="py-12 border-t border-beige mt-12">
+        <div class="max-w-[640px] mx-auto px-6 text-[14px] text-[#677D6A]">
+            &copy; 2024 Ridgeway Property Group
+        </div>
+    </footer>
+
+</body>
+</html>

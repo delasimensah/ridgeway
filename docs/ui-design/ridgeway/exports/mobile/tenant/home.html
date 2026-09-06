@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+            -webkit-font-smoothing: antialiased;
+        }
+        .card-shadow {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header id="header" class="px-5 pt-8 pb-4">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-[#1A3636] font-bold text-xl tracking-tight">Ridgeway</h1>
+            <div class="w-8 h-8 rounded-full overflow-hidden border border-[#E8E4DA]">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="Akosua Darko" class="w-full h-full object-cover">
+            </div>
+        </div>
+        <div>
+            <h2 class="text-2xl font-bold text-[#1A3636]">B12 · Ridge Court</h2>
+            <p class="text-[#677D6A] text-[14px]">14 Ridge Road, Cantonments</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-5 space-y-4 pb-24">
+        
+        <!-- Rent Card -->
+        <div id="rent-card" class="bg-white border border-[#E8E4DA] rounded-lg p-4 card-shadow">
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-[13px] font-medium text-[#677D6A] uppercase tracking-wider">Next Rent</span>
+                <span class="bg-[#7F2020] text-white text-[11px] font-bold px-2 py-0.5 rounded-full uppercase">LATE</span>
+            </div>
+            <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-bold text-[#1A3636]">GH₵ 4,500</span>
+            </div>
+            <p class="text-[14px] text-[#677D6A] mt-1">Due 5 Sep 2026</p>
+            <a href="rent.html" class="mt-4 w-full h-[44px] bg-[#1A3636] text-white rounded-md flex items-center justify-center font-semibold text-[16px] hover:bg-[#40534C] transition-colors">
+                Manage Rent
+            </a>
+        </div>
+
+        <!-- Repair Section Header -->
+        <div class="flex items-center justify-between pt-2">
+            <h3 class="text-[14px] font-bold text-[#1A3636] uppercase tracking-wider">Active Repairs</h3>
+            <a href="file-repair.html" class="text-[14px] font-semibold text-[#1A3636] flex items-center gap-2">
+                <i class="fa-solid fa-plus text-[12px]"></i> File a repair
+            </a>
+        </div>
+
+        <!-- Repair Card -->
+        <a href="repair-timeline.html" id="repair-card" class="block bg-white border border-[#E8E4DA] rounded-lg p-4 card-shadow hover:border-[#D6BD98] transition-colors">
+            <div class="flex justify-between items-start mb-2">
+                <h4 class="font-bold text-[16px] text-[#1A3636]">Kitchen tap leak</h4>
+                <span class="bg-[#40534C] text-white text-[11px] font-bold px-2 py-0.5 rounded-full uppercase">Assigned</span>
+            </div>
+            <div class="flex items-center gap-2 text-[#677D6A] text-[13px]">
+                <i class="fa-solid fa-wrench"></i>
+                <span>Plumbing · High Urgency</span>
+            </div>
+            <div class="mt-3 flex items-center text-[#1A3636] text-[13px] font-medium">
+                <span>View status timeline</span>
+                <i class="fa-solid fa-chevron-right ml-auto text-[10px]"></i>
+            </div>
+        </a>
+
+        <a href="house-rules-chat.html" class="block text-[14px] font-semibold text-[#1A3636] pt-2">
+            Ask house rules
+        </a>
+
+    </main>
+
+    <!-- Tab Bar -->
+    <nav id="tab-bar" class="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8E4DA] h-[80px] px-8 flex items-center justify-between z-50">
+        <a href="home.html" class="flex flex-col items-center gap-1">
+            <i class="fa-solid fa-house text-[20px] text-[#1A3636]"></i>
+            <span class="text-[12px] font-semibold text-[#1A3636]">Home</span>
+        </a>
+        <a href="file-repair.html" class="flex flex-col items-center gap-1">
+            <i class="fa-solid fa-wrench text-[20px] text-[#677D6A]"></i>
+            <span class="text-[12px] font-medium text-[#677D6A]">Repairs</span>
+        </a>
+        <a href="rent.html" class="flex flex-col items-center gap-1">
+            <i class="fa-solid fa-receipt text-[20px] text-[#677D6A]"></i>
+            <span class="text-[12px] font-medium text-[#677D6A]">Rent</span>
+        </a>
+    </nav>
+
+</body>
+</html>

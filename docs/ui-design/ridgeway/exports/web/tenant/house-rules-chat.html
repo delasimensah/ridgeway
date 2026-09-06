@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant house-rules chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+        }
+        .border-beige {
+            border-color: #E8E4DA;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header id="header" class="h-16 border-b border-beige px-8 flex items-center justify-between sticky top-0 bg-white z-10">
+        <div class="text-[20px] font-bold tracking-tight">Ridgeway</div>
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Akosua Darko" class="w-8 h-8 rounded-full">
+                <span class="font-semibold text-[14px]">Akosua Darko</span>
+            </div>
+            <button class="text-[#677D6A] text-[14px] hover:text-[#1A3636] transition-colors font-medium">Sign out</button>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-[800px] mx-auto py-12 px-6 flex flex-col">
+
+        <header class="mb-8">
+            <h1 class="text-[32px] font-bold">House rules · Ridge Court</h1>
+            <p class="text-[#677D6A] text-[18px]">Unit B12</p>
+            <p class="mt-4 text-[14px] text-[#677D6A] bg-[#F7F5F0] inline-block px-3 py-1 rounded-[4px] border border-beige">
+                Answers come only from this building’s approved house rules.
+            </p>
+        </header>
+
+        <div class="flex-1 space-y-8 mb-12">
+            <div class="flex flex-col items-end">
+                <div class="bg-[#1A3636] text-white px-5 py-3 rounded-t-[16px] rounded-bl-[16px] rounded-br-[4px] max-w-[85%] shadow-sm">
+                    <p class="text-[15px] leading-relaxed">Can I keep a small dog in B12?</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-start">
+                <div class="bg-white border border-beige px-5 py-3 rounded-t-[16px] rounded-br-[16px] rounded-bl-[4px] max-w-[85%] shadow-sm">
+                    <p class="text-[15px] leading-relaxed">Ridge Court house rules allow one small pet with written office approval. Dogs and cats under 10 kg. No pets in the shops.</p>
+                </div>
+                <div class="mt-2 flex items-center gap-2 px-1">
+                    <span class="bg-[#F7F5F0] text-[#677D6A] text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-[4px] border border-beige">
+                        Answer based on: Ridge Court house rules
+                    </span>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-end">
+                <div class="bg-[#1A3636] text-white px-5 py-3 rounded-t-[16px] rounded-bl-[16px] rounded-br-[4px] max-w-[85%] shadow-sm">
+                    <p class="text-[15px] leading-relaxed">What about generator hours?</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-start">
+                <div class="bg-white border border-beige px-5 py-3 rounded-t-[16px] rounded-br-[16px] rounded-bl-[4px] max-w-[85%] shadow-sm">
+                    <p class="text-[15px] leading-relaxed">The house rules for Ridge Court do not cover generator hours. Please contact the office.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sticky bottom-8">
+            <div class="relative group">
+                <input type="text" placeholder="Ask about Ridge Court house rules" class="w-full h-14 pl-6 pr-16 bg-white border border-beige rounded-[8px] text-[16px] focus:outline-none focus:border-[#1A3636] transition-colors shadow-sm">
+                <button class="absolute right-2 top-2 w-10 h-10 bg-[#1A3636] text-white rounded-[6px] flex items-center justify-center hover:bg-[#40534C] transition-colors">
+                    <i class="fa-solid fa-arrow-up"></i>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

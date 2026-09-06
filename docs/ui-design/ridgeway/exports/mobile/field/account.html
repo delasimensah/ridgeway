@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            color: #677D6A;
+        }
+        .nav-item.active {
+            color: #1A3636;
+        }
+        .cta-button {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-weight: 600;
+            width: 100%;
+        }
+        .cta-primary {
+            background-color: #1A3636;
+            color: #FFFFFF;
+        }
+        .cta-primary:active {
+            background-color: #40534C;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header id="header" class="px-4 pt-8 pb-6 text-center">
+        <div class="w-20 h-20 bg-[#F9F8F6] rounded-full mx-auto mb-4 flex items-center justify-center">
+            <i class="fa-solid fa-user text-3xl text-[#677D6A]"></i>
+        </div>
+        <h1 class="text-2xl font-bold">Kojo Asante</h1>
+        <p class="text-[#677D6A] font-medium">Field</p>
+    </header>
+
+    <main class="flex-1 px-4 overflow-y-auto">
+        <a href="../tenant/sign-in.html" class="cta-button cta-primary mt-8">
+            Sign out
+        </a>
+    </main>
+
+    <nav id="tab-bar" class="h-16 bg-white border-t border-[#E8E4DA] flex items-center px-4 sticky bottom-0">
+        <a href="jobs.html" class="nav-item">
+            <i class="fa-solid fa-briefcase text-lg mb-1"></i>
+            <span class="text-[11px] font-medium">Jobs</span>
+        </a>
+        <a href="account.html" class="nav-item active">
+            <i class="fa-solid fa-user text-lg mb-1"></i>
+            <span class="text-[11px] font-bold">Account</span>
+        </a>
+    </nav>
+</body>
+</html>

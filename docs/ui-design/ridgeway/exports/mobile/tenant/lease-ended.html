@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lease Ended</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="px-5 pt-8 pb-4">
+        <h1 class="text-[#1A3636] font-bold text-xl tracking-tight">Ridgeway</h1>
+    </header>
+
+    <!-- Main Content (Centered Content) -->
+    <main class="flex-1 px-8 flex flex-col items-center justify-center text-center space-y-6">
+        
+        <!-- Calm No-Access State -->
+        <div class="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mb-2">
+            <i class="fa-solid fa-lock text-[#677D6A] text-[24px]"></i>
+        </div>
+
+        <div class="space-y-3">
+            <h2 class="text-2xl font-bold text-[#1A3636] leading-tight">You no longer have access to this unit</h2>
+            <p class="text-[#677D6A] text-[16px] leading-relaxed">
+                The lease for <span class="font-semibold text-[#1A3636]">Ridge Court B12</span> has ended. 
+                If you believe this is an error, please contact Ridgeway Property Group.
+            </p>
+        </div>
+
+        <div class="w-full pt-8">
+            <a href="sign-in.html" class="w-full h-[52px] bg-[#1A3636] text-white rounded-md flex items-center justify-center font-semibold text-[16px] hover:bg-[#40534C] transition-colors">
+                Sign out
+            </a>
+        </div>
+
+    </main>
+
+    <!-- Footer Space -->
+    <footer class="p-8"></footer>
+
+</body>
+</html>

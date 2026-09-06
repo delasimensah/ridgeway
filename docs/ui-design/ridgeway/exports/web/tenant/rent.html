@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+        }
+        .border-beige {
+            border-color: #E8E4DA;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Bar -->
+    <header id="header" class="h-16 border-b border-beige px-8 flex items-center justify-between sticky top-0 bg-white z-10">
+        <div class="text-[20px] font-bold tracking-tight">Ridgeway</div>
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Akosua Darko" class="w-8 h-8 rounded-full">
+                <span class="font-semibold text-[14px]">Akosua Darko</span>
+            </div>
+            <button class="text-[#677D6A] text-[14px] hover:text-[#1A3636] transition-colors font-medium">Sign out</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 w-full max-w-[800px] mx-auto py-12 px-6">
+        
+        <header class="mb-10">
+            <a href="home.html" class="text-[#677D6A] hover:text-[#1A3636] transition-colors inline-flex items-center gap-2 mb-6 text-[14px] font-medium">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to home
+            </a>
+            <h1 class="text-[32px] font-bold">Rent</h1>
+        </header>
+
+        <div class="space-y-8">
+            <!-- Property Context -->
+            <div class="bg-[#F7F5F0] p-4 rounded-[8px] flex items-center gap-4">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#1A3636] border border-beige">
+                    <i class="fa-solid fa-building"></i>
+                </div>
+                <div>
+                    <p class="text-[12px] font-bold text-[#677D6A] uppercase tracking-wider">Unit</p>
+                    <p class="font-semibold">Ridge Court · B12</p>
+                </div>
+            </div>
+
+            <!-- Rent List (Bonsai-like row) -->
+            <section id="rent-list" class="space-y-4">
+                <h2 class="text-[14px] font-bold text-[#677D6A] uppercase tracking-wider mb-4">Invoices</h2>
+                
+                <!-- Invoice Row -->
+                <div class="bg-white border border-beige p-6 rounded-[8px] shadow-sm flex items-center justify-between">
+                    <div class="flex items-center gap-8">
+                        <div>
+                            <p class="text-[12px] font-bold text-[#677D6A] uppercase tracking-wider mb-1">Month</p>
+                            <p class="font-semibold">September 2026</p>
+                        </div>
+                        <div>
+                            <p class="text-[12px] font-bold text-[#677D6A] uppercase tracking-wider mb-1">Amount</p>
+                            <p class="font-bold text-[18px]">GH₵ 4,500</p>
+                        </div>
+                        <div>
+                            <p class="text-[12px] font-bold text-[#677D6A] uppercase tracking-wider mb-1">Due date</p>
+                            <p class="font-medium">5 Sep 2026</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-6">
+                        <span class="px-3 py-1 bg-[#7F2020] text-white text-[12px] font-bold rounded-full uppercase">Late</span>
+                        <button class="bg-[#1A3636] text-white px-6 py-2 rounded-[8px] font-semibold hover:bg-[#40534C] transition-colors text-[14px]">
+                            I have paid
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Footer Note -->
+                <div class="mt-8 flex items-start gap-3 p-6 border border-beige rounded-[8px] border-dashed bg-[#F7F5F0]/30">
+                    <i class="fa-solid fa-circle-info text-[#677D6A] mt-1"></i>
+                    <div>
+                        <p class="font-semibold text-[14px] mb-1">Payment reporting</p>
+                        <p class="text-[14px] text-[#677D6A]">Ridgeway staff still confirm this. Reporting your payment helps us track it faster, but your status will update once funds are verified.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Past Rent Summary (Optional simple view) -->
+            <section id="history">
+                <h2 class="text-[14px] font-bold text-[#677D6A] uppercase tracking-wider mb-4 mt-12">Recent history</h2>
+                <div class="border-t border-beige">
+                    <div class="py-4 flex items-center justify-between border-b border-beige">
+                        <span class="font-medium">August 2026</span>
+                        <div class="flex items-center gap-4">
+                            <span class="text-[#677D6A]">GH₵ 4,500</span>
+                            <span class="text-[#1A3636] font-bold uppercase text-[12px]">Paid</span>
+                        </div>
+                    </div>
+                    <div class="py-4 flex items-center justify-between border-b border-beige">
+                        <span class="font-medium">July 2026</span>
+                        <div class="flex items-center gap-4">
+                            <span class="text-[#677D6A]">GH₵ 4,500</span>
+                            <span class="text-[#1A3636] font-bold uppercase text-[12px]">Paid</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer id="footer" class="py-12 border-t border-beige mt-12">
+        <div class="max-w-[800px] mx-auto px-6 text-[14px] text-[#677D6A]">
+            &copy; 2024 Ridgeway Property Group
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Rules Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+            -webkit-font-smoothing: antialiased;
+        }
+        .chat-bubble-right {
+            background-color: #1A3636;
+            color: #FFFFFF;
+            border-radius: 12px 12px 2px 12px;
+        }
+        .chat-bubble-left {
+            background-color: #FFFFFF;
+            border: 1px solid #E8E4DA;
+            color: #1A3636;
+            border-radius: 12px 12px 12px 2px;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <header id="header" class="px-5 pt-8 pb-4 border-b border-[#E8E4DA] bg-white shrink-0">
+        <div class="flex items-center gap-4 mb-2">
+            <a href="home.html" class="w-[44px] h-[44px] -ml-3 flex items-center justify-center text-[#1A3636] hover:bg-gray-50 rounded-full transition-colors">
+                <i class="fa-solid fa-chevron-left text-xl"></i>
+            </a>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-[#1A3636]">House rules</h1>
+                <p class="text-[13px] text-[#677D6A] font-medium">Ridge Court · B12</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="px-5 py-3 bg-[#F9F8F6] shrink-0">
+        <p class="text-[12px] text-[#677D6A] leading-relaxed text-center">
+            Answers come only from this building’s approved house rules.
+        </p>
+    </div>
+
+    <main id="chat-thread" class="flex-1 overflow-y-auto px-5 py-6 space-y-6">
+        <div class="flex justify-end">
+            <div class="chat-bubble-right max-w-[85%] p-3 text-[15px] leading-snug">
+                Can I keep a small dog in B12?
+            </div>
+        </div>
+
+        <div class="flex flex-col items-start gap-2">
+            <div class="chat-bubble-left max-w-[85%] p-3 text-[15px] leading-snug">
+                Ridge Court house rules allow one small pet with written office approval. Dogs and cats under 10 kg. No pets in the shops.
+            </div>
+            <div class="flex items-center gap-1.5 px-2 py-1 bg-[#F9F8F6] border border-[#E8E4DA] rounded-full">
+                <i class="fa-solid fa-circle-info text-[#677D6A] text-[10px]"></i>
+                <span class="text-[11px] text-[#677D6A] font-medium">Answer based on: Ridge Court house rules</span>
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <div class="chat-bubble-right max-w-[85%] p-3 text-[15px] leading-snug">
+                What about generator hours?
+            </div>
+        </div>
+
+        <div class="flex flex-col items-start gap-2">
+            <div class="chat-bubble-left max-w-[85%] p-3 text-[15px] leading-snug">
+                The house rules for Ridge Court do not cover generator hours. Please contact the office.
+            </div>
+        </div>
+    </main>
+
+    <footer id="composer" class="p-4 border-t border-[#E8E4DA] bg-white shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="flex-1 relative">
+                <input type="text" placeholder="Ask about house rules"
+                    class="w-full h-[44px] bg-[#F9F8F6] border border-[#E8E4DA] rounded-full px-5 text-[15px] placeholder-[#677D6A] focus:outline-none focus:border-[#D6BD98]">
+            </div>
+            <button class="w-[44px] h-[44px] bg-[#1A3636] text-white rounded-full flex items-center justify-center hover:bg-[#40534C] transition-colors shadow-sm">
+                <i class="fa-solid fa-arrow-up text-lg"></i>
+            </button>
+        </div>
+    </footer>
+
+</body>
+</html>

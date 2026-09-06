@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's jobs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            color: #677D6A;
+        }
+        .nav-item.active {
+            color: #1A3636;
+        }
+        .cta-button {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-weight: 600;
+            padding: 0 24px;
+        }
+        .cta-primary {
+            background-color: #1A3636;
+            color: #FFFFFF;
+        }
+        .cta-primary:active {
+            background-color: #40534C;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header id="header" class="px-4 pt-6 pb-2">
+        <p class="text-[13px] font-medium text-[#677D6A]">Wednesday, 5 Sep</p>
+        <h1 class="text-2xl font-bold mt-1">Today's jobs</h1>
+    </header>
+
+    <main class="flex-1 px-4 py-20 flex flex-col items-center justify-center text-center">
+        <p class="text-[#677D6A] font-medium mb-6">Couldn't load jobs.</p>
+        <button onclick="window.location.reload()" class="cta-button cta-primary">
+            Try again
+        </button>
+    </main>
+
+    <nav id="tab-bar" class="h-16 bg-white border-t border-[#E8E4DA] flex items-center px-4 sticky bottom-0">
+        <a href="jobs.html" class="nav-item active">
+            <i class="fa-solid fa-briefcase text-lg mb-1"></i>
+            <span class="text-[11px] font-bold">Jobs</span>
+        </a>
+        <a href="account.html" class="nav-item">
+            <i class="fa-solid fa-user text-lg mb-1"></i>
+            <span class="text-[11px] font-medium">Account</span>
+        </a>
+    </nav>
+</body>
+</html>

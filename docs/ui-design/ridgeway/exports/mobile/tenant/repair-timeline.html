@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repair Timeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+            -webkit-font-smoothing: antialiased;
+        }
+        .timeline-line {
+            width: 2px;
+            background-color: #E8E4DA;
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+        }
+        .timeline-step.active .timeline-dot {
+            background-color: #1A3636;
+            border-color: #1A3636;
+        }
+        .timeline-step.completed .timeline-dot {
+            background-color: #1A3636;
+            border-color: #1A3636;
+        }
+        .timeline-step.completed .timeline-dot i {
+            display: block;
+        }
+        .timeline-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #E8E4DA;
+            background-color: white;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .timeline-dot i {
+            display: none;
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Navbar (No Tab Bar) -->
+    <nav class="px-5 pt-12 pb-4 flex items-center border-b border-[#E8E4DA]">
+        <a href="home.html" class="w-10 h-10 -ml-2 flex items-center justify-center text-[#1A3636]">
+            <i class="fa-solid fa-arrow-left text-[18px]"></i>
+        </a>
+        <h1 class="flex-1 text-center font-bold text-[18px] mr-8">Kitchen tap leak</h1>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-5 pt-6 pb-8">
+        
+        <!-- Status Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-[20px] font-bold text-[#1A3636]">Repair Status</h2>
+                <p class="text-[#677D6A] text-[14px]">Case ID: RDW-782-B12</p>
+            </div>
+            <span class="bg-[#40534C] text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Assigned</span>
+        </div>
+
+        <!-- Vertical Timeline -->
+        <div class="relative space-y-8 pl-2">
+            <div class="timeline-line"></div>
+
+            <!-- Step 1: Completed -->
+            <div class="timeline-step completed flex gap-4">
+                <div class="timeline-dot">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div class="pt-1">
+                    <h3 class="font-bold text-[16px] text-[#1A3636]">Received</h3>
+                    <p class="text-[14px] text-[#677D6A]">Reported on 2 Sep, 10:30 AM</p>
+                    <!-- User Photo Attachment -->
+                    <div class="mt-3 w-24 h-24 rounded-lg overflow-hidden border border-[#E8E4DA]">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/default-placeholder.png" alt="Repair photo" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Active -->
+            <div class="timeline-step active flex gap-4">
+                <div class="timeline-dot">
+                    <div class="w-2.5 h-2.5 bg-white rounded-full"></div>
+                </div>
+                <div class="pt-1">
+                    <h3 class="font-bold text-[16px] text-[#1A3636]">Assigned</h3>
+                    <p class="text-[14px] text-[#677D6A]">A plumber has been assigned to your case.</p>
+                </div>
+            </div>
+
+            <!-- Step 3: Pending -->
+            <div class="timeline-step flex gap-4">
+                <div class="timeline-dot"></div>
+                <div class="pt-1">
+                    <h3 class="font-bold text-[16px] text-[#677D6A]">Scheduled</h3>
+                    <p class="text-[14px] text-[#677D6A]/70">Waiting for technician availability.</p>
+                </div>
+            </div>
+
+            <!-- Step 4: Pending -->
+            <div class="timeline-step flex gap-4">
+                <div class="timeline-dot"></div>
+                <div class="pt-1">
+                    <h3 class="font-bold text-[16px] text-[#677D6A]">Done</h3>
+                    <p class="text-[14px] text-[#677D6A]/70">Job completion and verification.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

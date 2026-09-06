@@ -10,9 +10,9 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** System design locked → **next is screen design**
-- **Last updated:** 5 Sep 2026
-- **Blocked / open:** none. `docs/product/system-design.md` and `docs/product/convex-design.md` are written and the open architecture calls are decided, with the reasons recorded in section 15 of the system design. Two things land with the first build slice rather than now: Vitest for the `convex/` folder, and the `convex-helpers` dependency behind the wrapped function declarations.
+- **Current phase:** Screen design locked → **next is Linear build tickets**
+- **Last updated:** 6 Sep 2026
+- **Blocked / open:** none. UX Pilot HTML is in `docs/ui-design/ridgeway/exports/` by role. Suggested category and urgency reuse the File a repair selects, so there is no extra screen. Two things still land with the first build slice: Vitest for the `convex/` folder, and the `convex-helpers` dependency behind the wrapped function declarations.
 
 ---
 
@@ -48,7 +48,7 @@
 ## Product path (after workshop)
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
-- [ ] Screen design / UX Pilot exports (07)
+- [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
 - [ ] Linear build tickets with design links (08)
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
@@ -58,13 +58,14 @@
 
 ## Next action (one line)
 
-Start screen design. Build tickets need screen links, so no product tables or Convex functions until screens exist.
+Write Linear build tickets with links to the HTML exports. Product schema and Convex functions start with the first build slice.
 
 ---
 
 ## Pointers
 
 - Product requirements: `docs/product/product-requirements.md`
+- Screen design: `docs/ui-design/ridgeway/`
 - Access list (private): `ACCESS-LIST.md`
 - Practice pack (process paper): `project-template/docs/client-delivery/practice/ridgeway/`
 - Convex cloud guide: `project-template/docs/client-delivery/convex-cloud-setup.md`

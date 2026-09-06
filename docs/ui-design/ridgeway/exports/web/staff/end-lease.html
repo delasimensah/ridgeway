@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>End lease</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #1A3636;
+        }
+        .sidebar {
+            background-color: #F7F5F0;
+        }
+        .border-beige {
+            border-color: #E8E4DA;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 sidebar border-r border-beige flex flex-col fixed h-full">
+        <div class="p-6">
+            <h1 class="text-[24px] font-bold tracking-tight">Ridgeway</h1>
+        </div>
+        
+        <nav class="flex-1 px-4 space-y-1">
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-house w-5"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] bg-[#1A3636] text-white font-semibold">
+                <i class="fa-solid fa-building w-5"></i>
+                <span>Buildings</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-wrench w-5"></i>
+                <span>Repairs</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-[8px] text-[#1A3636] hover:bg-[#E8E4DA] transition-colors font-medium">
+                <i class="fa-solid fa-money-bill-transfer w-5"></i>
+                <span>Rent</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-beige">
+            <div class="flex items-center gap-3 px-4 py-2">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Ama Boateng" class="w-8 h-8 rounded-full">
+                <div class="flex flex-col">
+                    <span class="text-[14px] font-semibold">Ama Boateng</span>
+                    <span class="text-[12px] text-[#677D6A]">Staff</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-12 max-w-[800px]">
+        <header class="mb-10">
+            <div class="flex items-center gap-2 text-[#677D6A] mb-2 text-[14px] font-medium">
+                <a href="#" class="hover:text-[#1A3636]">Ridge Court · B12</a>
+                <span>/</span>
+                <span>Akosua Darko</span>
+            </div>
+            <h2 class="text-[32px] font-bold">End lease</h2>
+        </header>
+
+        <!-- Confirmation Card (Attio/Jobber style) -->
+        <div class="bg-white border border-beige rounded-[8px] shadow-sm p-12 text-center">
+            <div class="w-16 h-16 bg-[#F7F5F0] rounded-full flex items-center justify-center text-[#1A3636] mx-auto mb-6">
+                <i class="fa-solid fa-file-contract text-2xl"></i>
+            </div>
+            <h3 class="text-[20px] font-bold mb-4">Are you sure you want to end this lease?</h3>
+            <p class="text-[16px] text-[#677D6A] max-w-[500px] mx-auto mb-10">
+                This will end Akosua Darko's lease for Unit B12 at Ridge Court effective immediately. This action cannot be undone.
+            </p>
+            
+            <div class="flex justify-center gap-4">
+                <button type="button" class="px-8 py-3 text-[15px] font-semibold text-[#677D6A] hover:text-[#1A3636] transition-colors">
+                    Cancel
+                </button>
+                <button type="button" class="bg-[#1A3636] text-white px-10 py-3 rounded-[8px] text-[15px] font-semibold hover:bg-[#40534C] transition-colors">
+                    End lease
+                </button>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
