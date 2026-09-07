@@ -22,9 +22,7 @@ The web app uses Mantine's responsive props and Tailwind breakpoints to adapt la
   <Grid.Col span={{ base: 12, lg: 6 }}>
     {/* Left column — stacks on mobile */}
   </Grid.Col>
-  <Grid.Col span={{ base: 12, lg: 6 }}>
-    {/* Right column */}
-  </Grid.Col>
+  <Grid.Col span={{ base: 12, lg: 6 }}>{/* Right column */}</Grid.Col>
 </Grid>
 ```
 

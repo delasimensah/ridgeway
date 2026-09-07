@@ -27,6 +27,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "test": "yarn test:backend && turbo run test",
+    "test:ci": "yarn test:backend && turbo run test:ci",
     "test:backend": "vitest run --config vitest.config.ts",
     "test:mobile": "turbo run test --filter=@ridgeway/mobile-app",
     "test:web": "turbo run test --filter=@ridgeway/web-app",

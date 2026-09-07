@@ -179,6 +179,7 @@ Full page, no old home. Wordmark Ridgeway. Title “You no longer have access to
 Tenant top bar (Ridgeway, Akosua Darko, Sign out). No staff sidebar. Title “House rules · Ridge Court”. Subline B12. One thread, not an inbox of conversations. Short note: “Answers come only from this building’s approved house rules.”
 
 Thread already has two turns:
+
 - Akosua (right, `#1A3636` bubble, white text): “Can I keep a small dog in B12?”
 - Reply (left, white bubble, `#E8E4DA` border): “Ridge Court house rules allow one small pet with written office approval. Dogs and cats under 10 kg. No pets in the shops.” Citation chip under the reply: “Answer based on: Ridge Court house rules”.
 - Akosua: “What about generator hours?”

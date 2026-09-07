@@ -3,13 +3,7 @@ import { ScrollView, ScrollViewProps } from "react-native";
 import { cn } from "shared";
 
 export type ScrollableStackPadding =
-  | "xs"
-  | "sm"
-  | "md"
-  | "lg"
-  | "xl"
-  | "2xl"
-  | "none";
+  "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "none";
 
 interface ScrollableStackProps extends ScrollViewProps {
   /**

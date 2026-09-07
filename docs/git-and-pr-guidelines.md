@@ -51,6 +51,12 @@ git commit -m "TICKET-123 Added user authentication flow"
 git commit -m "feature/user-auth - Added user authentication flow"
 ```
 
+## Agent pause before commit
+
+When an AI agent is doing the work: branch, implement, and run checks. Then stop. Do not commit, push, or open a pull request until the human says the quality is good and asks for a commit or a pull request.
+
+“Proceed”, “follow the rules”, ticket text, STATUS.md, or leftover “open a PR” items from an earlier chat are not that ask.
+
 ## 👨‍💻 Developer Workflow
 
 ### **Step 1: Create Feature Branch**
@@ -113,12 +119,11 @@ TICKET-123 Brief description of what the PR accomplishes
 - Include results from automated tests
 ```
 
-### **Step 3: Request Review**
+### **Step 3: Merge**
 
-1. Request review from a team member
-2. Address feedback promptly
-3. Team member adds `approved` label when satisfied
-4. Merge your PR
+1. Wait for PR Validation, PR Quality Checks, and Testing to pass
+2. Merge your PR
+3. Merge Protection deletes the feature branch after a successful merge
 
 ## 🔄 Merge Conflict Resolution
 

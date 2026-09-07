@@ -99,7 +99,9 @@ const GenericBottomSheet = forwardRef<
                   spacing="none"
                   className="mb-4 h-[2px] w-[40px] self-center rounded-full bg-lightGrey"
                 />
-                <Text className="font-app-bold text-xl text-white">{title}</Text>
+                <Text className="font-app-bold text-xl text-white">
+                  {title}
+                </Text>
               </VStack>
             )}
             {children}

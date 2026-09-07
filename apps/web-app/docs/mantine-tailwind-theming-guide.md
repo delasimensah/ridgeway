@@ -163,7 +163,7 @@ import { Text } from "@/components";
 
 export const ExampleSection = () => {
   return (
-    <Stack gap="md" className="rounded-lg border border-border bg-darkGrey p-6">
+    <Stack gap="md" className="border-border bg-darkGrey rounded-lg border p-6">
       <Title order={2} className="font-bold text-white">
         Section title
       </Title>
@@ -173,7 +173,7 @@ export const ExampleSection = () => {
       <Button
         type="button"
         variant="default"
-        className="border border-border bg-transparent font-medium text-white hover:bg-border"
+        className="border-border hover:bg-border border bg-transparent font-medium text-white"
       >
         Secondary action
       </Button>

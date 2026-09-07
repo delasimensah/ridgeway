@@ -5,13 +5,7 @@ import Separator from "../Separator/Separator";
 import { VStack } from "../Stack/Stack";
 
 export type ListContainerPadding =
-  | "xs"
-  | "sm"
-  | "md"
-  | "lg"
-  | "xl"
-  | "2xl"
-  | "none";
+  "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "none";
 
 type SeparatorSpacing = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "none";
 

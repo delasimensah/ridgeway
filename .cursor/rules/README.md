@@ -4,6 +4,7 @@ Rules guide the agent for this monorepo.
 
 ## Always on (every chat)
 
+- **`wait-for-approval-before-git.mdc`** — Implement and stop. Do not commit, push, or open a PR until asked.
 - **`mandatory-project-docs.mdc`** — Which `docs/` files to read before implementing (by task type).
 - **`docs-this-project-only.mdc`** — Product docs describe this project only. No studio process. No unused-stack lists.
 - **`mandatory-checks-before-coding.mdc`** — Pre-flight checklist; includes mandatory docs step.

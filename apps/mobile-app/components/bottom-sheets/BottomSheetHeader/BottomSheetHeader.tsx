@@ -34,7 +34,7 @@ const BottomSheetHeader: React.FC<BottomSheetHeaderProps> = ({
         <Text className="font-app-medium text-[20px] text-white">{title}</Text>
       )}
       {subtitle && (
-        <Text className="font-app-medium mt-4 text-[14px] text-lightGrey">
+        <Text className="mt-4 font-app-medium text-[14px] text-lightGrey">
           {subtitle}
         </Text>
       )}

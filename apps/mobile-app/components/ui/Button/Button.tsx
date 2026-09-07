@@ -13,11 +13,7 @@ import { COLORS } from "@/constants";
 import Text from "../Text/Text";
 
 export type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "link";
+  "primary" | "secondary" | "outline" | "ghost" | "link";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends Omit<PressableProps, "onPress"> {

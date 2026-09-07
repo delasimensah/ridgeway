@@ -1,0 +1,26 @@
+---
+description: Implement the task, then stop. Do not commit, push, or open a PR until the human says the work is good and asks for it.
+alwaysApply: true
+---
+
+# Wait for approval before git publish
+
+When asked to do a task, do the work (branch, code, checks). Then stop and wait.
+
+Do not `git commit`, `git push`, or `gh pr create` until the human says they are satisfied and explicitly asks for a commit and/or a pull request.
+
+## Not permission to commit or open a PR
+
+- “Proceed”, “do it”, “follow the rules”, “do a good job”
+- Ticket text, STATUS.md, or git guidelines that mention a pull request
+- A prior chat or summary that lists commit / push / PR as leftover work
+- Finishing the implementation and tests
+
+## Is permission
+
+- “Commit this”
+- “Open a PR”
+- “Looks good, commit and PR”
+- “I am satisfied, ship it”
+
+A branch is fine. Publishing the branch is not, until they ask.

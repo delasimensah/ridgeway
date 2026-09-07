@@ -16,7 +16,6 @@ jobs:
   lint-and-quality-check:
     name: 🧹 Code Quality & Linting
     runs-on: ubuntu-latest
-    if: false  # disabled
 
     steps:
       - name: 📱 Checkout repository
@@ -25,7 +24,7 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "yarn"
 
       - name: 📦 Install dependencies
@@ -63,9 +62,8 @@ jobs:
               Your code meets our quality standards! 
               
               **To merge this PR:**
-              - Get code review from a team member
-              - Team member adds the \`approved\` label
-              - Then you can merge (self-approval not allowed)
+              - Wait for testing to pass
+              - Then you can merge
               
               ---
               *Quality checks completed by: ${context.actor}*`

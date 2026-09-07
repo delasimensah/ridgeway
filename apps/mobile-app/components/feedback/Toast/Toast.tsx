@@ -54,7 +54,7 @@ const BaseToast: React.FC<ToastProps & { variant: ToastVariant }> = ({
       spacing={icon ? "sm" : "none"}
     >
       {icon && icon}
-      <Text className={`font-app-medium flex-1 text-base ${config.textColor}`}>
+      <Text className={`flex-1 font-app-medium text-base ${config.textColor}`}>
         {text1}
       </Text>
     </HStack>
