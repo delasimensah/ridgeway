@@ -1,23 +1,20 @@
 /**
  * Color System - Shared Package
  *
- * All colors are defined here as the single source of truth.
- * Apps import and re-export these colors from their own constants.
- *
- * Customize these colors for your project.
+ * Locked Ridgeway tokens. Web Tailwind and phone NativeWind both read these.
  */
 
 export const COLORS = {
-  // Basic colors
   white: "#FFFFFF",
   black: "#000000",
-
-  // Neutral grays
-  grey: "#808080",
-  lightGrey: "#C2C2C2",
-  darkGrey: "#1C1C1C",
-
-  // Skeleton colors (for loading states)
-  border: "#262626",
-  shimmerLight: "#303030",
+  primary: "#1A3636",
+  primaryHover: "#40534C",
+  accent: "#D6BD98",
+  grey: "#677D6A",
+  lightGrey: "#E8E4DA",
+  darkGrey: "#1A3636",
+  border: "#E8E4DA",
+  sidebar: "#F7F5F0",
+  shimmerLight: "#F7F5F0",
+  overdue: "#7F2020",
 } as const;

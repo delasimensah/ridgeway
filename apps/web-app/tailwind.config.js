@@ -51,11 +51,16 @@ module.exports = {
       colors: {
         white: COLORS.white,
         black: COLORS.black,
+        primary: COLORS.primary,
+        primaryHover: COLORS.primaryHover,
+        accent: COLORS.accent,
         grey: COLORS.grey,
         lightGrey: COLORS.lightGrey,
         darkGrey: COLORS.darkGrey,
         border: COLORS.border,
+        sidebar: COLORS.sidebar,
         shimmerLight: COLORS.shimmerLight,
+        overdue: COLORS.overdue,
       },
       fontFamily: {
         appFont: ["var(--app-font)", "system-ui", "sans-serif"],

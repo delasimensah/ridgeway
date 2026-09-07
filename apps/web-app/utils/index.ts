@@ -9,6 +9,7 @@ export {
   showInfoNotification,
   showSuccessNotification,
 } from "./notificationUtils";
+export { default as staffGreeting } from "./staffGreeting";
 
 // Add more utilities as needed:
 // export { default as formatDate } from "./formatDate";

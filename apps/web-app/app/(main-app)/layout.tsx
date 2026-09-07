@@ -3,7 +3,7 @@ import React from "react";
 
 /** Layout for main application pages. */
 const MainAppLayout = ({ children }: { children: React.ReactNode }) => {
-  return <Box className="min-h-screen bg-black">{children}</Box>;
+  return <Box className="min-h-screen bg-white">{children}</Box>;
 };
 
 export default MainAppLayout;

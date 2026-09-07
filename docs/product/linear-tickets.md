@@ -15,7 +15,7 @@ Implement one issue at a time. Branch `feature/RIDGE-n`. Product schema and Conv
 
 ## Status now
 
-- [RIDGE-1](https://linear.app/dm-studios/issue/RIDGE-1/staff-can-sign-in-on-the-website) is **Todo**. Everything else is **Backlog**.
+- [RIDGE-1](https://linear.app/dm-studios/issue/RIDGE-1/staff-can-sign-in-on-the-website) is **In Progress**. Everything else is **Backlog**.
 - Do not move an issue to In Progress without the Design block in Linear.
 - RIDGE-16, RIDGE-17, and RIDGE-18 wait until RIDGE-1 through RIDGE-13 are done.
 
