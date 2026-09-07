@@ -1,0 +1,13 @@
+# Markdown trees that Prettier corrupts (extra fences, flattened ASCII art)
+apps/mobile-app/docs/project-structure.md
+convex/_generated/
+apps/mobile-app/expo-env.d.ts
+.agents/
+coverage/
+.next/
+.expo/
+.turbo/
+node_modules/
+dist/
+build/
+.vercel/

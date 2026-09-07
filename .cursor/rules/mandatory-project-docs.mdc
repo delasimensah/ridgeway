@@ -9,10 +9,11 @@ alwaysApply: true
 
 - **Product / what to build:** `docs/product/product-requirements.md`
 - **Architecture / Convex:** `docs/product/system-design.md` and `docs/product/convex-design.md` when those files exist. Until then, do not invent tables or permission rules beyond the product requirements.
+- **Convex Auth env (sign-in):** `docs/convex-auth-env.md`
 - **Components (structure, UI building, web Mantine patterns):** `docs/component-building-guide.md`, `docs/component-organization-guide.md`
 - **Imports / exports:** `docs/import-patterns-guide.md`, `docs/export-patterns-guide.md`
 - **Forms:** `docs/forms-guide.md`
-- **Data fetching:** Convex is not wired in the apps yet. Do not import `convex/react` until it is.
+- **Data fetching:** Convex `useQuery` / `useMutation` in screens. Generated API: `convex/_generated/api`.
 - **Responsive web UI:** `docs/responsive-design-guide.md`
 - **Tests (placement, naming, what to test):** `docs/testing-strategy.md`
 - **Git / branches / commits / PRs:** `docs/git-and-pr-guidelines.md`

@@ -105,5 +105,4 @@ describe("Validation Schemas", () => {
       expect(() => passwordUpdateSchema.parse(invalidData)).toThrow();
     });
   });
-
 });

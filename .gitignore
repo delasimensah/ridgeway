@@ -30,6 +30,7 @@ yarn-error.log*
 .env
 .env.local
 .env.*.local
+.auth-keys.json
 
 # Local access-list draft for Bitwarden or 1Password
 ACCESS-LIST.md
@@ -54,9 +55,6 @@ coverage/
 **/.eas/*
 !**/.eas/workflows/
 !**/.eas/workflows/**
-
-# Convex generated (created by `npx convex dev`)
-convex/_generated/
 
 # Claude Code skill copies (Cursor uses .agents/skills/). Keep local; do not commit.
 .claude/

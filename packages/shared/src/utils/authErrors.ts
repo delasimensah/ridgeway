@@ -1,3 +1,14 @@
+const WRONG_PASSWORD_MESSAGE =
+  "Email or password is wrong. Check both and try again.";
+
+const WRONG_PASSWORD_KEYS = [
+  "Invalid account ID",
+  "InvalidAccountId",
+  "InvalidSecret",
+  "Invalid login credentials",
+  "Invalid credentials",
+];
+
 /**
  * Map auth failures to a message the user can act on.
  */
@@ -12,13 +23,22 @@ export const handleAuthError = (
         : "";
 
   const errorMessages: Record<string, string> = {
-    "Invalid account ID": "Invalid email or password. Please try again.",
-    InvalidSecret: "Invalid email or password. Please try again.",
-    "Invalid login credentials": "Invalid email or password. Please try again.",
+    "Invalid account ID": WRONG_PASSWORD_MESSAGE,
+    InvalidAccountId: WRONG_PASSWORD_MESSAGE,
+    InvalidSecret: WRONG_PASSWORD_MESSAGE,
+    "Invalid login credentials": WRONG_PASSWORD_MESSAGE,
+    "Invalid credentials": WRONG_PASSWORD_MESSAGE,
     TooManyFailedAttempts: "Too many attempts. Please try again later.",
   };
 
-  const customMessage = rawMessage ? errorMessages[rawMessage] : undefined;
+  const looksLikeWrongPassword = WRONG_PASSWORD_KEYS.some((key) =>
+    rawMessage.toLowerCase().includes(key.toLowerCase())
+  );
+  const customMessage = looksLikeWrongPassword
+    ? WRONG_PASSWORD_MESSAGE
+    : rawMessage
+      ? errorMessages[rawMessage]
+      : undefined;
   const code =
     typeof error === "object" && error !== null && "code" in error
       ? String((error as { code?: string }).code ?? "")

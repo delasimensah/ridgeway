@@ -1,6 +1,6 @@
 # Agent instructions for Ridgeway
 
-This is a **Turborepo** with a **Next.js** web app, an **Expo** mobile app, a **shared** package, and a **Convex** backend. Convex packages and `convex/` are in the repo. Do not import Convex in the apps until it is wired.
+This is a **Turborepo** with a **Next.js** web app, an **Expo** mobile app, a **shared** package, and a **Convex** backend. Convex Auth and Convex queries are wired on the website. Do not import Convex in the mobile app until a ticket needs it.
 
 ## Where we left off
 
@@ -8,6 +8,7 @@ Read **`STATUS.md`** at the repo root before planning or implementing. It is the
 
 ## Compliance (do this before coding)
 
+- **`.cursor/rules/wait-for-approval-before-git.mdc`** — Always applied. Do the work, then stop. Do not commit, push, or open a pull request until you are asked.
 - **`.cursor/rules/mandatory-project-docs.mdc`** — Always applied. For your task type, **read the listed `docs/...` files** (and app docs) with the Read tool before implementing.
 - **Lint (barrel imports):** Top-level barrels — `@/constants`, `@/hooks`, `@/utils`, `@/assets`, `@/services`, `shared`. Inside `components/`, relative imports for components. Run lint after edits.
 
@@ -68,8 +69,8 @@ Prefer these official sources. Add them as **@Docs** in Cursor (Settings → Ind
 
 ## Hard rules for this product
 
-- Product data will use Convex `useQuery` / `useMutation` after Convex is added. Do not import Convex in the apps until then.
-- Permission checks belong at the top of every public Convex function. The client is not trusted.
+- Product data uses Convex `useQuery` / `useMutation`. Permission checks belong at the top of every public Convex function. The client is not trusted.
+- Convex Auth needs `JWT_PRIVATE_KEY`, `JWKS`, and `SITE_URL` on the Convex deployment. Pushing `convex/` is not enough. Read `docs/convex-auth-env.md`. Do not commit the keys.
 - Owner A must never read Owner B’s rows. Work orders are never silently deleted.
 - Zustand is only for client session extras, not buildings or tickets.
 

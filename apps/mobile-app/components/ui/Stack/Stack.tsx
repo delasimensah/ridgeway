@@ -7,12 +7,7 @@ export type StackSpacing = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "none";
 export type StackPadding = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "none";
 export type StackAlign = "start" | "center" | "end" | "stretch";
 export type StackJustify =
-  | "start"
-  | "center"
-  | "end"
-  | "between"
-  | "around"
-  | "evenly";
+  "start" | "center" | "end" | "between" | "around" | "evenly";
 
 interface StackProps extends ViewProps {
   /**

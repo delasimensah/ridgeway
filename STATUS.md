@@ -10,9 +10,9 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Linear tickets written → **next is RIDGE-1 (staff sign-in)**
-- **Last updated:** 6 Sep 2026
-- **Blocked / open:** none. Review RIDGE-1 in Linear before In Progress. Vitest for `convex/` and the `convex-helpers` wrappers land on RIDGE-1. Suggested category and urgency reuse the File a repair selects (RIDGE-17), so there is no extra screen.
+- **Current phase:** Build slices — **RIDGE-1 in progress** (staff sign-in)
+- **Last updated:** 7 Sep 2026
+- **Blocked / open:** none. Vitest for `convex/` and the `convex-helpers` wrappers land on RIDGE-1.
 
 ---
 
@@ -58,12 +58,13 @@
 
 ## Next action (one line)
 
-Approve [RIDGE-1](https://linear.app/dm-studios/issue/RIDGE-1/staff-can-sign-in-on-the-website), move it In Progress, and implement staff sign-in. Product schema and Convex functions start there.
+Approve [PR #1](https://github.com/delasimensah/ridgeway/pull/1), merge it, and close RIDGE-1. Next is RIDGE-2 (add a building).
 
 ---
 
 ## Pointers
 
+- RIDGE-1 PR: https://github.com/delasimensah/ridgeway/pull/1
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`

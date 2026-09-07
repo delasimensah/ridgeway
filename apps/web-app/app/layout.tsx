@@ -32,7 +32,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
       <head>
         <ColorSchemeScript />
       </head>
-      <body className="font-regular bg-black">
+      <body className="bg-white font-appFont text-darkGrey">
         <Providers>{children}</Providers>
       </body>
     </html>

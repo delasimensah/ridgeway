@@ -13,7 +13,6 @@ jobs:
   validate-pr:
     name: 📝 Validate PR Title and Description
     runs-on: ubuntu-latest
-    if: false  # disabled
 
     steps:
       - name: 🔍 Validate PR Title
@@ -136,9 +135,7 @@ jobs:
               **Next steps:**
               1. Wait for quality checks to complete
               2. Wait for automatic testing to complete and pass
-              3. Request review from a team member
-              4. Team member adds the \`approved\` label
-              5. Then you can merge
+              3. Then you can merge
               
               ---
               *Validation completed by GitHub Actions*`

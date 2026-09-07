@@ -18,6 +18,7 @@ Forms in this project use:
 Keep forms in a single file when practical. The general rule is max ~300 lines per file (applies to all components, not just forms). If a form grows beyond that, extract sections into separate components that receive `form` as a prop. Section heading style (e.g. `Title order={3}`) follows the design — there is no fixed rule.
 
 If you do split:
+
 - Define the schema in the parent form component, or colocate it (e.g. `MyForm/formSchema.ts`) when section components need the types.
 - Use `useForm` with `zodResolver(schema)` in the parent.
 - Each section component receives `form` as a prop.

@@ -145,11 +145,11 @@ EAS Build does not read `.env.local`. You must add the keys in the Expo dashboar
 
 When you run a build from the project, use these scripts from **`apps/mobile-app`**:
 
-- **Preview (internal testing)**  
-  - Android: `yarn build:preview:android`  
+- **Preview (internal testing)**
+  - Android: `yarn build:preview:android`
   - iOS: `yarn build:preview:ios`
-- **Production (store)**  
-  - Android: `yarn build:production:android`  
+- **Production (store)**
+  - Android: `yarn build:production:android`
   - iOS: `yarn build:production:ios`
 
 After adding or changing a secret, run a new build; the previous binary does not pick up the change.

@@ -26,21 +26,28 @@
     "type-check": "turbo run type-check",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
-    "test": "turbo run test",
+    "test": "yarn test:backend && turbo run test",
+    "test:ci": "yarn test:backend && turbo run test:ci",
+    "test:backend": "vitest run --config vitest.config.ts",
     "test:mobile": "turbo run test --filter=@ridgeway/mobile-app",
     "test:web": "turbo run test --filter=@ridgeway/web-app",
     "test:shared": "turbo run test --filter=shared",
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
+    "convex-test": "^0.0.56",
     "prettier": "^3.6.2",
     "turbo": "^2.10.11",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
   },
   "dependencies": {
     "@auth/core": "0.41.1",
     "@convex-dev/auth": "^0.0.95",
-    "convex": "^1.45.0"
+    "convex": "^1.45.0",
+    "convex-helpers": "^0.1.124"
   },
   "resolutions": {
     "react": "19.2.3",
