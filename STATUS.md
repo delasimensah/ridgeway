@@ -58,12 +58,13 @@
 
 ## Next action (one line)
 
-Approve the RIDGE-1 pull request, merge it, and close the issue. Next is RIDGE-2 (add a building).
+Approve [PR #1](https://github.com/delasimensah/ridgeway/pull/1), merge it, and close RIDGE-1. Next is RIDGE-2 (add a building).
 
 ---
 
 ## Pointers
 
+- RIDGE-1 PR: https://github.com/delasimensah/ridgeway/pull/1
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
