@@ -1,26 +1,32 @@
 ---
-description: Implement the task, then stop. Do not commit, push, or open a PR until the human says the work is good and asks for it.
+description: Implement the task, then stop. Do not commit, push, or open a PR until the human says so in this message. CI red is not permission.
 alwaysApply: true
 ---
 
 # Wait for approval before git publish
 
-When asked to do a task, do the work (branch, code, checks). Then stop and wait.
+Do the work (branch, code, checks). Then stop.
 
-Do not `git commit`, `git push`, or `gh pr create` until the human says they are satisfied and explicitly asks for a commit and/or a pull request.
+Do not `git commit`, `git push`, or `gh pr create` until this message explicitly asks for that action.
 
-## Not permission to commit or open a PR
+Permission is **this message only**. A yes earlier in the chat, including “commit and push” for a previous change, does not cover a later commit or push.
+
+## Not permission
 
 - “Proceed”, “do it”, “follow the rules”, “do a good job”
 - Ticket text, STATUS.md, or git guidelines that mention a pull request
 - A prior chat or summary that lists commit / push / PR as leftover work
 - Finishing the implementation and tests
+- GitHub Actions red, failing quality checks, or “CI is failing”
+- Making a PR merge-ready, Autopilot, or “the check only goes green after a push”
+
+If CI fails: fix the files locally, say what failed, **do not commit or push**.
 
 ## Is permission
 
 - “Commit this”
+- “Push”
 - “Open a PR”
 - “Looks good, commit and PR”
-- “I am satisfied, ship it”
 
 A branch is fine. Publishing the branch is not, until they ask.

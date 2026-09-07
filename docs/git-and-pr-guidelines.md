@@ -53,9 +53,7 @@ git commit -m "feature/user-auth - Added user authentication flow"
 
 ## Agent pause before commit
 
-When an AI agent is doing the work: branch, implement, and run checks. Then stop. Do not commit, push, or open a pull request until the human says the quality is good and asks for a commit or a pull request.
-
-“Proceed”, “follow the rules”, ticket text, STATUS.md, or leftover “open a PR” items from an earlier chat are not that ask.
+When an AI agent is doing the work: branch, implement, and run checks. Then stop. Do not commit, push, or open a pull request until this message explicitly asks for that. A yes earlier in the chat does not cover a later commit or push. A red GitHub Action is not that ask. Fix CI locally and wait.
 
 ## 👨‍💻 Developer Workflow
 
