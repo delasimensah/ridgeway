@@ -47,6 +47,17 @@ describe("LoginForm", () => {
 });
 ```
 
+## Where tests live
+
+Put each test next to the kind of code it covers, using the folder that kind already uses.
+
+- A component test sits in the component folder, named `ComponentName.test.tsx`, next to `ComponentName.tsx`.
+- A util test sits in `utils/__tests__/`, named after the util file.
+- A hook or service test sits in `__tests__/` inside that category, for example `hooks/auth/__tests__/useStaffSession.test.ts`. Do not put a test file beside the hook or service file. Do not put two hooks in one source file.
+- A Convex test sits beside the functions it covers, for example `convex/buildings.test.ts`.
+
+The file name is always the same base name as the source, with `.test.ts` or `.test.tsx`. This repo uses `.test.`, not `.spec.`.
+
 ## 🎯 Testing Guidelines
 
 ### **What to Test**

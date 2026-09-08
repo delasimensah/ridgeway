@@ -22,6 +22,7 @@ When in doubt, open the doc for the app or package you are editing and follow it
 - Every component lives in a **folder**: `ComponentName/ComponentName.tsx` (not a loose `ComponentName.tsx`).
 - **Do not nest component folders inside another component's folder.** Each component is a direct child of a **category** folder (e.g. `components/home/RecentSearchItem/`, `components/home/SearchOverlayContent/`). Wrong: `components/home/SearchOverlayContent/RecentSearchItem/`. Right: `components/home/RecentSearchItem/` and `components/home/SearchOverlayContent/` as siblings.
 - Every component has a test file: `ComponentName/ComponentName.test.tsx` (colocated in the same folder as the component). Tests are REQUIRED. See `.cursor/rules/test-files-placement.mdc` for where and how to add all test files.
+- A component folder contains only `ComponentName.tsx`, `ComponentName.test.tsx`, and optionally `ComponentNameSkeleton.tsx`. Form schemas, helpers, and other files go in `utils/`.
 - **No** `index.ts` inside individual component folders. Only category-level or top-level barrel files.
 - Types stay **inline** in the component file. No separate `.types.ts` files for component props.
 - Export components from the **barrel**: `components/index.ts` with `export { default as ComponentName } from "./[category]/ComponentName/ComponentName";`
@@ -59,7 +60,7 @@ See `.cursor/rules/hooks-and-services-organization.mdc` for the full mandatory r
 
 ### App structure
 
-- **Web (Next.js):** App Router. Route groups `(auth)`, `(onboarding)`, `(main-app)`. One `page.tsx` per route under `app/`.
+- **Web (Next.js):** App Router. Route groups `(auth)`, `(onboarding)`, `(main-app)`. One `page.tsx` per route under `app/`. The default export of `page.tsx` is a `*Route` (e.g. `BuildingsRoute`). It imports a `*Page` from `components/pages/` (e.g. `StaffBuildingsPage`). Do not name the route component `*Page`, and do not put the screen UI in `page.tsx`.
 - **Mobile (Expo):** Expo Router. Same group names under `app/`. Screens in `app/(auth)/`, `app/(main-app)/(tabs)/[tab]/`, etc. Register new screens in the corresponding `_layout.tsx` when adding to a stack.
 
 Before adding a new screen, page, component, hook, or service, read the relevant **developer-decision-guide** and **project-structure** for that app so you follow the exact patterns (paths, exports, layout registration).

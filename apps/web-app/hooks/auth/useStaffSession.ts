@@ -4,12 +4,9 @@ import { api } from "@convex/_generated/api";
 import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react";
 import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { LoadingScreen, NotAllowedPage, StaffHomePage } from "@/components";
-import { staffGreeting } from "@/utils";
-
-const HomePage = () => {
+export function useStaffSession() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useConvexAuth();
   const { signOut } = useAuthActions();
@@ -46,7 +43,6 @@ const HomePage = () => {
     api.profiles.getCurrent,
     isAuthenticated && profileReady ? {} : "skip"
   );
-  const home = useQuery(api.staff.getHome, viewer?.isStaff ? {} : "skip");
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -58,28 +54,14 @@ const HomePage = () => {
     }
   };
 
-  if (isLoading || !isAuthenticated || !profileReady || viewer === undefined) {
-    return <LoadingScreen />;
-  }
+  const isSessionLoading =
+    isLoading || !isAuthenticated || !profileReady || viewer === undefined;
 
-  if (!viewer.isStaff) {
-    return (
-      <NotAllowedPage onSignOut={handleSignOut} isSigningOut={isSigningOut} />
-    );
-  }
-
-  if (home === undefined) {
-    return <LoadingScreen />;
-  }
-
-  return (
-    <StaffHomePage
-      greeting={staffGreeting(home.displayName)}
-      displayName={home.displayName}
-      onSignOut={handleSignOut}
-      isSigningOut={isSigningOut}
-    />
-  );
-};
-
-export default HomePage;
+  return {
+    isSessionLoading,
+    isStaff: viewer?.isStaff === true,
+    displayName: viewer?.displayName ?? "",
+    isSigningOut,
+    handleSignOut,
+  };
+}

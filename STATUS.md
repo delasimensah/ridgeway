@@ -10,9 +10,9 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-1 in progress** (staff sign-in)
-- **Last updated:** 7 Sep 2026
-- **Blocked / open:** none. Vitest for `convex/` and the `convex-helpers` wrappers land on RIDGE-1.
+- **Current phase:** Build slices — **RIDGE-2 implemented** on `feature/RIDGE-2` (add a building). Not merged.
+- **Last updated:** 8 Sep 2026
+- **Blocked / open:** none
 
 ---
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1 Todo; RIDGE-2–18 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1 Done; RIDGE-2 In Progress; RIDGE-3–15, RIDGE-25, and epics Todo; RIDGE-16–18 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,13 +58,13 @@
 
 ## Next action (one line)
 
-Approve [PR #1](https://github.com/delasimensah/ridgeway/pull/1), merge it, and close RIDGE-1. Next is RIDGE-2 (add a building).
+Review RIDGE-2 on `feature/RIDGE-2`, then RIDGE-3 (add a unit).
 
 ---
 
 ## Pointers
 
-- RIDGE-1 PR: https://github.com/delasimensah/ridgeway/pull/1
+- RIDGE-1 PR (merged): https://github.com/delasimensah/ridgeway/pull/1
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`

@@ -1,21 +1,8 @@
-import { ConvexError } from "convex/values";
 import { describe, expect, it } from "vitest";
 
 import { api, internal } from "./_generated/api";
-import { asUser, makeBackend } from "./test.setup";
 import { FIELD_SEED, ORGANIZATION_NAME, STAFF_SEED } from "./seed";
-
-function errorCode(error: unknown): string | undefined {
-  if (
-    error instanceof ConvexError &&
-    typeof error.data === "object" &&
-    error.data !== null &&
-    "code" in error.data
-  ) {
-    return String((error.data as { code: string }).code);
-  }
-  return undefined;
-}
+import { asUser, errorCode, makeBackend } from "./test.setup";
 
 describe("seed.attachIdentity", () => {
   it("is idempotent and grants staff membership", async () => {

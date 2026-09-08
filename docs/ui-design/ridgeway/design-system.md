@@ -66,5 +66,6 @@ Source: [Color Hunt — #1A3636 #40534C #677D6A #D6BD98](https://colorhunt.co/pa
 - Currency GH₵. Accra addresses. Ridge Court is the busy building.
 - English copy. Roles: staff, owner, tenant, field worker.
 - Web chrome: sidebar + main (Mantine `AppShell`), lists as tables, status as badges, forms stacked.
+- Web viewports: mockups are desktop-first (1280+, usable at 1024). The website still has to work in phone and tablet browsers. Collapse the sidebar below about 992px. Do not wait for separate mobile web mockups.
 - Field phone: today’s jobs, detail, status, completion photo. No owner money screens.
 - Logo: none yet. Wordmark “Ridgeway” in Bold.

@@ -1,20 +1,7 @@
-import { ConvexError } from "convex/values";
 import { describe, expect, it } from "vitest";
 
 import { api } from "./_generated/api";
-import { asUser, insertPerson, makeBackend } from "./test.setup";
-
-function errorCode(error: unknown): string | undefined {
-  if (
-    error instanceof ConvexError &&
-    typeof error.data === "object" &&
-    error.data !== null &&
-    "code" in error.data
-  ) {
-    return String((error.data as { code: string }).code);
-  }
-  return undefined;
-}
+import { asUser, errorCode, insertPerson, makeBackend } from "./test.setup";
 
 describe("profiles", () => {
   it("returns the signed-in staff viewer", async () => {

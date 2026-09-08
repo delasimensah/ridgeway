@@ -43,8 +43,10 @@ const eslintConfig = defineConfig([
       import: importPlugin,
     },
     rules: {
+      "react/jsx-uses-react": "off",
+      "react/react-in-jsx-scope": "off",
       "@typescript-eslint/no-unused-vars": [
-        "warn",
+        "error",
         {
           vars: "all",
           args: "after-used",

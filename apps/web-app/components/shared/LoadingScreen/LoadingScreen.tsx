@@ -1,11 +1,23 @@
 import { Box } from "@mantine/core";
 import React from "react";
+import { cn } from "shared";
 
 import Text from "../../ui/Text/Text";
 
-const LoadingScreen: React.FC = () => {
+interface LoadingScreenProps {
+  fillViewport?: boolean;
+}
+
+const LoadingScreen: React.FC<LoadingScreenProps> = ({
+  fillViewport = true,
+}) => {
   return (
-    <Box className="flex min-h-screen items-center justify-center bg-white">
+    <Box
+      className={cn(
+        "flex items-center justify-center bg-white",
+        fillViewport ? "min-h-screen" : "min-h-[40vh]"
+      )}
+    >
       <Text className="text-lg text-grey">Loading...</Text>
     </Box>
   );

@@ -6,12 +6,38 @@
 
 ### **Adding a New Page**
 
-1. Create page file in appropriate route group:
-   - `app/(auth)/page-name/page.tsx` - Auth pages
-   - `app/(onboarding)/page-name/page.tsx` - Onboarding pages
-   - `app/(main-app)/page-name/page.tsx` - Main app pages
+1. Create the page component (the screen UI) in `components/pages/`:
 
-2. Navigate to it:
+   ```
+   components/pages/PageName/
+   ├── PageName.tsx
+   └── PageName.test.tsx
+   ```
+
+2. Export from `components/index.ts`:
+
+   ```typescript
+   export { default as PageName } from "./pages/PageName/PageName";
+   ```
+
+3. Create the route in the matching route group. Name the default export `PageNameRoute`. Import the page from `@/components`. Do not put the screen UI in `page.tsx`.
+
+   - `app/(auth)/page-name/page.tsx`
+   - `app/(onboarding)/page-name/page.tsx`
+   - `app/(main-app)/page-name/page.tsx`
+
+   ```tsx
+   import { PageName } from "@/components";
+
+   const PageNameRoute = () => {
+     return <PageName />;
+   };
+
+   export default PageNameRoute;
+   ```
+
+4. Navigate to it:
+
    ```tsx
    router.push("/page-name");
    ```
@@ -45,6 +71,7 @@
 - Read `docs/component-building-guide.md` — use built-in components (e.g. `Heading` for page/section/subsection/card titles) instead of raw Mantine primitives
 - Build by composing existing components
 - Use Tailwind classes for styling
+- Make every page work on phone, tablet, and desktop. Read `docs/responsive-design-guide.md`. Missing mockups does not skip this.
 - Export from `components/index.ts`
 
 ---
@@ -58,9 +85,12 @@
    ```
 
 2. Export from hooks/index.ts:
+
    ```typescript
    export { useHookName } from "./[category]/useHookName";
    ```
+
+3. Add the test at `hooks/[category]/__tests__/useHookName.test.ts`. Do not put the test file next to the hook.
 
 **Export Rules:**
 
@@ -86,9 +116,12 @@
    ```
 
 4. Export from services/index.ts:
+
    ```typescript
    export { signIn, signOut } from "./auth/authService";
    ```
+
+5. Add the test at `services/[category]/__tests__/serviceName.test.ts`. Do not put the test file next to the service.
 
 ---
 

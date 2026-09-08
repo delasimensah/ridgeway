@@ -16,19 +16,24 @@ Follow the documented test structure. Do not put test files in the wrong locatio
 - **Naming:** `ComponentName.test.tsx` — same base name as the component file, with `.test.tsx` (or `.test.ts` if the component is `.ts`).
 - **Required:** Every component MUST have a test file. When adding a new component, add `ComponentName.test.tsx` in the same folder.
 
-### Utils (mobile: apps/mobile-app/utils)
+### Utils (web: `apps/web-app/utils`, mobile: `apps/mobile-app/utils`)
 
 - **Dedicated test folder:** `utils/__tests__/utilityName.test.ts`.
 - **Naming:** `utilityName.test.ts` — matches the util file name.
-- **Required:** All utils must have tests in `utils/__tests__/`. See `apps/mobile-app/docs/project-structure.md`.
+- **Required:** All utils must have tests in `utils/__tests__/`. See each app’s `docs/project-structure.md`.
 
 ### Utils (shared: packages/shared)
 
-- **Colocated under the module:** e.g. `packages/shared/src/utils/__tests__/newUtility.test.ts`. See `packages/shared/docs/contributing-guide.md`.
+- **Dedicated test folder under the module:** e.g. `packages/shared/src/utils/__tests__/newUtility.test.ts`. See `packages/shared/docs/contributing-guide.md`.
 
 ### Hooks and services
 
-- **Mobile/web:** No single mandated folder; follow the app’s existing pattern. If the app uses colocated tests (e.g. next to the hook or in a `__tests__` folder under the same area), match that. When in doubt, use a colocated `useHookName.test.ts` next to the hook file, or an `__tests__` folder in the same directory as the code under test.
+- **Dedicated test folder in the category:** `hooks/[category]/__tests__/useHookName.test.ts` and `services/[category]/__tests__/serviceName.test.ts`.
+- **One hook per file.** Do not put two hooks in one source file. Do not put a test file next to the hook file.
+- **Naming:** `useHookName.test.ts` — same base name as the hook.
+- **Import the hook with a relative path** from the test, e.g. `import { useHookName } from "../useHookName";`.
+
+Wrong: `hooks/auth/useStaffSession.test.ts`. Right: `hooks/auth/__tests__/useStaffSession.test.ts`.
 
 ## File naming
 
@@ -40,6 +45,7 @@ Follow the documented test structure. Do not put test files in the wrong locatio
 
 - **Component tests:** Import the component under test with a **relative path** (e.g. `import ComponentName from "./ComponentName";`). Do not use `@/components` for the component under test when the test lives inside `components/`. See `docs/import-patterns-guide.md`.
 - **Utils tests:** Import from the relative path to the util (e.g. `import { fn } from "../utilityName";`).
+- **Hook tests:** Import from the relative path to the hook (e.g. `import { useHookName } from "../useHookName";`).
 
 ## What to test (summary)
 

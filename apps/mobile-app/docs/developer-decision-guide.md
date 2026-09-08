@@ -67,10 +67,12 @@ For detailed component building principles:
 2. Export from main index:
    export { useHookName } from "./[category]/useHookName";
 
+3. Add the test at hooks/[category]/__tests__/useHookName.test.ts. Do not put the test file next to the hook.
+
 **Export Rules:**
 - **All hooks must be exported** from `hooks/index.ts`
 - **Use named exports** for hooks
-- **Group exports by category** (auth, api, navigation, etc.)
+- **Group exports by category** (auth, navigation, shared)
 ```
 
 ### **Adding a New Service**

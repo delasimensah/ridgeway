@@ -154,24 +154,41 @@ router.back();
 
 ## 📍 Adding New Pages
 
-### **1. Create page file**
+### **1. Create the page component, then the route**
+
+The screen UI lives in `components/pages/`. The `page.tsx` file is a route that imports that page.
+
+```tsx
+// components/pages/Page2Page/Page2Page.tsx
+"use client";
+
+import { Box } from "@mantine/core";
+
+import Heading from "../../ui/Heading/Heading";
+
+const Page2Page = () => {
+  return (
+    <Box>
+      <Heading variant="page">Page 2</Heading>
+    </Box>
+  );
+};
+
+export default Page2Page;
+```
 
 ```tsx
 // app/(main-app)/page2/page.tsx
-"use client";
+import { Page2Page } from "@/components";
 
-import { Box, Title } from "@mantine/core";
+const Page2Route = () => {
+  return <Page2Page />;
+};
 
-export default function Page2() {
-  return (
-    <Box>
-      <Title order={1}>Page 2</Title>
-    </Box>
-  );
-}
+export default Page2Route;
 ```
 
-**Note:** Replace `page2` with your actual page name.
+**Note:** Replace `page2` with your actual page name. Do not put the screen UI in `page.tsx`.
 
 ### **2. Navigate to it**
 
@@ -199,6 +216,7 @@ That's it! Next.js automatically creates the route.
 - Use simple paths in navigation
 - Layouts handle protection logic
 - Test navigation on build, not just dev
+- Staff chrome: overlay navbar and burger below Mantine `md` (992px). Persistent sidebar from that width up. See `docs/responsive-design-guide.md`.
 
 ---
 
