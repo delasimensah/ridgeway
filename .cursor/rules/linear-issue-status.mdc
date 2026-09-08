@@ -13,3 +13,11 @@ The board that should make sense at a glance is **Todo → In Progress → Done*
 - **Backlog** — later work only (not this version yet).
 
 When the user says start this task, move that issue to In Progress immediately so it shows on the Kanban.
+
+## STATUS.md on a feature branch
+
+Write `STATUS.md` and the Linear tickets “Status now” block as the world **after this pull request merges**: this ticket is Done, the next ticket is named. Do not write “not merged”, “on this branch”, or “review this PR.”
+
+Linear stays In Progress until the merge. GitHub marks the issue Done. The docs on the branch may already say Done.
+
+When you open the pull request, add its URL to STATUS Pointers on the same branch in that same turn.

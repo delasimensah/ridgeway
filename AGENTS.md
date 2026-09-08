@@ -4,7 +4,7 @@ This is a **Turborepo** with a **Next.js** web app, an **Expo** mobile app, a **
 
 ## Where we left off
 
-Read **`STATUS.md`** at the repo root before planning or implementing. It is the phase checklist (workshop vs product). Update it when you finish a phase or change the next action. Do not put secrets in `STATUS.md`.
+Read **`STATUS.md`** at the repo root before planning or implementing. It is the phase checklist (workshop vs product). Update it when you finish a phase or change the next action. On a feature branch, write it as the state after that pull request merges (this ticket Done, next ticket named). Do not put secrets in `STATUS.md`.
 
 ## Compliance (do this before coding)
 

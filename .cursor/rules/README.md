@@ -4,7 +4,7 @@ Rules guide the agent for this monorepo.
 
 ## Always on (every chat)
 
-- **`linear-issue-status.mdc`** — Todo → In Progress → Done. Backlog is later work only.
+- **`linear-issue-status.mdc`** — Todo → In Progress → Done. Backlog is later work only. Write STATUS as the post-merge state on a feature branch.
 - **`wait-for-approval-before-git.mdc`** — Implement and stop. Do not commit, push, or open a PR until asked.
 - **`web-responsive.mdc`** — Website is always responsive, even without mobile mockups. Read `docs/responsive-design-guide.md`.
 - **`mandatory-project-docs.mdc`** — Which `docs/` files to read before implementing (by task type).

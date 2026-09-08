@@ -55,6 +55,10 @@ git commit -m "feature/user-auth - Added user authentication flow"
 
 When an AI agent is doing the work: branch, implement, and run checks. Then stop. Do not commit, push, or open a pull request until this message explicitly asks for that. A yes earlier in the chat does not cover a later commit or push. A red GitHub Action is not that ask. Fix CI locally and wait.
 
+## STATUS.md in a feature pull request
+
+Write `STATUS.md` as the state after this pull request merges: this ticket Done, next ticket named. Do not write “not merged” or “review this branch.” When you open the pull request, add its URL to STATUS Pointers on the same branch before you stop.
+
 ## 👨‍💻 Developer Workflow
 
 ### **Step 1: Create Feature Branch**

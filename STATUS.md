@@ -1,6 +1,6 @@
 # Project status (read this first)
 
-**For agents and humans:** this is the handoff checklist for this job. Update it when a phase finishes or the “next” item changes. Code alone does not show workshop vs product phase.
+**For agents and humans:** this is the handoff checklist for this job. Update it when a phase finishes or the “next” item changes. Code alone does not show workshop vs product phase. On a feature branch, write Snapshot and Next action as they should read after that pull request merges.
 
 **Do not put secrets here.** URLs and “done” notes are fine. Passwords, webhook values, `.p8` paths, and deploy keys stay in `ACCESS-LIST.md` (gitignored) or vendor dashboards.
 
@@ -10,7 +10,7 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-2 implemented** on `feature/RIDGE-2` (add a building). Not merged.
+- **Current phase:** Build slices — **RIDGE-2 done** (add a building). Next is RIDGE-25 (correct a building).
 - **Last updated:** 8 Sep 2026
 - **Blocked / open:** none
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1 Done; RIDGE-2 In Progress; RIDGE-3–15, RIDGE-25, and epics Todo; RIDGE-16–18 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1 and RIDGE-2 Done; RIDGE-3–15, RIDGE-25, and epics Todo; RIDGE-16–18 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,13 +58,14 @@
 
 ## Next action (one line)
 
-Review RIDGE-2 on `feature/RIDGE-2`, then RIDGE-3 (add a unit).
+Start RIDGE-25 (correct a building already added).
 
 ---
 
 ## Pointers
 
 - RIDGE-1 PR (merged): https://github.com/delasimensah/ridgeway/pull/1
+- RIDGE-2 PR (merged): https://github.com/delasimensah/ridgeway/pull/2
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
