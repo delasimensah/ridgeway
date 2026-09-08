@@ -17,6 +17,10 @@ describe("StaffBuildingsPage", () => {
     expect(screen.getAllByRole("link", { name: "Add building" }).length).toBe(
       2
     );
+    expect(screen.getByRole("link", { name: "Add owner" })).toHaveAttribute(
+      "href",
+      "/owners/new"
+    );
   });
 
   it("shows saved buildings in the list", () => {

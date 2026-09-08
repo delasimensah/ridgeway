@@ -15,16 +15,23 @@ interface BuildingDetailPageProps {
   buildingId: string;
   name: string;
   address: string;
+  ownerId?: string | null;
+  ownerName?: string | null;
   units: UnitListItem[];
 }
 
 const PRIMARY_BUTTON =
   "h-auto rounded-[8px] bg-primary px-6 py-2.5 text-[15px] font-semibold text-white hover:bg-primaryHover";
 
+const SECONDARY_BUTTON =
+  "h-auto rounded-[8px] border border-border bg-white px-6 py-2.5 text-[15px] font-semibold text-darkGrey hover:bg-sidebar";
+
 const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
   buildingId,
   name,
   address,
+  ownerId = null,
+  ownerName = null,
   units,
 }) => {
   const isEmpty = units.length === 0;
@@ -35,6 +42,8 @@ const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
         buildingId={buildingId}
         name={name}
         address={address}
+        ownerId={ownerId}
+        ownerName={ownerName}
       />
       <Box component="section">
         <Group
@@ -50,13 +59,24 @@ const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
           >
             Units
           </Heading>
-          <Button
-            component={Link}
-            href={`/buildings/${buildingId}/units/new`}
-            className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
-          >
-            Add unit
-          </Button>
+          <Group gap="sm" className="w-full sm:w-auto">
+            <Button
+              component={Link}
+              href={`/buildings/${buildingId}/units/new`}
+              className={`${SECONDARY_BUTTON} w-full sm:w-auto`}
+            >
+              Add unit
+            </Button>
+            {isEmpty ? null : (
+              <Button
+                component={Link}
+                href={`/buildings/${buildingId}/tenants/new`}
+                className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
+              >
+                Add tenant
+              </Button>
+            )}
+          </Group>
         </Group>
         {isEmpty ? (
           <UnitListEmpty buildingId={buildingId} />

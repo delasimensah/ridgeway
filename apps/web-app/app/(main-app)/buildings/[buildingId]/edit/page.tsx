@@ -13,6 +13,7 @@ const EditBuildingRoute = () => {
   const router = useRouter();
   const buildingId = params.buildingId as Id<"buildings">;
   const building = useQuery(api.buildings.get, { buildingId });
+  const owners = useQuery(api.owners.listForStaff);
 
   useEffect(() => {
     if (building === null) {
@@ -20,17 +21,19 @@ const EditBuildingRoute = () => {
     }
   }, [building, router]);
 
-  if (building === undefined || building === null) {
+  if (building === undefined || building === null || owners === undefined) {
     return <LoadingScreen fillViewport={false} />;
   }
 
   return (
     <AddBuildingPage
       buildingId={building._id}
+      owners={owners}
       initialValues={{
         name: building.name,
         street: building.street,
         area: building.area,
+        ownerId: building.ownerId ?? "",
       }}
     />
   );

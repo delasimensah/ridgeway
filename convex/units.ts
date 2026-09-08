@@ -2,7 +2,7 @@ import { v } from "convex/values";
 
 import { ERROR_CODES, raise } from "./lib/errors";
 import { authedQuery, staffMutation, staffQuery } from "./lib/functions";
-import { requireBuildingAccess } from "./lib/viewer";
+import { isLeaseCurrent, requireBuildingAccess, utcToday } from "./lib/viewer";
 
 const unitKind = v.union(v.literal("apartment"), v.literal("commercial"));
 
@@ -10,6 +10,9 @@ const unitListItem = v.object({
   _id: v.id("units"),
   label: v.string(),
   kind: unitKind,
+  tenantName: v.union(v.string(), v.null()),
+  leaseId: v.union(v.id("leases"), v.null()),
+  leaseEndedOn: v.union(v.string(), v.null()),
 });
 
 const unitFormFields = v.object({
@@ -40,11 +43,29 @@ export const listByBuilding = authedQuery({
       .withIndex("by_buildingId", (q) => q.eq("buildingId", args.buildingId))
       .collect();
 
-    return rows.map((row) => ({
-      _id: row._id,
-      label: row.label,
-      kind: row.kind,
-    }));
+    const today = utcToday();
+
+    return await Promise.all(
+      rows.map(async (row) => {
+        const leases = await ctx.db
+          .query("leases")
+          .withIndex("by_unitId", (q) => q.eq("unitId", row._id))
+          .collect();
+        const current =
+          leases.find((lease) => isLeaseCurrent(lease, today)) ?? null;
+        const tenant =
+          current === null ? null : await ctx.db.get(current.tenantProfileId);
+
+        return {
+          _id: row._id,
+          label: row.label,
+          kind: row.kind,
+          tenantName: tenant?.displayName ?? null,
+          leaseId: current?._id ?? null,
+          leaseEndedOn: current?.endedOn ?? null,
+        };
+      })
+    );
   },
 });
 

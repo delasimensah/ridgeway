@@ -2,7 +2,7 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { Button, Group, SimpleGrid, TextInput } from "@mantine/core";
+import { Button, Group, Select, SimpleGrid, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useMutation } from "convex/react";
 import { zod4Resolver } from "mantine-form-zod-resolver";
@@ -26,13 +26,20 @@ const INPUT_CLASSNAMES = {
 const PRIMARY_BUTTON =
   "h-auto rounded-[8px] bg-primary px-8 py-3 text-[15px] font-semibold text-white hover:bg-primaryHover";
 
+export interface BuildingOwnerOption {
+  _id: string;
+  displayName: string;
+}
+
 interface AddBuildingFormProps {
   buildingId?: Id<"buildings">;
+  owners?: BuildingOwnerOption[];
   initialValues?: AddBuildingFormValues;
 }
 
 const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
   buildingId,
+  owners = [],
   initialValues,
 }) => {
   const router = useRouter();
@@ -46,6 +53,7 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
       name: "",
       street: "",
       area: "",
+      ownerId: "",
     },
     validate: zod4Resolver(addBuildingSchema),
   });
@@ -54,18 +62,25 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
     setError(null);
     setIsSubmitting(true);
     try {
+      const ownerId =
+        values.ownerId !== undefined && values.ownerId.length > 0
+          ? (values.ownerId as Id<"owners">)
+          : undefined;
+
       if (buildingId !== undefined) {
         await updateBuilding({
           buildingId,
           name: values.name,
           street: values.street,
           area: values.area,
+          ...(ownerId !== undefined ? { ownerId } : {}),
         });
       } else {
         await createBuilding({
           name: values.name,
           street: values.street,
           area: values.area,
+          ...(ownerId !== undefined ? { ownerId } : {}),
         });
       }
       router.replace("/buildings");
@@ -85,6 +100,28 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
         withAsterisk
         classNames={INPUT_CLASSNAMES}
         {...form.getInputProps("name")}
+      />
+      <Select
+        id="ownerId"
+        label="Owner"
+        placeholder={
+          owners.length === 0 ? "Add an owner first" : "Pick an owner"
+        }
+        data={owners.map((owner) => ({
+          value: owner._id,
+          label: owner.displayName,
+        }))}
+        clearable
+        pointer
+        comboboxProps={{ shadow: "sm" }}
+        classNames={{
+          label: INPUT_CLASSNAMES.label,
+          input: INPUT_CLASSNAMES.input,
+          dropdown: "rounded-[8px] border border-border bg-white",
+          option:
+            "rounded-[6px] text-[15px] text-darkGrey bg-white hover:bg-sidebar data-[combobox-selected]:bg-sidebar data-[combobox-active]:bg-sidebar",
+        }}
+        {...form.getInputProps("ownerId")}
       />
       <TextInput
         id="street"

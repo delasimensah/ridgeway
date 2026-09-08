@@ -8,6 +8,9 @@ import UnitListRow from "../UnitListRow/UnitListRow";
 export interface UnitListItem {
   _id: string;
   label: string;
+  tenantName?: string | null;
+  leaseId?: string | null;
+  leaseEndedOn?: string | null;
 }
 
 interface UnitListTableProps {
@@ -38,6 +41,9 @@ const UnitListTable: React.FC<UnitListTableProps> = ({ buildingId, units }) => {
                 buildingId={buildingId}
                 unitId={unit._id}
                 label={unit.label}
+                tenantName={unit.tenantName}
+                leaseId={unit.leaseId}
+                leaseEndedOn={unit.leaseEndedOn}
               />
             ))}
           </Table.Tbody>

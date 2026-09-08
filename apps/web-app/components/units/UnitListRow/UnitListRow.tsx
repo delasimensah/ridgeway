@@ -3,11 +3,15 @@
 import { Anchor, Table } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
+import { formatDateString } from "shared";
 
 interface UnitListRowProps {
   buildingId: string;
   unitId: string;
   label: string;
+  tenantName?: string | null;
+  leaseId?: string | null;
+  leaseEndedOn?: string | null;
 }
 
 const TD = "px-4 py-4 text-[15px] text-darkGrey sm:px-6 sm:py-5";
@@ -17,6 +21,9 @@ const UnitListRow: React.FC<UnitListRowProps> = ({
   buildingId,
   unitId,
   label,
+  tenantName = null,
+  leaseId = null,
+  leaseEndedOn = null,
 }) => {
   return (
     <Table.Tr className="hover:bg-sidebar">
@@ -30,9 +37,26 @@ const UnitListRow: React.FC<UnitListRowProps> = ({
           {label}
         </Anchor>
       </Table.Td>
+      <Table.Td className={TD}>
+        {tenantName !== null && leaseId !== null ? (
+          <Anchor
+            component={Link}
+            href={`/buildings/${buildingId}/tenants/${leaseId}/edit`}
+            underline="never"
+            className="text-darkGrey"
+          >
+            {tenantName}
+          </Anchor>
+        ) : (
+          "—"
+        )}
+      </Table.Td>
       <Table.Td className={TD}>—</Table.Td>
-      <Table.Td className={TD}>—</Table.Td>
-      <Table.Td className={TD}>—</Table.Td>
+      <Table.Td className={TD}>
+        {leaseEndedOn !== null
+          ? formatDateString(leaseEndedOn, "d MMM yyyy")
+          : "—"}
+      </Table.Td>
     </Table.Tr>
   );
 };

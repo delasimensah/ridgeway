@@ -33,6 +33,8 @@ const BuildingDetailRoute = () => {
       buildingId={building._id}
       name={building.name}
       address={building.address}
+      ownerId={building.ownerId}
+      ownerName={building.ownerName}
       units={units}
     />
   );

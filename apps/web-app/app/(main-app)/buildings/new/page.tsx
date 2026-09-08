@@ -1,7 +1,18 @@
-import { AddBuildingPage } from "@/components";
+"use client";
+
+import { api } from "@convex/_generated/api";
+import { useQuery } from "convex/react";
+
+import { AddBuildingPage, LoadingScreen } from "@/components";
 
 const AddBuildingRoute = () => {
-  return <AddBuildingPage />;
+  const owners = useQuery(api.owners.listForStaff);
+
+  if (owners === undefined) {
+    return <LoadingScreen fillViewport={false} />;
+  }
+
+  return <AddBuildingPage owners={owners} />;
 };
 
 export default AddBuildingRoute;
