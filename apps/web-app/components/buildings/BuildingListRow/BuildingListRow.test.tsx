@@ -11,6 +11,7 @@ describe("BuildingListRow", () => {
       <Table>
         <Table.Tbody>
           <BuildingListRow
+            buildingId="building-1"
             name="Ridge Court"
             address="14 Ridge Road, Cantonments, Accra"
             ownerLabel="—"
@@ -27,5 +28,9 @@ describe("BuildingListRow", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("—")).toBeInTheDocument();
     expect(screen.getAllByText("0")).toHaveLength(2);
+    expect(screen.getByRole("link", { name: "Ridge Court" })).toHaveAttribute(
+      "href",
+      "/buildings/building-1/edit"
+    );
   });
 });

@@ -36,6 +36,7 @@ const BuildingListTable: React.FC<BuildingListTableProps> = ({ buildings }) => {
             {buildings.map((building) => (
               <BuildingListRow
                 key={building._id}
+                buildingId={building._id}
                 name={building.name}
                 address={building.address}
                 ownerLabel="—"

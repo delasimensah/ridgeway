@@ -1,12 +1,23 @@
 "use client";
 
+import type { Id } from "@convex/_generated/dataModel";
 import { Box } from "@mantine/core";
 import React from "react";
+
+import type { AddBuildingFormValues } from "@/utils";
 
 import AddBuildingForm from "../../buildings/AddBuildingForm/AddBuildingForm";
 import Heading from "../../ui/Heading/Heading";
 
-const AddBuildingPage: React.FC = () => {
+interface AddBuildingPageProps {
+  buildingId?: Id<"buildings">;
+  initialValues?: AddBuildingFormValues;
+}
+
+const AddBuildingPage: React.FC<AddBuildingPageProps> = ({
+  buildingId,
+  initialValues,
+}) => {
   return (
     <Box className="max-w-[800px]">
       <Heading
@@ -16,7 +27,10 @@ const AddBuildingPage: React.FC = () => {
         Add building
       </Heading>
       <Box className="rounded-[8px] border border-border bg-white p-4 shadow-sm sm:p-6 md:p-8">
-        <AddBuildingForm />
+        <AddBuildingForm
+          buildingId={buildingId}
+          initialValues={initialValues}
+        />
       </Box>
     </Box>
   );
