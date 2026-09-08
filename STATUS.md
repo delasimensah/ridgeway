@@ -66,7 +66,8 @@ Start RIDGE-4 (add an owner and a tenant with a lease that already started).
 
 - RIDGE-1 PR (merged): https://github.com/delasimensah/ridgeway/pull/1
 - RIDGE-2 PR (merged): https://github.com/delasimensah/ridgeway/pull/2
-- RIDGE-25 PR: https://github.com/delasimensah/ridgeway/pull/3
+- RIDGE-25 PR (merged): https://github.com/delasimensah/ridgeway/pull/3
+- RIDGE-3 PR: https://github.com/delasimensah/ridgeway/pull/4
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
