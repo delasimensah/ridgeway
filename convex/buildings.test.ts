@@ -26,6 +26,7 @@ describe("buildings", () => {
         _id: buildingId,
         name: "Ridge Court",
         address: formatAccraAddress("14 Ridge Road", "Cantonments"),
+        unitCount: 0,
       },
     ]);
 
@@ -186,12 +187,14 @@ describe("buildings", () => {
       name: "Ridge Court East",
       street: "16 Ridge Road",
       area: "Labone",
+      address: formatAccraAddress("16 Ridge Road", "Labone"),
     });
     expect(list).toEqual([
       {
         _id: buildingId,
         name: "Ridge Court East",
         address: formatAccraAddress("16 Ridge Road", "Labone"),
+        unitCount: 0,
       },
     ]);
   });

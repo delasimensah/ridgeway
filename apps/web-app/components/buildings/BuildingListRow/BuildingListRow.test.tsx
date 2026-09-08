@@ -30,7 +30,7 @@ describe("BuildingListRow", () => {
     expect(screen.getAllByText("0")).toHaveLength(2);
     expect(screen.getByRole("link", { name: "Ridge Court" })).toHaveAttribute(
       "href",
-      "/buildings/building-1/edit"
+      "/buildings/building-1"
     );
   });
 });

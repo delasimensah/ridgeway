@@ -17,6 +17,7 @@ import type * as lib_viewer from "../lib/viewer.js";
 import type * as profiles from "../profiles.js";
 import type * as seed from "../seed.js";
 import type * as staff from "../staff.js";
+import type * as units from "../units.js";
 
 import type {
   ApiFromModules,
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   profiles: typeof profiles;
   seed: typeof seed;
   staff: typeof staff;
+  units: typeof units;
 }>;
 
 /**

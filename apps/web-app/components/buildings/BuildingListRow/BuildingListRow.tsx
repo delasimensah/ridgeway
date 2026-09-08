@@ -31,7 +31,7 @@ const BuildingListRow: React.FC<BuildingListRowProps> = ({
       <Table.Td className={NAME_TD}>
         <Anchor
           component={Link}
-          href={`/buildings/${buildingId}/edit`}
+          href={`/buildings/${buildingId}`}
           underline="never"
           className="font-bold text-darkGrey"
         >

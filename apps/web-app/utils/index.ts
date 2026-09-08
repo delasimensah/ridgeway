@@ -15,6 +15,13 @@ export {
   addBuildingSchema,
   type AddBuildingFormValues,
 } from "./addBuildingSchema";
+export {
+  addUnitSchema,
+  UNIT_KIND_OPTIONS,
+  UNIT_KINDS,
+  type AddUnitFormValues,
+  type UnitKind,
+} from "./addUnitSchema";
 
 // Add more utilities as needed:
 // export { default as formatDate } from "./formatDate";
