@@ -19,7 +19,7 @@ Keep forms in a single file when practical. The general rule is max ~300 lines p
 
 If you do split:
 
-- Define the schema in the parent form component, or colocate it (e.g. `MyForm/formSchema.ts`) when section components need the types.
+- Put the schema in `apps/web-app/utils/` and import it from `@/utils` in the parent and any section components that need the types.
 - Use `useForm` with `zodResolver(schema)` in the parent.
 - Each section component receives `form` as a prop.
 
@@ -32,8 +32,9 @@ If you do split:
 
 ### Where to put the schema file
 
-- **Colocate** the schema when it is used by a single form. Place it next to the form, e.g. `MyForm/formSchema.ts`, and import it in the form and any section components that need the types.
-- **Move to utils** when the schema is shared by multiple forms. Place it in `apps/web-app/utils/` (or equivalent) so all forms can import from the same module.
+- **Web-only forms:** `apps/web-app/utils/`, named after the form (e.g. `addBuildingSchema.ts`). Export from `utils/index.ts`. Test in `utils/__tests__/`. Import from `@/utils`.
+- **Shared by web and mobile:** `packages/shared`.
+- Do not put a schema file in a component folder. That folder is only the component, its test, and an optional skeleton.
 
 ---
 
@@ -55,7 +56,7 @@ When testing section components that receive a form prop, mock the form with cor
 
 ```tsx
 import type { UseFormReturnType } from "@mantine/form";
-import type { MyFormValues } from "../MyForm/MyForm";
+import type { MyFormValues } from "@/utils";
 
 const mockForm = {
   getInputProps: (name: string) => ({ name }),

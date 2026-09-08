@@ -1,0 +1,15 @@
+---
+description: Linear board is Todo, In Progress, Done. Backlog is later work only.
+alwaysApply: true
+---
+
+# Linear issue status
+
+The board that should make sense at a glance is **Todo → In Progress → Done**.
+
+- **Todo** — queued work we will do. Create new ready issues here, not in Backlog.
+- **In Progress** — the slice we were asked to start. Move it here in the same step. Leave it here until the pull request is merged to `main`.
+- **Done** — the work is on `main`. Do not mark Done from a branch or an unmerged PR.
+- **Backlog** — later work only (not this version yet).
+
+When the user says start this task, move that issue to In Progress immediately so it shows on the Kanban.

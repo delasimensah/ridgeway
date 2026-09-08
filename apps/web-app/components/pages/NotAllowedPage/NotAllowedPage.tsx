@@ -16,9 +16,12 @@ const NotAllowedPage: React.FC<NotAllowedPageProps> = ({
   isSigningOut = false,
 }) => {
   return (
-    <Box className="flex min-h-screen flex-col items-center justify-center bg-white p-6">
+    <Box className="flex min-h-screen flex-col items-center justify-center bg-white p-4 sm:p-6">
       <Box className="max-w-md text-center">
-        <Heading variant="page" className="text-[32px] font-bold text-darkGrey">
+        <Heading
+          variant="page"
+          className="text-[24px] font-bold text-darkGrey sm:text-[28px] md:text-[32px]"
+        >
           You cannot open the office
         </Heading>
         <Text className="mb-8 text-base text-grey">
@@ -28,7 +31,7 @@ const NotAllowedPage: React.FC<NotAllowedPageProps> = ({
         <Button
           onClick={onSignOut}
           loading={isSigningOut}
-          className="h-auto rounded-[8px] bg-primary px-6 py-3 text-base font-semibold text-white hover:bg-primaryHover"
+          className="h-auto w-full rounded-[8px] bg-primary px-6 py-3 text-base font-semibold text-white hover:bg-primaryHover sm:w-auto"
         >
           Sign out
         </Button>

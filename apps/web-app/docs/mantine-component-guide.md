@@ -181,7 +181,7 @@ import { Button } from '@mantine/core';
 1. **Always use Mantine components** for standard UI patterns
 2. **Apply Tailwind classes** for customization (NO hardcoded colors)
 3. **Use project fonts** from constants
-4. **Follow responsive design** (mobile-first with md/lg breakpoints)
+4. **Follow responsive design** — every web page works on phone, tablet, and desktop. See `docs/responsive-design-guide.md`. Mantine `sm`/`md`/`lg` are not the same pixel widths as Tailwind’s.
 5. **Maintain consistency** with existing patterns
 6. **Test accessibility** (Mantine components are accessible by default)
 7. **Keep components simple** - prefer composition over complex custom components

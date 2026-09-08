@@ -4,9 +4,8 @@ import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { ConvexReactClient } from "convex/react";
-import React, { Suspense, useMemo } from "react";
+import React, { useMemo } from "react";
 
-import { LoadingScreen } from "@/components";
 import { mantineTheme } from "@/theme/mantine-theme";
 
 interface ProvidersProps {
@@ -25,7 +24,7 @@ export const Providers = ({ children }: ProvidersProps) => {
   return (
     <ConvexAuthProvider client={convex}>
       <MantineProvider theme={mantineTheme}>
-        <Suspense fallback={<LoadingScreen />}>{children}</Suspense>
+        {children}
         <Notifications position="top-right" />
       </MantineProvider>
     </ConvexAuthProvider>

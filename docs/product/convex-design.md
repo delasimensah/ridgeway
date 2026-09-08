@@ -265,7 +265,8 @@ Where a function is described as staff-only, that means it is declared with `sta
 - `buildings.get` is a query guarded by `requireBuildingAccess`.
 - `buildings.create` and `buildings.update` are staff-only mutations. Creating a building requires the named owner to be in the caller's organization.
 - `units.listByBuilding` is a query guarded by `requireBuildingAccess`.
-- `units.create` is a staff-only mutation, and it checks the parent building is in the caller's organization before writing.
+- `units.create` and `units.update` are staff-only mutations. Create checks the parent building is in the caller's organization before writing. Update may change typed fields such as the unit label. It does not move a unit to another building.
+- Where a staff (or tenant) mutation creates a typed field, there is a matching update on the same permission rules, unless a later rule freezes that field (work-order history, a confirmed rent period, ticket status).
 
 ### Leases and tenants
 

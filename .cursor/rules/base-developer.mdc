@@ -59,7 +59,7 @@ When the user:
 - **Feature-based**: Organize by features/domains, not file types
 - **This template**: Follow **`.cursor/rules/code-organization-and-style.mdc`** and each app's `docs/project-structure.md` and `docs/developer-decision-guide.md` for where files go, barrel exports, and conventions
 - **Mobile (Expo Router)**: Components in `components/` (or per-app structure); never put components in `app/` for routing
-- **Web**: Components in `components/` or feature directories
+- **Web (Next.js):** `app/**/page.tsx` is a `*Route` that imports a `*Page` from `components/pages/`. Do not put the screen UI in the route file.
 - **Imports**: React/core first, then third-party, then internal (`@/` aliases). Use destructuring.
 
 ## Code Quality

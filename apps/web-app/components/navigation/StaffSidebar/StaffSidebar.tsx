@@ -1,27 +1,43 @@
 "use client";
 
-import { Box, Button } from "@mantine/core";
+import { Anchor, Box, Button } from "@mantine/core";
+import Link from "next/link";
 import React from "react";
+import { cn } from "shared";
 
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
+
+export type StaffNavId = "home" | "buildings";
 
 interface StaffSidebarProps {
   displayName: string;
   onSignOut: () => void;
   isSigningOut?: boolean;
+  activeNav?: StaffNavId;
+  onNavigate?: () => void;
 }
+
+const NAV_ITEMS: { id: StaffNavId; href: string; label: string }[] = [
+  { id: "home", href: "/", label: "Home" },
+  { id: "buildings", href: "/buildings", label: "Buildings" },
+];
+
+const NAV_LINK_CLASS =
+  "block rounded-[8px] px-4 py-2.5 no-underline hover:bg-lightGrey";
+const NAV_LINK_ACTIVE_CLASS =
+  "bg-primary font-semibold text-white hover:bg-primary";
+const NAV_LINK_IDLE_CLASS = "font-medium text-darkGrey";
 
 const StaffSidebar: React.FC<StaffSidebarProps> = ({
   displayName,
   onSignOut,
   isSigningOut = false,
+  activeNav = "home",
+  onNavigate,
 }) => {
   return (
-    <Box
-      component="aside"
-      className="flex h-full w-64 flex-col border-r border-border bg-sidebar"
-    >
+    <Box className="flex h-full w-full flex-col border-r border-border bg-sidebar">
       <Box className="p-6">
         <Heading
           variant="section"
@@ -31,9 +47,24 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({
         </Heading>
       </Box>
       <Box component="nav" className="flex-1 space-y-1 px-4">
-        <Box className="rounded-[8px] bg-primary px-4 py-2.5 font-semibold text-white">
-          Home
-        </Box>
+        {NAV_ITEMS.map((item) => {
+          const isActive = item.id === activeNav;
+          return (
+            <Anchor
+              key={item.id}
+              component={Link}
+              href={item.href}
+              underline="never"
+              onClick={onNavigate}
+              className={cn(
+                NAV_LINK_CLASS,
+                isActive ? NAV_LINK_ACTIVE_CLASS : NAV_LINK_IDLE_CLASS
+              )}
+            >
+              {item.label}
+            </Anchor>
+          );
+        })}
       </Box>
       <Box className="border-t border-border p-4">
         <Box className="mb-3 px-4">

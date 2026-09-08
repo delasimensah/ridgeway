@@ -1,0 +1,25 @@
+---
+description: Web UI is always responsive. Missing mobile mockups does not skip this.
+alwaysApply: true
+---
+
+# Web is always responsive
+
+Every web screen must work on phone, tablet, and desktop. Missing mobile or tablet mockups does not skip this.
+
+- Read `docs/responsive-design-guide.md` before changing web layout.
+- Use Mantine `AppShell` `padding` and `navbar.breakpoint`. Do not pad `AppShell.Main` with Tailwind (it breaks the navbar offset).
+- Collapse the sidebar below Mantine `md` (62em / 992px). Persistent sidebar from that width up.
+- Stack columns, wrap toolbars, and let tables scroll horizontally on narrow viewports.
+- Remaining width = viewport − sidebar (0 or 256) − horizontal padding × 2. Size type, grids, and `minWidth` from that number.
+
+```tsx
+// BAD — desktop-only shell
+<AppShell navbar={{ width: 256, breakpoint: 0 }} />
+
+// GOOD — overlay nav on phone/tablet
+<AppShell
+  navbar={{ width: 256, breakpoint: "md", collapsed: { mobile: !opened } }}
+  padding={{ base: 16, sm: 24, md: 32, lg: 48 }}
+/>
+```

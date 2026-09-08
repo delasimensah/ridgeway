@@ -21,7 +21,7 @@ A Cursor project rule (`.cursor/rules/code-organization-and-style.mdc`) is appli
 - **Shared package:** Follow `packages/shared/docs/contributing-guide.md`.
 - **Imports, exports, component placement:** Follow `docs/import-patterns-guide.md`, `docs/export-patterns-guide.md`, `docs/component-organization-guide.md`.
 
-Components go in folders with tests; no `index.ts` inside component or service/hook subdirectories; use `@/` for cross-folder imports; barrel exports from top-level `index.ts` only.
+Components go in folders with tests; no `index.ts` inside component or service/hook subdirectories; use `@/` for cross-folder imports; barrel exports from top-level `index.ts` only. Web `app/**/page.tsx` files are `*Route` components that import `*Page` from `components/pages/`.
 
 ## Product and architecture
 
@@ -73,6 +73,8 @@ Prefer these official sources. Add them as **@Docs** in Cursor (Settings → Ind
 - Convex Auth needs `JWT_PRIVATE_KEY`, `JWKS`, and `SITE_URL` on the Convex deployment. Pushing `convex/` is not enough. Read `docs/convex-auth-env.md`. Do not commit the keys.
 - Owner A must never read Owner B’s rows. Work orders are never silently deleted.
 - Zustand is only for client session extras, not buildings or tickets.
+- The website is always responsive (phone, tablet, desktop), even when designs are desktop-only. Read `docs/responsive-design-guide.md`.
+- Linear board: Todo (queued), In Progress (started, until merge to `main`), Done. Backlog is later work only. Read `docs/product/linear-tickets.md`.
 
 ## How to get the best results
 

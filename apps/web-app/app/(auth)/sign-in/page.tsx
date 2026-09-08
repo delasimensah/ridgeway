@@ -1,9 +1,7 @@
-import React from "react";
-
 import { SignInPage } from "@/components";
 
-const Page = () => {
+const SignInRoute = () => {
   return <SignInPage />;
 };
 
-export default Page;
+export default SignInRoute;

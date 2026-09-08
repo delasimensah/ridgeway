@@ -1,5 +1,4 @@
 import { screen } from "@testing-library/react";
-import React from "react";
 
 import { render } from "@/test-utils";
 
@@ -14,6 +13,12 @@ describe("LoadingScreen Component", () => {
 
     it("displays loading text", () => {
       render(<LoadingScreen />);
+      expect(screen.getByText("Loading...")).toBeTruthy();
+    });
+
+    it("can sit in the main column instead of covering the viewport", () => {
+      const { container } = render(<LoadingScreen fillViewport={false} />);
+      expect(container.firstChild).not.toHaveClass("min-h-screen");
       expect(screen.getByText("Loading...")).toBeTruthy();
     });
   });

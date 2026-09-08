@@ -63,6 +63,8 @@ Export from components/index.ts:
 export { default as DashboardPage } from "./pages/DashboardPage/DashboardPage";
 ```
 
+The Next.js file `app/.../page.tsx` is the route, not the page component. Name its default export `DashboardRoute` (or `HomeRoute`, `SignInRoute`, and so on). Import the page from `@/components`. Do not put the screen UI in `page.tsx`.
+
 ---
 
 ## 🌳 Decision Tree
@@ -175,6 +177,7 @@ IMPORTANT:
 - ALL components MUST be in folders (not loose files)
 - ALL components MUST have tests
 - Skeletons are colocated with their components
+- A component folder contains only `ComponentName.tsx`, `ComponentName.test.tsx`, and optionally `ComponentNameSkeleton.tsx`. Form schemas, helpers, and other files go in `utils/`.
 - No index.ts files in component folders
 - All types stay with component (inline)
 - No separate .types.ts files

@@ -74,7 +74,7 @@ app/
 
 - Route groups use parentheses `(name)` - don't affect URL structure
 - Layouts cascade and can handle protection logic
-- Each page.tsx file becomes a route
+- Each `page.tsx` file is a route. Name its default export `*Route` and import a `*Page` from `components/pages/`. Do not put the screen UI in `page.tsx`.
 
 ---
 
@@ -93,6 +93,7 @@ components/
 ├── navigation/                 # Navigation components
 │   ├── Sidebar/
 │   └── Header/
+├── pages/                      # Full-screen page components (*Page)
 ├── shared/                     # Shared business components
 └── [feature]/                  # Feature-specific components
 ```
@@ -103,9 +104,12 @@ components/
 ComponentName/
 ├── ComponentName.tsx          # Component implementation (all types inline)
 └── ComponentName.test.tsx     # Tests (REQUIRED)
+
+# Optional:
+ComponentNameSkeleton.tsx      # Colocated skeleton only
 ```
 
-**Note:** NO index.ts files in individual component folders, only at category level
+**Note:** NO index.ts files in individual component folders, only at category level. No form schemas or helpers in the component folder — those go in `utils/`.
 
 ---
 
@@ -131,21 +135,21 @@ Product data uses Convex `useQuery` / `useMutation` in screens.
 
 ```
 hooks/
-├── index.ts                   # Barrel export file (ONLY top-level)
-├── auth/                     # Authentication hooks
-│   └── useAuthStore.ts      # Zustand auth store
-└── api/                      # API hooks
+├── index.ts
+├── auth/
+│   ├── useStaffSession.ts
+│   └── __tests__/
+│       └── useStaffSession.test.ts
+├── navigation/
+└── shared/
 ```
 
-**🚨 CRITICAL:** NO index.ts files in subdirectories (auth, api, etc.)
+There is no `index.ts` inside a category folder. Each hook is its own file. Tests for that hook go in `__tests__/` inside the same category, not next to the hook file.
 
 **Pattern:**
 
 ```typescript
-// ✅ hooks/index.ts exports directly from subdirectories
-export { default as useAuthStore } from "./auth/useAuthStore";
-
-// ❌ NO hooks/auth/index.ts file
+export { useStaffSession } from "./auth/useStaffSession";
 ```
 
 ---
@@ -207,10 +211,10 @@ constants/
 
 **Test organization:**
 
-```
-__tests__/
-└── [test-files].tsx
-```
+- Component tests sit in the component folder: `components/[category]/ComponentName/ComponentName.test.tsx`.
+- Util tests sit in `utils/__tests__/`.
+- Hook tests sit in `hooks/[category]/__tests__/`.
+- Convex tests sit beside the functions in `convex/`.
 
 ---
 

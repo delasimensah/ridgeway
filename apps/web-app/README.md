@@ -132,7 +132,7 @@ This app uses **Tailwind CSS** and **Mantine** for UI components.
 ```typescript
 import { Stack, Title, Text } from "@mantine/core";
 
-export const Page: React.FC = () => {
+export const HomePage: React.FC = () => {
   return (
     <Stack gap="md" className="p-4">
       <Title order={1} className="text-white font-bold">Hello</Title>

@@ -17,7 +17,7 @@ When you are given a screen HTML file (or design) to build out, you MUST follow 
 
 1. **Plan first.** Identify from the HTML: list items, cards, sections, headers, forms, repeated patterns. Each of these is a candidate for its own component.
 2. **Create components before or alongside the screen.** For each distinct UI piece (e.g. a card row, a list item, a section with title + content), create a component in the right category folder (e.g. `components/home/AreaCard/`, `components/home/RecentSearchItem/`). Do not inline that JSX in the screen.
-3. **Screen file = composition only.** The screen file (e.g. `HomeScreen.tsx`) should import and compose these components. It should not contain long blocks of layout and markup; if it does, extract more components.
+3. **Screen file = composition only.** The screen file (e.g. `HomeScreen.tsx`) should import and compose these components. It should not contain long blocks of layout and markup; if it does, extract more components. On web, `app/**/page.tsx` is a `*Route` that imports that page from `components/pages/`.
 4. **Reuse existing components.** Before creating a new component, check for existing ones (e.g. AreaCard, PropertyCard, SectionTitle, Button). Use or extend them; do not duplicate.
 
 ## Reference patterns in this repo

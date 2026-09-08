@@ -16,6 +16,7 @@ alwaysApply: true
    - **Hooks:** `.cursor/rules/hooks-and-services-organization.mdc` and code-organization — hooks live in `hooks/[category]/useHookName.ts` (e.g. `hooks/shared/`, `hooks/auth/`); never at `hooks/useName.ts`.
    - **Imports from inside `components/`:** `.cursor/rules/import-paths-mandatory.mdc` — use relative paths for component-to-component imports; never `@/components` from inside `components/`.
    - **Building a screen from HTML/design:** `.cursor/rules/screen-and-component-decomposition.mdc` — break the screen into smaller components; do not put everything in one file; no component file over 300 lines.
+   - **Web layout (`apps/web-app`):** `.cursor/rules/web-responsive.mdc` and `docs/responsive-design-guide.md` — every page works on phone, tablet, and desktop. Missing mockups does not skip this.
 
 2. **Confirm against this checklist** before implementing:
    - **Component location:** New component goes in `[category]/ComponentName/` (e.g. `home/RecentSearchItem/`). NEVER inside another component's folder (e.g. NOT `home/SearchOverlayContent/RecentSearchItem/`).
@@ -24,5 +25,6 @@ alwaysApply: true
    - **Hooks:** New hook file goes in `hooks/[category]/useHookName.ts` (e.g. `hooks/shared/useDebouncedValue.ts`). Export from `hooks/index.ts` from the category path.
    - **Screens folder:** Only full-screen components (e.g. `*Screen`) belong in `components/screens/`. Overlays, forms, feature content go in feature folders (e.g. `components/home/`).
    - **Screen decomposition:** When implementing a screen from HTML/design, extract list items, cards, sections, and repeated UI into separate components. Screen file composes them; no file over 300 lines.
+   - **Web responsive:** Phone, tablet, and desktop. Collapse the AppShell sidebar below Mantine `md`. Do not ship a desktop-only shell.
 
 Do not implement until you have confirmed placement, colors, and layout against the rules above. If in doubt, read the referenced doc or rule file.

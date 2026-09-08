@@ -25,4 +25,10 @@ export default defineSchema({
   })
     .index("by_profileId", ["profileId"])
     .index("by_organizationId_and_role", ["organizationId", "role"]),
+  buildings: defineTable({
+    organizationId: v.id("organizations"),
+    name: v.string(),
+    address: v.string(),
+    houseRules: v.optional(v.string()),
+  }).index("by_organizationId", ["organizationId"]),
 });

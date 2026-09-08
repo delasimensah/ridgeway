@@ -31,7 +31,7 @@ Give Ridgeway Property Group one system where staff run the office, each owner s
 ## 3. Core flows (first version)
 
 1. Staff sign in and open a home screen that shows buildings, units, tenants, open repairs, and rent marked paid, late, or partial.
-2. Staff add a building, a unit, an owner, or a tenant by typing it in. When a tenant moves out, staff set an end date on that lease.
+2. Staff add a building, a unit, an owner, or a tenant by typing it in. After save, they can correct those typed fields. When a tenant moves out, staff set an end date on that lease.
 3. An owner signs in and sees only their buildings. For those buildings they see occupancy, open repairs, and rent collected versus still outstanding.
 4. A tenant files a repair and can attach a photo. The ticket starts as received, then staff assign it, then it is scheduled, then it is marked done. Those steps happen in that order. After the lease end date, that person may still sign in, but they cannot see that unit, file a repair, or see rent.
 5. A tenant sees rent reminders and can mark a payment as reported. Staff still confirm the money. This is not a full accounts ledger.
@@ -55,7 +55,7 @@ Give Ridgeway Property Group one system where staff run the office, each owner s
 **Screens the product needs** so design and tickets have a list:
 
 - Sign in, sign out, and forgot password.
-- Staff website: a home command center, lists and detail pages for buildings, units, tenants, repairs, and rent, forms to add a building, unit, owner, or tenant, a way to end a lease, and later a draft monthly owner summary.
+- Staff website: a home command center, lists and detail pages for buildings, units, tenants, repairs, and rent, forms to add or correct a building, unit, owner, or tenant, a way to end a lease, and later a draft monthly owner summary.
 - Owner website: a home for their buildings only, a snapshot of each building, a list of open issues, and rent collected versus outstanding.
 - Tenant website and light phone app: a home, a form to file a repair, a timeline for that repair, a rent reminder, and later house-rules chat. After a lease ends, those screens show that the person has no permission for that unit. They do not show the old home as if they still lived there.
 - Field phone app: today’s jobs, job detail, a status update, and a completion photo.
@@ -99,7 +99,7 @@ Relations. An organization has many owners, buildings, staff, and field workers.
 
 - **Permissions.** Staff see all buildings in their organization. They do not see another organization’s buildings. An owner sees only buildings linked to them, inside that same organization. A tenant sees only their lease, their tickets, and their rent reminders, and only while that lease has not ended. After the lease end date they can sign in but cannot see the unit, file a repair, or see rent. In the first version a field worker sees jobs staff assigned to them. If you later choose a shared pool of jobs instead, write that rule once and enforce it the same way everywhere. Field workers do not see owner money screens. The server enforces all of this. Hiding a button on the phone or website is not enough.
 - **Compliance.** The client did not name a statute. Treat names, phones, emails, addresses, rent, and photos as private. Do not invent whether GDPR applies. Ask a lawyer before a real launch privacy page.
-- **Special rules.** A repair starts as received, then staff assign it, then it is scheduled, then it is marked done. Those steps happen in that order. Do not delete a work order when it is done. A tenant saying they paid does not mark the period paid until staff confirm. An owner must not see another owner’s buildings, tenants, or rent. Two staff members must not each save a separate copy of the same repair in a way that one copy is lost. One work order is the record. After a lease ends, that person can still sign in, but they cannot see that unit.
+- **Special rules.** A repair starts as received, then staff assign it, then it is scheduled, then it is marked done. Those steps happen in that order. Do not delete a work order when it is done. A tenant saying they paid does not mark the period paid until staff confirm. An owner must not see another owner’s buildings, tenants, or rent. Two staff members must not each save a separate copy of the same repair in a way that one copy is lost. One work order is the record. After a lease ends, that person can still sign in, but they cannot see that unit. Typed fields a person is allowed to create, they may later correct, under the same permission rules as create. That includes building name and address, unit labels, owner and tenant details staff typed, a tenant’s repair description while the ticket is still received, and category or urgency. Do not rewrite work-order history rows, a confirmed rent period, or a ticket’s status as free text. Do not add delete in the first version unless a ticket says so.
 
 ---
 

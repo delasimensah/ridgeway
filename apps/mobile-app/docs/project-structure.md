@@ -102,6 +102,7 @@ components/
 **IMPORTANT:**
 - ALL components MUST be in folders (not loose files)
 - ALL components MUST have tests
+- A component folder contains only `ComponentName.tsx`, `ComponentName.test.tsx`, and optionally `ComponentNameSkeleton.tsx`. Form schemas, helpers, and other files go in `utils/`.
 - NO index.ts files in component folders
 - All types stay with component (inline)
 - No separate .types.ts files
@@ -126,25 +127,22 @@ Product data uses Convex `useQuery` / `useMutation` in screens.
 
 ```
 hooks/
-├── index.ts                   # Barrel export file (ONLY top-level)
-├── auth/                     # Authentication hooks
-│   └── useAuthStore.ts       # Zustand auth store
-├── api/                      # React Query bindings
-│   └── useData.ts           # Data fetching hooks
-└── navigation/               # Navigation hooks
-    └── useScreenContext.ts
+├── index.ts
+├── auth/
+├── navigation/
+├── shared/
+└── bottom-sheets/
+    ├── useBottomsheetStore.ts
+    └── __tests__/
+        └── useBottomsheetStore.test.ts
 ```
 
-**🚨 CRITICAL:** NO index.ts files in subdirectories (auth, api, etc.)
+There is no `index.ts` inside a category folder. Each hook is its own file. Tests for that hook go in `__tests__/` inside the same category, not next to the hook file.
 
 **Pattern:**
 
 ```typescript
-// ✅ hooks/index.ts exports directly from subdirectories
-export { useAuthStore } from "./auth/useAuthStore";
-export { useData } from "./api/useData";
-
-// ❌ NO hooks/auth/index.ts file
+export { useBottomsheetStore } from "./bottom-sheets/useBottomsheetStore";
 ```
 
 ## 📝 Types Directory (`types/`)
@@ -196,13 +194,9 @@ constants/
 
 **Test organization:**
 
-```
-__tests__/
-├── critical/                 # Critical flow tests
-│   └── auth.test.tsx        # Authentication flow tests
-└── __mocks__/               # Jest mocks
-    └── [mock-files].ts
-```
+- Component tests sit in the component folder: `components/[category]/ComponentName/ComponentName.test.tsx`.
+- Util tests sit in `utils/__tests__/`.
+- Hook tests sit in `hooks/[category]/__tests__/`.
 
 ## 📚 Documentation Structure
 

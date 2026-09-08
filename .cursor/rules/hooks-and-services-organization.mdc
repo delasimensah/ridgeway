@@ -28,6 +28,10 @@ Product data uses Convex `useQuery` / `useMutation` in screens. Convex Auth live
 - Export from the category path: `export { useHookName } from "./[category]/useHookName";`
 - **No** `index.ts` inside category folders.
 
+### Tests
+
+Hook tests live in `hooks/[category]/__tests__/useHookName.test.ts`. Do not place `useHookName.test.ts` next to the hook. Each hook stays in its own source file.
+
 ---
 
 ## Services
@@ -36,6 +40,7 @@ Client extras only (toasts, navigation helpers). Do not put Convex queries in `s
 
 - **Path pattern:** `services/[category]/serviceName.ts`
 - Export from `services/index.ts` only.
+- Service tests live in `services/[category]/__tests__/serviceName.test.ts`. Do not place a test file next to the service file.
 
 ---
 
@@ -44,3 +49,4 @@ Client extras only (toasts, navigation helpers). Do not put Convex queries in `s
 1. Decide the **category**.
 2. Create the file at `hooks/[category]/useName.ts` or `services/[category]/name.ts`.
 3. Add the export to the top-level barrel.
+4. Add the test at `hooks/[category]/__tests__/useName.test.ts` or `services/[category]/__tests__/name.test.ts`.
