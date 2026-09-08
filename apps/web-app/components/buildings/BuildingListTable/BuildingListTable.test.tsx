@@ -13,11 +13,13 @@ describe("BuildingListTable", () => {
             _id: "1",
             name: "Ridge Court",
             address: "14 Ridge Road, Cantonments, Accra",
+            unitCount: 0,
           },
           {
             _id: "2",
             name: "Labone walk-up",
             address: "32 Labone Crescent, Labone, Accra",
+            unitCount: 0,
           },
         ]}
       />

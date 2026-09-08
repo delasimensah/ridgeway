@@ -7,6 +7,7 @@ const buildingListItem = v.object({
   _id: v.id("buildings"),
   name: v.string(),
   address: v.string(),
+  unitCount: v.number(),
 });
 
 function requireText(value: string, field: string): string {
@@ -65,11 +66,20 @@ export const listForViewer = authedQuery({
       )
       .collect();
 
-    return rows.map((row) => ({
-      _id: row._id,
-      name: row.name,
-      address: row.address,
-    }));
+    return await Promise.all(
+      rows.map(async (row) => {
+        const units = await ctx.db
+          .query("units")
+          .withIndex("by_buildingId", (q) => q.eq("buildingId", row._id))
+          .collect();
+        return {
+          _id: row._id,
+          name: row.name,
+          address: row.address,
+          unitCount: units.length,
+        };
+      })
+    );
   },
 });
 
@@ -103,6 +113,7 @@ const buildingFormFields = v.object({
   name: v.string(),
   street: v.string(),
   area: v.string(),
+  address: v.string(),
 });
 
 export const get = staffQuery({
@@ -127,6 +138,7 @@ export const get = staffQuery({
       name: building.name,
       street,
       area,
+      address: building.address,
     };
   },
 });

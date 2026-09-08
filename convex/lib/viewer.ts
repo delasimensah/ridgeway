@@ -55,3 +55,20 @@ export async function requireStaff(ctx: QueryCtx): Promise<Viewer> {
   }
   return viewer;
 }
+
+export async function requireBuildingAccess(
+  ctx: { db: QueryCtx["db"] },
+  viewer: Viewer,
+  buildingId: Id<"buildings">
+): Promise<Doc<"buildings">> {
+  const building = await ctx.db.get(buildingId);
+  if (building === null) {
+    raise(ERROR_CODES.NOT_PERMITTED);
+  }
+
+  if (viewer.isStaff && viewer.organizationId === building.organizationId) {
+    return building;
+  }
+
+  raise(ERROR_CODES.NOT_PERMITTED);
+}

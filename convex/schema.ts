@@ -31,4 +31,9 @@ export default defineSchema({
     address: v.string(),
     houseRules: v.optional(v.string()),
   }).index("by_organizationId", ["organizationId"]),
+  units: defineTable({
+    buildingId: v.id("buildings"),
+    label: v.string(),
+    kind: v.union(v.literal("apartment"), v.literal("commercial")),
+  }).index("by_buildingId", ["buildingId"]),
 });

@@ -27,6 +27,7 @@ describe("StaffBuildingsPage", () => {
             _id: "1",
             name: "Ridge Court",
             address: "14 Ridge Road, Cantonments, Accra",
+            unitCount: 0,
           },
         ]}
       />
