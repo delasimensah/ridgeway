@@ -66,6 +66,7 @@ Start RIDGE-3 (add a unit under a building).
 
 - RIDGE-1 PR (merged): https://github.com/delasimensah/ridgeway/pull/1
 - RIDGE-2 PR (merged): https://github.com/delasimensah/ridgeway/pull/2
+- RIDGE-25 PR: https://github.com/delasimensah/ridgeway/pull/3
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
