@@ -22,6 +22,9 @@ describe("BuildingDetailPage", () => {
       screen.getByRole("heading", { name: "No units yet." })
     ).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "Add unit" }).length).toBe(2);
+    expect(
+      screen.queryByRole("link", { name: "Add tenant" })
+    ).not.toBeInTheDocument();
   });
 
   it("shows saved units under the building", () => {
@@ -36,5 +39,9 @@ describe("BuildingDetailPage", () => {
 
     expect(screen.getByText("A3")).toBeInTheDocument();
     expect(screen.queryByText("No units yet.")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Add tenant" })).toHaveAttribute(
+      "href",
+      "/buildings/building-1/tenants/new"
+    );
   });
 });

@@ -11,9 +11,11 @@
 import type * as auth from "../auth.js";
 import type * as buildings from "../buildings.js";
 import type * as http from "../http.js";
+import type * as leases from "../leases.js";
 import type * as lib_errors from "../lib/errors.js";
 import type * as lib_functions from "../lib/functions.js";
 import type * as lib_viewer from "../lib/viewer.js";
+import type * as owners from "../owners.js";
 import type * as profiles from "../profiles.js";
 import type * as seed from "../seed.js";
 import type * as staff from "../staff.js";
@@ -29,9 +31,11 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   buildings: typeof buildings;
   http: typeof http;
+  leases: typeof leases;
   "lib/errors": typeof lib_errors;
   "lib/functions": typeof lib_functions;
   "lib/viewer": typeof lib_viewer;
+  owners: typeof owners;
   profiles: typeof profiles;
   seed: typeof seed;
   staff: typeof staff;

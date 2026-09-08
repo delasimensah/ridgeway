@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 
+import type { Doc, Id } from "./_generated/dataModel";
 import { ERROR_CODES, raise } from "./lib/errors";
 import { authedQuery, staffMutation, staffQuery } from "./lib/functions";
 
@@ -83,11 +84,24 @@ export const listForViewer = authedQuery({
   },
 });
 
+async function requireOwnerInOrganization(
+  ctx: { db: { get: (id: Id<"owners">) => Promise<Doc<"owners"> | null> } },
+  organizationId: Id<"organizations">,
+  ownerId: Id<"owners">
+) {
+  const owner = await ctx.db.get(ownerId);
+  if (owner === null || owner.organizationId !== organizationId) {
+    raise(ERROR_CODES.NOT_PERMITTED);
+  }
+  return owner;
+}
+
 export const create = staffMutation({
   args: {
     name: v.string(),
     street: v.string(),
     area: v.string(),
+    ownerId: v.optional(v.id("owners")),
   },
   returns: v.id("buildings"),
   handler: async (ctx, args) => {
@@ -100,10 +114,15 @@ export const create = staffMutation({
     const street = requireText(args.street, "Street");
     const area = requireText(args.area, "Area");
 
+    if (args.ownerId !== undefined) {
+      await requireOwnerInOrganization(ctx, organizationId, args.ownerId);
+    }
+
     return await ctx.db.insert("buildings", {
       organizationId,
       name,
       address: formatAccraAddress(street, area),
+      ...(args.ownerId !== undefined ? { ownerId: args.ownerId } : {}),
     });
   },
 });
@@ -114,6 +133,8 @@ const buildingFormFields = v.object({
   street: v.string(),
   area: v.string(),
   address: v.string(),
+  ownerId: v.union(v.id("owners"), v.null()),
+  ownerName: v.union(v.string(), v.null()),
 });
 
 export const get = staffQuery({
@@ -133,12 +154,19 @@ export const get = staffQuery({
     }
 
     const { street, area } = parseAccraAddress(building.address);
+    const owner =
+      building.ownerId === undefined
+        ? null
+        : await ctx.db.get(building.ownerId);
+
     return {
       _id: building._id,
       name: building.name,
       street,
       area,
       address: building.address,
+      ownerId: owner?._id ?? null,
+      ownerName: owner?.displayName ?? null,
     };
   },
 });
@@ -149,6 +177,7 @@ export const update = staffMutation({
     name: v.string(),
     street: v.string(),
     area: v.string(),
+    ownerId: v.optional(v.id("owners")),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -166,9 +195,14 @@ export const update = staffMutation({
     const street = requireText(args.street, "Street");
     const area = requireText(args.area, "Area");
 
+    if (args.ownerId !== undefined) {
+      await requireOwnerInOrganization(ctx, organizationId, args.ownerId);
+    }
+
     await ctx.db.patch(args.buildingId, {
       name,
       address: formatAccraAddress(street, area),
+      ...(args.ownerId !== undefined ? { ownerId: args.ownerId } : {}),
     });
     return null;
   },

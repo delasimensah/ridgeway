@@ -37,13 +37,22 @@ const StaffBuildingsPage: React.FC<StaffBuildingsPageProps> = ({
         >
           Buildings
         </Heading>
-        <Button
-          component={Link}
-          href="/buildings/new"
-          className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
-        >
-          Add building
-        </Button>
+        <Group gap="sm" className="w-full sm:w-auto">
+          <Button
+            component={Link}
+            href="/owners/new"
+            className="h-auto w-full rounded-[8px] border border-border bg-white px-6 py-2.5 text-[15px] font-semibold text-darkGrey hover:bg-sidebar sm:w-auto"
+          >
+            Add owner
+          </Button>
+          <Button
+            component={Link}
+            href="/buildings/new"
+            className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
+          >
+            Add building
+          </Button>
+        </Group>
       </Group>
       {isEmpty ? (
         <BuildingListEmpty />

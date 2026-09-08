@@ -48,6 +48,9 @@ describe("units", () => {
         _id: unitId,
         label: "A3",
         kind: "apartment",
+        tenantName: null,
+        leaseId: null,
+        leaseEndedOn: null,
       },
     ]);
     expect(otherList).toEqual([]);
@@ -256,6 +259,9 @@ describe("units", () => {
         _id: unitId,
         label: "B12",
         kind: "commercial",
+        tenantName: null,
+        leaseId: null,
+        leaseEndedOn: null,
       },
     ]);
   });

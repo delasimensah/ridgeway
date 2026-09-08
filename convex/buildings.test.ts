@@ -188,6 +188,8 @@ describe("buildings", () => {
       street: "16 Ridge Road",
       area: "Labone",
       address: formatAccraAddress("16 Ridge Road", "Labone"),
+      ownerId: null,
+      ownerName: null,
     });
     expect(list).toEqual([
       {

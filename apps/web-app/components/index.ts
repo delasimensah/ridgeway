@@ -22,12 +22,17 @@ export { default as BuildingListEmpty } from "./buildings/BuildingListEmpty/Buil
 export { default as BuildingListRow } from "./buildings/BuildingListRow/BuildingListRow";
 export { default as BuildingListTable } from "./buildings/BuildingListTable/BuildingListTable";
 
+export { default as AddOwnerForm } from "./owners/AddOwnerForm/AddOwnerForm";
+export { default as AddTenantForm } from "./tenants/AddTenantForm/AddTenantForm";
+
 export { default as AddUnitForm } from "./units/AddUnitForm/AddUnitForm";
 export { default as UnitListEmpty } from "./units/UnitListEmpty/UnitListEmpty";
 export { default as UnitListRow } from "./units/UnitListRow/UnitListRow";
 export { default as UnitListTable } from "./units/UnitListTable/UnitListTable";
 
 export { default as AddBuildingPage } from "./pages/AddBuildingPage/AddBuildingPage";
+export { default as AddOwnerPage } from "./pages/AddOwnerPage/AddOwnerPage";
+export { default as AddTenantPage } from "./pages/AddTenantPage/AddTenantPage";
 export { default as AddUnitPage } from "./pages/AddUnitPage/AddUnitPage";
 export { default as BuildingDetailPage } from "./pages/BuildingDetailPage/BuildingDetailPage";
 export { default as NotAllowedPage } from "./pages/NotAllowedPage/NotAllowedPage";

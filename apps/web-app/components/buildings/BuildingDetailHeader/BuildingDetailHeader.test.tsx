@@ -28,5 +28,29 @@ describe("BuildingDetailHeader", () => {
       "href",
       "/buildings/building-1/edit"
     );
+    expect(screen.getByRole("link", { name: "Add owner" })).toHaveAttribute(
+      "href",
+      "/buildings/building-1/owners/new"
+    );
+  });
+
+  it("shows the owner name when a building has an owner", () => {
+    render(
+      <BuildingDetailHeader
+        buildingId="building-1"
+        name="Ridge Court"
+        address="14 Ridge Road, Cantonments, Accra"
+        ownerId="owner-1"
+        ownerName="Kwesi Mensah"
+      />
+    );
+
+    expect(screen.getByRole("link", { name: "Kwesi Mensah" })).toHaveAttribute(
+      "href",
+      "/owners/owner-1/edit"
+    );
+    expect(
+      screen.queryByRole("link", { name: "Add owner" })
+    ).not.toBeInTheDocument();
   });
 });

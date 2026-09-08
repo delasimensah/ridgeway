@@ -10,7 +10,7 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-3 done** (add a unit). Next is RIDGE-4 (add an owner and a tenant with a lease).
+- **Current phase:** Build slices — **RIDGE-4 done** (add an owner and a tenant with a lease). Next is RIDGE-5 (owner A cannot see owner B's buildings).
 - **Last updated:** 8 Sep 2026
 - **Blocked / open:** none
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, and RIDGE-3 Done; RIDGE-4–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, and RIDGE-4 Done; RIDGE-5–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,7 +58,7 @@
 
 ## Next action (one line)
 
-Start RIDGE-4 (add an owner and a tenant with a lease that already started).
+Start RIDGE-5 (owner A cannot see owner B's buildings).
 
 ---
 

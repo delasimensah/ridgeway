@@ -11,11 +11,13 @@ import Heading from "../../ui/Heading/Heading";
 
 interface AddBuildingPageProps {
   buildingId?: Id<"buildings">;
+  owners?: { _id: string; displayName: string }[];
   initialValues?: AddBuildingFormValues;
 }
 
 const AddBuildingPage: React.FC<AddBuildingPageProps> = ({
   buildingId,
+  owners,
   initialValues,
 }) => {
   return (
@@ -29,6 +31,7 @@ const AddBuildingPage: React.FC<AddBuildingPageProps> = ({
       <Box className="rounded-[8px] border border-border bg-white p-4 shadow-sm sm:p-6 md:p-8">
         <AddBuildingForm
           buildingId={buildingId}
+          owners={owners}
           initialValues={initialValues}
         />
       </Box>
