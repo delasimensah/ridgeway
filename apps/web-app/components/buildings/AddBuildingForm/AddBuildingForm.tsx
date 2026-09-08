@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { Button, Group, SimpleGrid, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useMutation } from "convex/react";
@@ -25,14 +26,23 @@ const INPUT_CLASSNAMES = {
 const PRIMARY_BUTTON =
   "h-auto rounded-[8px] bg-primary px-8 py-3 text-[15px] font-semibold text-white hover:bg-primaryHover";
 
-const AddBuildingForm: React.FC = () => {
+interface AddBuildingFormProps {
+  buildingId?: Id<"buildings">;
+  initialValues?: AddBuildingFormValues;
+}
+
+const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
+  buildingId,
+  initialValues,
+}) => {
   const router = useRouter();
   const createBuilding = useMutation(api.buildings.create);
+  const updateBuilding = useMutation(api.buildings.update);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<AddBuildingFormValues>({
-    initialValues: {
+    initialValues: initialValues ?? {
       name: "",
       street: "",
       area: "",
@@ -44,11 +54,20 @@ const AddBuildingForm: React.FC = () => {
     setError(null);
     setIsSubmitting(true);
     try {
-      await createBuilding({
-        name: values.name,
-        street: values.street,
-        area: values.area,
-      });
+      if (buildingId !== undefined) {
+        await updateBuilding({
+          buildingId,
+          name: values.name,
+          street: values.street,
+          area: values.area,
+        });
+      } else {
+        await createBuilding({
+          name: values.name,
+          street: values.street,
+          area: values.area,
+        });
+      }
       router.replace("/buildings");
     } catch {
       setError("Could not save this building. Check the fields and try again.");

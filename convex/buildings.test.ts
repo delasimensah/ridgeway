@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { api } from "./_generated/api";
-import { formatAccraAddress } from "./buildings";
+import { formatAccraAddress, parseAccraAddress } from "./buildings";
 import { asUser, errorCode, insertPerson, makeBackend } from "./test.setup";
 
 describe("buildings", () => {
@@ -153,5 +153,168 @@ describe("buildings", () => {
     } catch (error) {
       expect(errorCode(error)).toBe("INVALID");
     }
+  });
+
+  it("lets signed-in staff correct a building they already added", async () => {
+    const t = makeBackend();
+    const { userId } = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+
+    const buildingId = await asUser(t, userId).mutation(api.buildings.create, {
+      name: "Ridge Court",
+      street: "14 Ridge Road",
+      area: "Cantonments",
+    });
+
+    await asUser(t, userId).mutation(api.buildings.update, {
+      buildingId,
+      name: "Ridge Court East",
+      street: "16 Ridge Road",
+      area: "Labone",
+    });
+
+    const loaded = await asUser(t, userId).query(api.buildings.get, {
+      buildingId,
+    });
+    const list = await asUser(t, userId).query(api.buildings.listForViewer, {});
+
+    expect(loaded).toEqual({
+      _id: buildingId,
+      name: "Ridge Court East",
+      street: "16 Ridge Road",
+      area: "Labone",
+    });
+    expect(list).toEqual([
+      {
+        _id: buildingId,
+        name: "Ridge Court East",
+        address: formatAccraAddress("16 Ridge Road", "Labone"),
+      },
+    ]);
+  });
+
+  it("refuses update when the building belongs to another organization", async () => {
+    const t = makeBackend();
+    const ama = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const otherOrganizationId = await t.run(async (ctx) => {
+      return await ctx.db.insert("organizations", {
+        name: "Harbour Management",
+      });
+    });
+    const other = await insertPerson(t, {
+      email: "kofi.asante@harbour.gh",
+      displayName: "Kofi Asante",
+      role: "staff",
+      organizationId: otherOrganizationId,
+    });
+
+    const buildingId = await asUser(t, ama.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+
+    try {
+      await asUser(t, other.userId).mutation(api.buildings.update, {
+        buildingId,
+        name: "Harbour House",
+        street: "1 Independence Avenue",
+        area: "Ridge",
+      });
+      throw new Error("expected update to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    const loaded = await asUser(t, ama.userId).query(api.buildings.get, {
+      buildingId,
+    });
+    expect(loaded?.name).toBe("Ridge Court");
+  });
+
+  it("returns null from get when the building belongs to another organization", async () => {
+    const t = makeBackend();
+    const ama = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const otherOrganizationId = await t.run(async (ctx) => {
+      return await ctx.db.insert("organizations", {
+        name: "Harbour Management",
+      });
+    });
+    const other = await insertPerson(t, {
+      email: "kofi.asante@harbour.gh",
+      displayName: "Kofi Asante",
+      role: "staff",
+      organizationId: otherOrganizationId,
+    });
+
+    const buildingId = await asUser(t, ama.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+
+    const loaded = await asUser(t, other.userId).query(api.buildings.get, {
+      buildingId,
+    });
+    expect(loaded).toBeNull();
+  });
+
+  it("refuses update when the caller is a field worker", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const field = await insertPerson(t, {
+      email: "yaw.darko@ridgeway.gh",
+      displayName: "Yaw Darko",
+      role: "field",
+    });
+    const buildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+
+    try {
+      await asUser(t, field.userId).mutation(api.buildings.update, {
+        buildingId,
+        name: "Ridge Court East",
+        street: "16 Ridge Road",
+        area: "Labone",
+      });
+      throw new Error("expected update to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
+
+  it("round-trips street and area through the Accra address format", () => {
+    const address = formatAccraAddress("14 Ridge Road", "Cantonments");
+    expect(parseAccraAddress(address)).toEqual({
+      street: "14 Ridge Road",
+      area: "Cantonments",
+    });
   });
 });

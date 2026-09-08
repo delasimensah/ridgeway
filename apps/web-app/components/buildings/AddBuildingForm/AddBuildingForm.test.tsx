@@ -84,4 +84,33 @@ describe("AddBuildingForm", () => {
     await user.click(screen.getByRole("button", { name: "Cancel" }));
     expect(mockPush).toHaveBeenCalledWith("/buildings");
   });
+
+  it("saves corrections to an existing building and returns to the list", async () => {
+    const user = userEvent.setup();
+    mockCreate.mockResolvedValue(null);
+    render(
+      <AddBuildingForm
+        buildingId={"building-id" as never}
+        initialValues={{
+          name: "Ridge Court",
+          street: "14 Ridge Road",
+          area: "Cantonments",
+        }}
+      />
+    );
+
+    await user.clear(screen.getByLabelText(/name/i));
+    await user.type(screen.getByLabelText(/name/i), "Ridge Court East");
+    await user.click(screen.getByRole("button", { name: "Save building" }));
+
+    await waitFor(() => {
+      expect(mockCreate).toHaveBeenCalledWith({
+        buildingId: "building-id",
+        name: "Ridge Court East",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      });
+    });
+    expect(mockReplace).toHaveBeenCalledWith("/buildings");
+  });
 });

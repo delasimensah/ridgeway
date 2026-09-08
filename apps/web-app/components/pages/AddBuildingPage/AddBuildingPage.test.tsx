@@ -27,4 +27,21 @@ describe("AddBuildingPage", () => {
       screen.getByRole("button", { name: "Save building" })
     ).toBeInTheDocument();
   });
+
+  it("fills the form when a saved building is opened", () => {
+    render(
+      <AddBuildingPage
+        buildingId={"building-id" as never}
+        initialValues={{
+          name: "Ridge Court",
+          street: "14 Ridge Road",
+          area: "Cantonments",
+        }}
+      />
+    );
+
+    expect(screen.getByLabelText(/name/i)).toHaveValue("Ridge Court");
+    expect(screen.getByLabelText(/street/i)).toHaveValue("14 Ridge Road");
+    expect(screen.getByLabelText(/area/i)).toHaveValue("Cantonments");
+  });
 });

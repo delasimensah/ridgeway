@@ -10,7 +10,7 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-2 done** (add a building). Next is RIDGE-25 (correct a building).
+- **Current phase:** Build slices — **RIDGE-25 done** (correct a building). Next is RIDGE-3 (add a unit).
 - **Last updated:** 8 Sep 2026
 - **Blocked / open:** none
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1 and RIDGE-2 Done; RIDGE-3–15, RIDGE-25, and epics Todo; RIDGE-16–18 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, and RIDGE-25 Done; RIDGE-3–15 and epics Todo; RIDGE-16–18 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,7 +58,7 @@
 
 ## Next action (one line)
 
-Start RIDGE-25 (correct a building already added).
+Start RIDGE-3 (add a unit under a building).
 
 ---
 
@@ -66,6 +66,7 @@ Start RIDGE-25 (correct a building already added).
 
 - RIDGE-1 PR (merged): https://github.com/delasimensah/ridgeway/pull/1
 - RIDGE-2 PR (merged): https://github.com/delasimensah/ridgeway/pull/2
+- RIDGE-25 PR: https://github.com/delasimensah/ridgeway/pull/3
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
