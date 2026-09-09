@@ -44,4 +44,27 @@ describe("BuildingDetailPage", () => {
       "/buildings/building-1/tenants/new"
     );
   });
+
+  it("hides add tenant when every unit already has a tenant", () => {
+    render(
+      <BuildingDetailPage
+        buildingId="building-1"
+        name="Ridge Court"
+        address="14 Ridge Road, Cantonments, Accra"
+        units={[
+          {
+            _id: "1",
+            label: "A3",
+            tenantName: "Sofia Herrera",
+            leaseId: "lease-1",
+          },
+        ]}
+      />
+    );
+
+    expect(
+      screen.queryByRole("link", { name: "Add tenant" })
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Add unit" })).toBeInTheDocument();
+  });
 });

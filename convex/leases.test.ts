@@ -209,4 +209,28 @@ describe("leases", () => {
     });
     expect(loaded).toBeNull();
   });
+
+  it("lists tenants whose current lease has ended", async () => {
+    const { t, userId, unitId, otherUnitId } = await staffWithUnit();
+    await asUser(t, userId).mutation(api.leases.createWithTenant, {
+      unitId,
+      displayName: "Sofia Herrera",
+      email: "sofia.herrera@example.com",
+      startedOn: "2024-01-15",
+      endedOn: "2024-12-31",
+    });
+    await asUser(t, userId).mutation(api.leases.createWithTenant, {
+      unitId: otherUnitId,
+      displayName: "Daniel Berg",
+      email: "daniel.berg@example.com",
+      startedOn: "2024-01-15",
+    });
+
+    const available = await asUser(t, userId).query(
+      api.leases.listAvailableForStaff,
+      {}
+    );
+
+    expect(available.map((row) => row.displayName)).toEqual(["Sofia Herrera"]);
+  });
 });

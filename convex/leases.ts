@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 
 import type { Doc, Id } from "./_generated/dataModel";
-import type { QueryCtx } from "./_generated/server";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { ERROR_CODES, raise } from "./lib/errors";
 import { staffMutation, staffQuery } from "./lib/functions";
 import {
@@ -188,6 +188,225 @@ export const get = staffQuery({
   },
 });
 
+export async function insertLeaseWithTenant(
+  ctx: MutationCtx,
+  viewer: Viewer,
+  unitId: Id<"units">,
+  args: {
+    displayName: string;
+    email: string;
+    phone?: string;
+    startedOn: string;
+    endedOn?: string;
+  }
+): Promise<Id<"leases">> {
+  const { unit } = await requireUnitInStaffOrg(ctx, viewer, unitId);
+
+  const displayName = requireText(args.displayName, "Name");
+  const email = requireEmail(args.email);
+  const phone = optionalText(args.phone);
+  const startedOn = requireCalendarDate(args.startedOn, "Lease start");
+  const endedOn = optionalCalendarDate(args.endedOn, "Lease end");
+  validateLeaseDates(startedOn, endedOn);
+
+  const today = utcToday();
+  const occupied = await currentLeaseForUnit(ctx, unit._id, today);
+  if (occupied !== null) {
+    raise(ERROR_CODES.INVALID, "This unit already has a current lease");
+  }
+
+  const existingUser = await findUserByEmail(ctx, email);
+  let tenantProfileId: Id<"profiles">;
+
+  if (existingUser !== null) {
+    const existingProfile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", existingUser._id))
+      .unique();
+    if (existingProfile === null) {
+      tenantProfileId = await ctx.db.insert("profiles", {
+        userId: existingUser._id,
+        displayName,
+        ...(phone !== undefined ? { phone } : {}),
+      });
+    } else {
+      if (await profileHasMembership(ctx, existingProfile._id)) {
+        raise(
+          ERROR_CODES.INVALID,
+          "That email already belongs to someone on staff"
+        );
+      }
+      const current = await currentLeaseForProfile(
+        ctx,
+        existingProfile._id,
+        today
+      );
+      if (current !== null) {
+        raise(ERROR_CODES.INVALID, "This person already has a current lease");
+      }
+      await ctx.db.patch(existingProfile._id, {
+        displayName,
+        ...(phone !== undefined ? { phone } : {}),
+      });
+      tenantProfileId = existingProfile._id;
+    }
+  } else {
+    const userId = await ctx.db.insert("users", {
+      email,
+      name: displayName,
+    });
+    tenantProfileId = await ctx.db.insert("profiles", {
+      userId,
+      displayName,
+      ...(phone !== undefined ? { phone } : {}),
+    });
+  }
+
+  return await ctx.db.insert("leases", {
+    unitId: unit._id,
+    tenantProfileId,
+    startedOn,
+    ...(endedOn !== undefined ? { endedOn } : {}),
+  });
+}
+
+async function requireAvailableTenantInOrg(
+  ctx: Pick<MutationCtx, "db">,
+  organizationId: Id<"organizations">,
+  tenantProfileId: Id<"profiles">
+) {
+  const profile = await ctx.db.get(tenantProfileId);
+  if (profile === null) {
+    raise(ERROR_CODES.NOT_PERMITTED);
+  }
+  if (await profileHasMembership(ctx, profile._id)) {
+    raise(
+      ERROR_CODES.INVALID,
+      "That email already belongs to someone on staff"
+    );
+  }
+  const today = utcToday();
+  const current = await currentLeaseForProfile(ctx, profile._id, today);
+  if (current !== null) {
+    raise(ERROR_CODES.INVALID, "This person already has a current lease");
+  }
+
+  const pastLeases = await ctx.db
+    .query("leases")
+    .withIndex("by_tenantProfileId", (q) =>
+      q.eq("tenantProfileId", profile._id)
+    )
+    .collect();
+  for (const lease of pastLeases) {
+    const unit = await ctx.db.get(lease.unitId);
+    if (unit === null) {
+      continue;
+    }
+    const building = await ctx.db.get(unit.buildingId);
+    if (building?.organizationId === organizationId) {
+      return profile;
+    }
+  }
+
+  raise(ERROR_CODES.NOT_PERMITTED);
+}
+
+export async function insertLeaseForExistingTenant(
+  ctx: MutationCtx,
+  viewer: Viewer,
+  unitId: Id<"units">,
+  args: {
+    tenantProfileId: Id<"profiles">;
+    startedOn: string;
+    endedOn?: string;
+  }
+): Promise<Id<"leases">> {
+  const { unit, building } = await requireUnitInStaffOrg(ctx, viewer, unitId);
+  const startedOn = requireCalendarDate(args.startedOn, "Lease start");
+  const endedOn = optionalCalendarDate(args.endedOn, "Lease end");
+  validateLeaseDates(startedOn, endedOn);
+
+  const today = utcToday();
+  const occupied = await currentLeaseForUnit(ctx, unit._id, today);
+  if (occupied !== null) {
+    raise(ERROR_CODES.INVALID, "This unit already has a current lease");
+  }
+
+  const profile = await requireAvailableTenantInOrg(
+    ctx,
+    building.organizationId,
+    args.tenantProfileId
+  );
+
+  return await ctx.db.insert("leases", {
+    unitId: unit._id,
+    tenantProfileId: profile._id,
+    startedOn,
+    ...(endedOn !== undefined ? { endedOn } : {}),
+  });
+}
+
+const availableTenant = v.object({
+  _id: v.id("profiles"),
+  displayName: v.string(),
+});
+
+export const listAvailableForStaff = staffQuery({
+  args: {},
+  returns: v.array(availableTenant),
+  handler: async (ctx) => {
+    const organizationId = ctx.viewer.organizationId;
+    if (organizationId === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const buildings = await ctx.db
+      .query("buildings")
+      .withIndex("by_organizationId", (q) =>
+        q.eq("organizationId", organizationId)
+      )
+      .collect();
+    const today = utcToday();
+    const names = new Map<Id<"profiles">, string>();
+
+    for (const building of buildings) {
+      const units = await ctx.db
+        .query("units")
+        .withIndex("by_buildingId", (q) => q.eq("buildingId", building._id))
+        .collect();
+      for (const unit of units) {
+        const leases = await ctx.db
+          .query("leases")
+          .withIndex("by_unitId", (q) => q.eq("unitId", unit._id))
+          .collect();
+        for (const lease of leases) {
+          const profile = await ctx.db.get(lease.tenantProfileId);
+          if (profile !== null) {
+            names.set(profile._id, profile.displayName);
+          }
+        }
+      }
+    }
+
+    const available: { _id: Id<"profiles">; displayName: string }[] = [];
+    for (const [profileId, displayName] of names) {
+      if (await profileHasMembership(ctx, profileId)) {
+        continue;
+      }
+      const current = await currentLeaseForProfile(ctx, profileId, today);
+      if (current !== null) {
+        continue;
+      }
+      available.push({ _id: profileId, displayName });
+    }
+
+    available.sort((left, right) =>
+      left.displayName.localeCompare(right.displayName)
+    );
+    return available;
+  },
+});
+
 export const createWithTenant = staffMutation({
   args: {
     unitId: v.id("units"),
@@ -195,73 +414,29 @@ export const createWithTenant = staffMutation({
   },
   returns: v.id("leases"),
   handler: async (ctx, args) => {
-    const { unit } = await requireUnitInStaffOrg(ctx, ctx.viewer, args.unitId);
+    return await insertLeaseWithTenant(ctx, ctx.viewer, args.unitId, {
+      displayName: args.displayName,
+      email: args.email,
+      phone: args.phone,
+      startedOn: args.startedOn,
+      endedOn: args.endedOn,
+    });
+  },
+});
 
-    const displayName = requireText(args.displayName, "Name");
-    const email = requireEmail(args.email);
-    const phone = optionalText(args.phone);
-    const startedOn = requireCalendarDate(args.startedOn, "Lease start");
-    const endedOn = optionalCalendarDate(args.endedOn, "Lease end");
-    validateLeaseDates(startedOn, endedOn);
-
-    const today = utcToday();
-    const occupied = await currentLeaseForUnit(ctx, unit._id, today);
-    if (occupied !== null) {
-      raise(ERROR_CODES.INVALID, "This unit already has a current lease");
-    }
-
-    const existingUser = await findUserByEmail(ctx, email);
-    let tenantProfileId: Id<"profiles">;
-
-    if (existingUser !== null) {
-      const existingProfile = await ctx.db
-        .query("profiles")
-        .withIndex("by_userId", (q) => q.eq("userId", existingUser._id))
-        .unique();
-      if (existingProfile === null) {
-        tenantProfileId = await ctx.db.insert("profiles", {
-          userId: existingUser._id,
-          displayName,
-          ...(phone !== undefined ? { phone } : {}),
-        });
-      } else {
-        if (await profileHasMembership(ctx, existingProfile._id)) {
-          raise(
-            ERROR_CODES.INVALID,
-            "That email already belongs to someone on staff"
-          );
-        }
-        const current = await currentLeaseForProfile(
-          ctx,
-          existingProfile._id,
-          today
-        );
-        if (current !== null) {
-          raise(ERROR_CODES.INVALID, "This person already has a current lease");
-        }
-        await ctx.db.patch(existingProfile._id, {
-          displayName,
-          ...(phone !== undefined ? { phone } : {}),
-        });
-        tenantProfileId = existingProfile._id;
-      }
-    } else {
-      const userId = await ctx.db.insert("users", {
-        email,
-        name: displayName,
-      });
-      tenantProfileId = await ctx.db.insert("profiles", {
-        userId,
-        displayName,
-        ...(phone !== undefined ? { phone } : {}),
-      });
-    }
-
-    return await ctx.db.insert("leases", {
-      unitId: unit._id,
-      tenantProfileId,
-      startedOn,
-      ...(endedOn !== undefined ? { endedOn } : {}),
+export const createForExistingTenant = staffMutation({
+  args: {
+    unitId: v.id("units"),
+    tenantProfileId: v.id("profiles"),
+    startedOn: v.string(),
+    endedOn: v.optional(v.string()),
+  },
+  returns: v.id("leases"),
+  handler: async (ctx, args) => {
+    return await insertLeaseForExistingTenant(ctx, ctx.viewer, args.unitId, {
+      tenantProfileId: args.tenantProfileId,
+      startedOn: args.startedOn,
+      endedOn: args.endedOn,
     });
   },
 });

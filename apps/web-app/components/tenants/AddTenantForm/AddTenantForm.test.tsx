@@ -8,6 +8,7 @@ import AddTenantForm from "./AddTenantForm";
 const mockReplace = jest.fn();
 const mockPush = jest.fn();
 const mockMutate = jest.fn();
+let mockAvailableTenants: { _id: string; displayName: string }[] = [];
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -18,15 +19,17 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("convex/react", () => ({
   useMutation: () => mockMutate,
+  useQuery: () => mockAvailableTenants,
 }));
 
-const units = [{ _id: "unit-1", label: "B12" }];
+const units = [{ _id: "unit-1", label: "G03" }];
 
 describe("AddTenantForm", () => {
   beforeEach(() => {
     mockReplace.mockReset();
     mockPush.mockReset();
     mockMutate.mockReset();
+    mockAvailableTenants = [];
   });
 
   it("renders tenant fields", () => {
@@ -194,5 +197,44 @@ describe("AddTenantForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
     expect(mockPush).toHaveBeenCalledWith("/buildings/building-id");
+  });
+
+  it("leases a vacant unit to someone who already rented", async () => {
+    const user = userEvent.setup();
+    mockAvailableTenants = [{ _id: "profile-1", displayName: "Sofia Herrera" }];
+    mockMutate.mockResolvedValue("lease-id");
+    render(
+      <AddTenantForm
+        buildingId={"building-id" as never}
+        units={units}
+        initialValues={{
+          unitId: "unit-1",
+          tenantChoice: "",
+          displayName: "",
+          phone: "",
+          email: "",
+          startedOn: "2024-01-15",
+          endedOn: "",
+        }}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox", { name: /tenant/i }));
+    await user.click(
+      await screen.findByRole("option", {
+        name: "Sofia Herrera",
+        hidden: true,
+      })
+    );
+    await user.click(screen.getByRole("button", { name: "Save tenant" }));
+
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith({
+        unitId: "unit-1",
+        tenantProfileId: "profile-1",
+        startedOn: "2024-01-15",
+        endedOn: "",
+      });
+    });
   });
 });

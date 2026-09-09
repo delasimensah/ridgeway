@@ -35,6 +35,7 @@ const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
   units,
 }) => {
   const isEmpty = units.length === 0;
+  const hasVacantUnit = units.some((unit) => unit.leaseId == null);
 
   return (
     <Box className="max-w-[1200px]">
@@ -67,7 +68,7 @@ const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
             >
               Add unit
             </Button>
-            {isEmpty ? null : (
+            {hasVacantUnit ? (
               <Button
                 component={Link}
                 href={`/buildings/${buildingId}/tenants/new`}
@@ -75,7 +76,7 @@ const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
               >
                 Add tenant
               </Button>
-            )}
+            ) : null}
           </Group>
         </Group>
         {isEmpty ? (

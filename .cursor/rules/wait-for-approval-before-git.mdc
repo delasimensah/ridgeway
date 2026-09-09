@@ -29,4 +29,4 @@ If CI fails: fix the files locally, say what failed, **do not commit or push**.
 - “Open a PR”
 - “Looks good, commit and PR”
 
-A branch is fine. Publishing the branch is not, until they ask.
+A `feature/RIDGE-n` branch for an existing Linear issue is fine. Any other branch name is not. See `never-branch-off-linear.mdc`. Publishing the branch is not, until they ask.

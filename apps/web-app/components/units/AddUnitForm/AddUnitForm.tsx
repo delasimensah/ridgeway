@@ -4,7 +4,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { Button, Group, Select, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -12,9 +12,13 @@ import React, { useState } from "react";
 import {
   type AddUnitFormValues,
   addUnitSchema,
+  getConvexErrorInfo,
+  isExistingTenantChoice,
+  NEW_TENANT_CHOICE,
   UNIT_KIND_OPTIONS,
 } from "@/utils";
 
+import UnitTenantFields from "../../tenants/UnitTenantFields/UnitTenantFields";
 import Text from "../../ui/Text/Text";
 
 const INPUT_CLASSNAMES = {
@@ -25,6 +29,25 @@ const INPUT_CLASSNAMES = {
 
 const PRIMARY_BUTTON =
   "h-auto rounded-[8px] bg-primary px-8 py-3 text-[15px] font-semibold text-white hover:bg-primaryHover";
+
+const FIELD_BY_MESSAGE: Record<string, keyof AddUnitFormValues> = {
+  "Lease start must be today or earlier": "startedOn",
+  "Lease end cannot be before the start date": "endedOn",
+  "Enter a valid email": "email",
+  "That email already belongs to someone on staff": "email",
+  "This person already has a current lease": "email",
+};
+
+const EMPTY_VALUES: AddUnitFormValues = {
+  label: "",
+  kind: "apartment",
+  tenantChoice: "",
+  displayName: "",
+  phone: "",
+  email: "",
+  startedOn: "",
+  endedOn: "",
+};
 
 interface AddUnitFormProps {
   buildingId: Id<"buildings">;
@@ -40,6 +63,11 @@ const AddUnitForm: React.FC<AddUnitFormProps> = ({
   initialValues,
 }) => {
   const router = useRouter();
+  const isEditing = unitId !== undefined;
+  const availableTenants = useQuery(
+    api.leases.listAvailableForStaff,
+    isEditing ? "skip" : {}
+  );
   const createUnit = useMutation(api.units.create);
   const updateUnit = useMutation(api.units.update);
   const [error, setError] = useState<string | null>(null);
@@ -47,9 +75,9 @@ const AddUnitForm: React.FC<AddUnitFormProps> = ({
   const buildingHref = `/buildings/${buildingId}`;
 
   const form = useForm<AddUnitFormValues>({
-    initialValues: initialValues ?? {
-      label: "",
-      kind: "apartment",
+    initialValues: {
+      ...EMPTY_VALUES,
+      ...initialValues,
     },
     validate: zod4Resolver(addUnitSchema),
   });
@@ -65,15 +93,41 @@ const AddUnitForm: React.FC<AddUnitFormProps> = ({
           kind: values.kind,
         });
       } else {
+        const tenantChoice = values.tenantChoice ?? "";
         await createUnit({
           buildingId,
           label: values.label,
           kind: values.kind,
+          ...(tenantChoice === NEW_TENANT_CHOICE
+            ? {
+                newTenant: {
+                  displayName: values.displayName ?? "",
+                  email: values.email ?? "",
+                  phone: values.phone,
+                  startedOn: values.startedOn ?? "",
+                  endedOn: values.endedOn,
+                },
+              }
+            : isExistingTenantChoice(tenantChoice)
+              ? {
+                  existingTenant: {
+                    tenantProfileId: tenantChoice as Id<"profiles">,
+                    startedOn: values.startedOn ?? "",
+                    endedOn: values.endedOn,
+                  },
+                }
+              : {}),
         });
       }
       router.replace(buildingHref);
-    } catch {
-      setError("Could not save this unit. Check the fields and try again.");
+    } catch (caught) {
+      const info = getConvexErrorInfo(caught);
+      const field = FIELD_BY_MESSAGE[info.message];
+      if (field !== undefined) {
+        form.setFieldError(field, info.message);
+      } else {
+        setError("Could not save this unit. Check the fields and try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -122,6 +176,9 @@ const AddUnitForm: React.FC<AddUnitFormProps> = ({
           }
         }}
       />
+      {isEditing ? null : (
+        <UnitTenantFields form={form} tenants={availableTenants ?? []} />
+      )}
       {error ? <Text className="text-sm text-overdue">{error}</Text> : null}
       <Group
         justify="flex-end"

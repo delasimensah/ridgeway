@@ -13,7 +13,7 @@ import {
 import { DatePickerInput } from "@mantine/dates";
 import { useForm, type UseFormReturnType } from "@mantine/form";
 import { IconAlertCircle, IconCalendar } from "@tabler/icons-react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -22,6 +22,8 @@ import {
   type AddTenantFormValues,
   addTenantSchema,
   getConvexErrorInfo,
+  isExistingTenantChoice,
+  NEW_TENANT_CHOICE,
   utcToday,
 } from "@/utils";
 
@@ -108,7 +110,13 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
   initialValues,
 }) => {
   const router = useRouter();
+  const isEditing = leaseId !== undefined;
+  const availableTenants = useQuery(
+    api.leases.listAvailableForStaff,
+    isEditing ? "skip" : {}
+  );
   const createLease = useMutation(api.leases.createWithTenant);
+  const createForExisting = useMutation(api.leases.createForExistingTenant);
   const updateTenant = useMutation(api.leases.updateTenant);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -121,6 +129,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
   const form = useForm<AddTenantFormValues>({
     initialValues: initialValues ?? {
       unitId: units.length === 1 ? units[0]._id : "",
+      tenantChoice: NEW_TENANT_CHOICE,
       displayName: "",
       phone: "",
       email: "",
@@ -140,6 +149,13 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
           displayName: values.displayName,
           email: values.email,
           phone: values.phone,
+          startedOn: values.startedOn,
+          endedOn: values.endedOn,
+        });
+      } else if (isExistingTenantChoice(values.tenantChoice)) {
+        await createForExisting({
+          unitId: values.unitId as Id<"units">,
+          tenantProfileId: values.tenantChoice as Id<"profiles">,
           startedOn: values.startedOn,
           endedOn: values.endedOn,
         });
@@ -208,33 +224,63 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
           {...form.getInputProps("unitId")}
         />
       )}
-      <TextInput
-        id="displayName"
-        label="Name"
-        placeholder="Akosua Darko"
-        withAsterisk
-        classNames={INPUT_CLASSNAMES}
-        {...form.getInputProps("displayName")}
-      />
-      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
-        <TextInput
-          id="phone"
-          label="Phone"
-          type="tel"
-          placeholder="024 XXX XXXX"
-          classNames={INPUT_CLASSNAMES}
-          {...form.getInputProps("phone")}
-        />
-        <TextInput
-          id="email"
-          label="Email"
-          type="email"
-          placeholder="akosua@example.com"
+      {isEditing ? null : (
+        <Select
+          id="tenantChoice"
+          label="Tenant"
+          placeholder="Pick a tenant"
+          data={[
+            ...(availableTenants ?? []).map((tenant) => ({
+              value: tenant._id,
+              label: tenant.displayName,
+            })),
+            { value: NEW_TENANT_CHOICE, label: "Add a tenant…" },
+          ]}
+          allowDeselect={false}
           withAsterisk
-          classNames={INPUT_CLASSNAMES}
-          {...form.getInputProps("email")}
+          pointer
+          comboboxProps={{ shadow: "sm", withinPortal: false }}
+          classNames={{
+            label: INPUT_CLASSNAMES.label,
+            input: INPUT_CLASSNAMES.input,
+            dropdown: "rounded-[8px] border border-border bg-white",
+            option:
+              "rounded-[6px] text-[15px] text-darkGrey bg-white hover:bg-sidebar data-[combobox-selected]:bg-sidebar data-[combobox-active]:bg-sidebar",
+          }}
+          {...form.getInputProps("tenantChoice")}
         />
-      </SimpleGrid>
+      )}
+      {isEditing || !isExistingTenantChoice(form.values.tenantChoice) ? (
+        <>
+          <TextInput
+            id="displayName"
+            label="Name"
+            placeholder="Sofia Herrera"
+            withAsterisk
+            classNames={INPUT_CLASSNAMES}
+            {...form.getInputProps("displayName")}
+          />
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
+            <TextInput
+              id="phone"
+              label="Phone"
+              type="tel"
+              placeholder="024 XXX XXXX"
+              classNames={INPUT_CLASSNAMES}
+              {...form.getInputProps("phone")}
+            />
+            <TextInput
+              id="email"
+              label="Email"
+              type="email"
+              placeholder="sofia.herrera@example.com"
+              withAsterisk
+              classNames={INPUT_CLASSNAMES}
+              {...form.getInputProps("email")}
+            />
+          </SimpleGrid>
+        </>
+      ) : null}
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
         <DatePickerInput
           id="startedOn"

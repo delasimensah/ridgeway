@@ -1,0 +1,20 @@
+---
+description: Do not create a git branch unless it is feature/RIDGE-n for an existing Linear issue. Ask first. A tangent is not a new branch.
+alwaysApply: true
+---
+
+# Never branch off Linear
+
+Do not create a git branch unless it is `feature/RIDGE-n` for an issue that **already exists** on Linear.
+
+A tangent, UX follow-up, or “while we are here” change stays on the current Linear branch. If that cannot work, **ask** before you create anything.
+
+## Do not
+
+- Name a branch after the work (`feature/add-tenant-on-unit`, `feature/fix-empty-picker`, or any name that is not `feature/RIDGE-n`)
+- Create a Linear issue after the fact to justify a branch you already made
+- Create a Linear issue so you can branch, unless this message asked you to create that issue
+
+## Ask first, then wait
+
+Stay on this ticket’s branch, or create a Linear issue first and then `feature/RIDGE-n`. Do not pick for them.

@@ -1,38 +1,85 @@
 import { isValidEmail } from "shared";
 import { z } from "zod";
 
+export const NEW_TENANT_CHOICE = "__new_tenant__";
+
 export function utcToday(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+export function isExistingTenantChoice(
+  tenantChoice: string | undefined
+): boolean {
+  return (
+    tenantChoice !== undefined &&
+    tenantChoice.length > 0 &&
+    tenantChoice !== NEW_TENANT_CHOICE
+  );
+}
+
+export function addLeaseDateIssues(
+  values: { startedOn?: string; endedOn?: string },
+  ctx: z.RefinementCtx,
+  required: boolean
+) {
+  const startedOn = values.startedOn?.trim() ?? "";
+  if (required && startedOn.length === 0) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["startedOn"],
+      message: "Lease start is required",
+    });
+  } else if (startedOn.length > 0 && startedOn > utcToday()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["startedOn"],
+      message: "Lease start must be today or earlier",
+    });
+  }
+  const endedOn = values.endedOn?.trim() ?? "";
+  if (endedOn.length > 0 && startedOn.length > 0 && endedOn < startedOn) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["endedOn"],
+      message: "Lease end cannot be before the start date",
+    });
+  }
 }
 
 export const addTenantSchema = z
   .object({
     unitId: z.string().trim().min(1, "Unit is required"),
-    displayName: z.string().trim().min(1, "Name is required"),
+    tenantChoice: z.string().optional(),
+    displayName: z.string().trim(),
     phone: z.string().trim(),
-    email: z
-      .string()
-      .trim()
-      .min(1, "Email is required")
-      .refine(isValidEmail, "Enter a valid email"),
-    startedOn: z.string().trim().min(1, "Lease start is required"),
+    email: z.string().trim(),
+    startedOn: z.string().trim(),
     endedOn: z.string().trim(),
   })
   .superRefine((values, ctx) => {
-    if (values.startedOn > utcToday()) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["startedOn"],
-        message: "Lease start must be today or earlier",
-      });
+    if (!isExistingTenantChoice(values.tenantChoice)) {
+      if (values.displayName.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["displayName"],
+          message: "Name is required",
+        });
+      }
+      if (values.email.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["email"],
+          message: "Email is required",
+        });
+      } else if (!isValidEmail(values.email)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["email"],
+          message: "Enter a valid email",
+        });
+      }
     }
-    if (values.endedOn.length > 0 && values.endedOn < values.startedOn) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["endedOn"],
-        message: "Lease end cannot be before the start date",
-      });
-    }
+    addLeaseDateIssues(values, ctx, true);
   });
 
 export type AddTenantFormValues = z.infer<typeof addTenantSchema>;
