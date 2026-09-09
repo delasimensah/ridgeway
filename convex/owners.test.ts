@@ -39,6 +39,20 @@ describe("owners", () => {
     ]);
     expect(building?.ownerId).toBe(ownerId);
     expect(building?.ownerName).toBe("Kwesi Mensah");
+
+    const buildings = await asUser(t, userId).query(
+      api.buildings.listForViewer,
+      {}
+    );
+    expect(buildings).toEqual([
+      {
+        _id: buildingId,
+        name: "Ridge Court",
+        address: "14 Ridge Road, Cantonments, Accra",
+        ownerName: "Kwesi Mensah",
+        unitCount: 0,
+      },
+    ]);
   });
 
   it("lets signed-in staff correct typed owner fields", async () => {
@@ -187,6 +201,52 @@ describe("owners", () => {
       throw new Error("expected update to refuse");
     } catch (error) {
       expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
+
+  it("lets staff grant a login the owner role for one owner only", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const owner = await asUser(t, staff.userId).mutation(api.owners.create, {
+      displayName: "Kwesi Mensah",
+      contactEmail: "kwesi.mensah@ridgeway.gh",
+    });
+    const otherOwner = await asUser(t, staff.userId).mutation(
+      api.owners.create,
+      {
+        displayName: "Adwoa Owusu",
+        contactEmail: "adwoa.owusu@ridgeway.gh",
+      }
+    );
+    const person = await insertPerson(t, {
+      email: "kwesi.mensah@ridgeway.gh",
+      displayName: "Kwesi Mensah",
+      role: null,
+    });
+
+    await asUser(t, staff.userId).mutation(api.owners.grantMembership, {
+      ownerId: owner,
+      profileId: person.profileId,
+    });
+
+    const viewer = await asUser(t, person.userId).query(
+      api.profiles.getCurrent,
+      {}
+    );
+    expect(viewer.ownerId).toBe(owner);
+
+    try {
+      await asUser(t, staff.userId).mutation(api.owners.grantMembership, {
+        ownerId: otherOwner,
+        profileId: person.profileId,
+      });
+      throw new Error("expected grant to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("INVALID");
     }
   });
 });

@@ -6,7 +6,8 @@ const mockReplace = jest.fn();
 const mockSignOut = jest.fn();
 const mockEnsureProfile = jest.fn();
 let mockAuth = { isAuthenticated: false, isLoading: true };
-let mockViewer: { isStaff: boolean; displayName: string } | undefined;
+let mockViewer:
+  { isStaff: boolean; displayName: string; ownerId: string | null } | undefined;
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -48,12 +49,29 @@ describe("useStaffSession", () => {
 
   it("reports staff once the profile is ready", async () => {
     mockAuth = { isAuthenticated: true, isLoading: false };
-    mockViewer = { isStaff: true, displayName: "Ama Boateng" };
+    mockViewer = { isStaff: true, displayName: "Ama Boateng", ownerId: null };
     const { result } = renderHook(() => useStaffSession());
 
     await waitFor(() => {
       expect(result.current.isStaff).toBe(true);
     });
+    expect(result.current.isOwner).toBe(false);
     expect(result.current.displayName).toBe("Ama Boateng");
+  });
+
+  it("reports an owner once the profile is ready", async () => {
+    mockAuth = { isAuthenticated: true, isLoading: false };
+    mockViewer = {
+      isStaff: false,
+      displayName: "Kwesi Mensah",
+      ownerId: "owner-1",
+    };
+    const { result } = renderHook(() => useStaffSession());
+
+    await waitFor(() => {
+      expect(result.current.isOwner).toBe(true);
+    });
+    expect(result.current.isStaff).toBe(false);
+    expect(result.current.displayName).toBe("Kwesi Mensah");
   });
 });

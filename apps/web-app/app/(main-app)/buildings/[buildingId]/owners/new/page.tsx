@@ -17,10 +17,18 @@ const AddOwnerForBuildingRoute = () => {
   useEffect(() => {
     if (building === null) {
       router.replace("/buildings");
+      return;
     }
-  }, [building, router]);
+    if (building !== undefined && building.ownerId !== null) {
+      router.replace(`/buildings/${buildingId}`);
+    }
+  }, [building, buildingId, router]);
 
-  if (building === undefined || building === null) {
+  if (
+    building === undefined ||
+    building === null ||
+    building.ownerId !== null
+  ) {
     return <LoadingScreen fillViewport={false} />;
   }
 

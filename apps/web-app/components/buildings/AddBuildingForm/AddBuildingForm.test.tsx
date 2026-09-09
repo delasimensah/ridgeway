@@ -8,6 +8,7 @@ import AddBuildingForm from "./AddBuildingForm";
 const mockReplace = jest.fn();
 const mockPush = jest.fn();
 const mockCreate = jest.fn();
+let mockOwners: { _id: string; displayName: string }[] = [];
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -18,6 +19,7 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("convex/react", () => ({
   useMutation: () => mockCreate,
+  useQuery: () => mockOwners,
 }));
 
 describe("AddBuildingForm", () => {
@@ -25,6 +27,7 @@ describe("AddBuildingForm", () => {
     mockReplace.mockReset();
     mockPush.mockReset();
     mockCreate.mockReset();
+    mockOwners = [];
   });
 
   it("renders name, street, area, and Accra as the city", () => {
@@ -34,6 +37,10 @@ describe("AddBuildingForm", () => {
     expect(screen.getByLabelText(/street/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/area/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/city/i)).toHaveValue("Accra");
+    expect(
+      screen.getByRole("combobox", { name: /owner/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/full name/i)).not.toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Save building" })
     ).toBeInTheDocument();
@@ -112,5 +119,80 @@ describe("AddBuildingForm", () => {
       });
     });
     expect(mockReplace).toHaveBeenCalledWith("/buildings");
+  });
+
+  it("does not show the owner select when correcting a building", () => {
+    render(
+      <AddBuildingForm
+        buildingId={"building-id" as never}
+        initialValues={{
+          name: "Ridge Court",
+          street: "14 Ridge Road",
+          area: "Cantonments",
+        }}
+      />
+    );
+
+    expect(
+      screen.queryByRole("combobox", { name: /owner/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("creates a building with a new owner from the same form", async () => {
+    const user = userEvent.setup();
+    mockCreate.mockResolvedValue("building-id");
+    render(<AddBuildingForm />);
+
+    await user.type(screen.getByLabelText(/name/i), "Ridge Court");
+    await user.type(screen.getByLabelText(/street/i), "14 Ridge Road");
+    await user.type(screen.getByLabelText(/area/i), "Cantonments");
+    await user.click(screen.getByRole("combobox", { name: /owner/i }));
+    await user.click(
+      await screen.findByRole("option", {
+        name: /Add a new owner/i,
+        hidden: true,
+      })
+    );
+    await user.type(screen.getByLabelText(/full name/i), "Kwesi Mensah");
+    await user.type(screen.getByLabelText(/email/i), "kwesi@example.com");
+    await user.click(screen.getByRole("button", { name: "Save building" }));
+
+    await waitFor(() => {
+      expect(mockCreate).toHaveBeenCalledWith({
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+        newOwner: {
+          displayName: "Kwesi Mensah",
+          contactEmail: "kwesi@example.com",
+          contactPhone: "",
+        },
+      });
+    });
+  });
+
+  it("links a building to an owner already on file", async () => {
+    const user = userEvent.setup();
+    mockOwners = [{ _id: "owner-1", displayName: "Kwesi Mensah" }];
+    mockCreate.mockResolvedValue("building-id");
+    render(<AddBuildingForm />);
+
+    await user.type(screen.getByLabelText(/name/i), "Ridge Court");
+    await user.type(screen.getByLabelText(/street/i), "14 Ridge Road");
+    await user.type(screen.getByLabelText(/area/i), "Cantonments");
+    await user.click(screen.getByRole("combobox", { name: /owner/i }));
+    await user.click(
+      await screen.findByRole("option", { name: "Kwesi Mensah", hidden: true })
+    );
+    await user.click(screen.getByRole("button", { name: "Save building" }));
+
+    await waitFor(() => {
+      expect(mockCreate).toHaveBeenCalledWith({
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+        ownerId: "owner-1",
+      });
+    });
   });
 });

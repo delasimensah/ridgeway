@@ -1,13 +1,17 @@
 import { v } from "convex/values";
 
 import type { Doc, Id } from "./_generated/dataModel";
+import type { QueryCtx } from "./_generated/server";
 import { ERROR_CODES, raise } from "./lib/errors";
-import { authedQuery, staffMutation, staffQuery } from "./lib/functions";
+import { authedQuery, staffMutation } from "./lib/functions";
+import { requireBuildingAccess, type Viewer } from "./lib/viewer";
+import { insertOwnerForOrg } from "./owners";
 
 const buildingListItem = v.object({
   _id: v.id("buildings"),
   name: v.string(),
   address: v.string(),
+  ownerName: v.union(v.string(), v.null()),
   unitCount: v.number(),
 });
 
@@ -52,20 +56,7 @@ export const listForViewer = authedQuery({
   args: {},
   returns: v.array(buildingListItem),
   handler: async (ctx) => {
-    if (!ctx.viewer.isStaff) {
-      return [];
-    }
-    const organizationId = ctx.viewer.organizationId;
-    if (organizationId === null) {
-      raise(ERROR_CODES.NOT_PERMITTED);
-    }
-
-    const rows = await ctx.db
-      .query("buildings")
-      .withIndex("by_organizationId", (q) =>
-        q.eq("organizationId", organizationId)
-      )
-      .collect();
+    const rows = await buildingsVisibleToViewer(ctx);
 
     return await Promise.all(
       rows.map(async (row) => {
@@ -73,16 +64,46 @@ export const listForViewer = authedQuery({
           .query("units")
           .withIndex("by_buildingId", (q) => q.eq("buildingId", row._id))
           .collect();
+        const owner =
+          row.ownerId === undefined ? null : await ctx.db.get(row.ownerId);
         return {
           _id: row._id,
           name: row.name,
           address: row.address,
+          ownerName: owner?.displayName ?? null,
           unitCount: units.length,
         };
       })
     );
   },
 });
+
+async function buildingsVisibleToViewer(
+  ctx: QueryCtx & { viewer: Viewer }
+): Promise<Doc<"buildings">[]> {
+  if (ctx.viewer.isStaff) {
+    const organizationId = ctx.viewer.organizationId;
+    if (organizationId === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+    return await ctx.db
+      .query("buildings")
+      .withIndex("by_organizationId", (q) =>
+        q.eq("organizationId", organizationId)
+      )
+      .collect();
+  }
+
+  if (ctx.viewer.ownerId !== null) {
+    const ownerId = ctx.viewer.ownerId;
+    return await ctx.db
+      .query("buildings")
+      .withIndex("by_ownerId", (q) => q.eq("ownerId", ownerId))
+      .collect();
+  }
+
+  return [];
+}
 
 async function requireOwnerInOrganization(
   ctx: { db: { get: (id: Id<"owners">) => Promise<Doc<"owners"> | null> } },
@@ -102,6 +123,13 @@ export const create = staffMutation({
     street: v.string(),
     area: v.string(),
     ownerId: v.optional(v.id("owners")),
+    newOwner: v.optional(
+      v.object({
+        displayName: v.string(),
+        contactEmail: v.optional(v.string()),
+        contactPhone: v.optional(v.string()),
+      })
+    ),
   },
   returns: v.id("buildings"),
   handler: async (ctx, args) => {
@@ -114,15 +142,23 @@ export const create = staffMutation({
     const street = requireText(args.street, "Street");
     const area = requireText(args.area, "Area");
 
+    if (args.ownerId !== undefined && args.newOwner !== undefined) {
+      raise(ERROR_CODES.INVALID, "Pick an owner or add a new one, not both");
+    }
+
+    let ownerId = args.ownerId;
     if (args.ownerId !== undefined) {
       await requireOwnerInOrganization(ctx, organizationId, args.ownerId);
+    }
+    if (args.newOwner !== undefined) {
+      ownerId = await insertOwnerForOrg(ctx, organizationId, args.newOwner);
     }
 
     return await ctx.db.insert("buildings", {
       organizationId,
       name,
       address: formatAccraAddress(street, area),
-      ...(args.ownerId !== undefined ? { ownerId: args.ownerId } : {}),
+      ...(ownerId !== undefined ? { ownerId } : {}),
     });
   },
 });
@@ -137,21 +173,17 @@ const buildingFormFields = v.object({
   ownerName: v.union(v.string(), v.null()),
 });
 
-export const get = staffQuery({
+export const get = authedQuery({
   args: {
     buildingId: v.id("buildings"),
   },
-  returns: v.union(buildingFormFields, v.null()),
+  returns: buildingFormFields,
   handler: async (ctx, args) => {
-    const organizationId = ctx.viewer.organizationId;
-    if (organizationId === null) {
-      raise(ERROR_CODES.NOT_PERMITTED);
-    }
-
-    const building = await ctx.db.get(args.buildingId);
-    if (building === null || building.organizationId !== organizationId) {
-      return null;
-    }
+    const building = await requireBuildingAccess(
+      ctx,
+      ctx.viewer,
+      args.buildingId
+    );
 
     const { street, area } = parseAccraAddress(building.address);
     const owner =
@@ -204,6 +236,29 @@ export const update = staffMutation({
       address: formatAccraAddress(street, area),
       ...(args.ownerId !== undefined ? { ownerId: args.ownerId } : {}),
     });
+    return null;
+  },
+});
+
+export const assignOwner = staffMutation({
+  args: {
+    buildingId: v.id("buildings"),
+    ownerId: v.id("owners"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const organizationId = ctx.viewer.organizationId;
+    if (organizationId === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const building = await ctx.db.get(args.buildingId);
+    if (building === null || building.organizationId !== organizationId) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    await requireOwnerInOrganization(ctx, organizationId, args.ownerId);
+    await ctx.db.patch(args.buildingId, { ownerId: args.ownerId });
     return null;
   },
 });

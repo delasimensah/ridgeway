@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import { api, internal } from "./_generated/api";
-import { FIELD_SEED, ORGANIZATION_NAME, STAFF_SEED } from "./seed";
+import {
+  FIELD_SEED,
+  ORGANIZATION_NAME,
+  OWNER_A_SEED,
+  STAFF_SEED,
+} from "./seed";
 import { asUser, errorCode, makeBackend } from "./test.setup";
 
 describe("seed.attachIdentity", () => {
@@ -32,6 +37,37 @@ describe("seed.attachIdentity", () => {
 
     const viewer = await asUser(t, userId).query(api.profiles.getCurrent, {});
     expect(viewer.isStaff).toBe(true);
+  });
+
+  it("lets owner A list only the building attached to owner A", async () => {
+    const t = makeBackend();
+    const userId = await t.run(async (ctx) => {
+      return await ctx.db.insert("users", {
+        email: OWNER_A_SEED.email,
+        name: OWNER_A_SEED.displayName,
+      });
+    });
+    const ownerId = await t.mutation(internal.seed.ensureOwner, {
+      displayName: OWNER_A_SEED.displayName,
+      contactEmail: OWNER_A_SEED.email,
+      organizationName: ORGANIZATION_NAME,
+    });
+    await t.mutation(internal.seed.attachIdentity, {
+      userId,
+      displayName: OWNER_A_SEED.displayName,
+      role: "owner",
+      organizationName: ORGANIZATION_NAME,
+      ownerId,
+    });
+    await t.mutation(internal.seed.ensureBuildingForOwner, {
+      ownerId,
+      name: OWNER_A_SEED.buildingName,
+      street: OWNER_A_SEED.street,
+      area: OWNER_A_SEED.area,
+    });
+
+    const list = await asUser(t, userId).query(api.buildings.listForViewer, {});
+    expect(list.map((row) => row.name)).toEqual([OWNER_A_SEED.buildingName]);
   });
 
   it("does not give a field worker the staff home", async () => {

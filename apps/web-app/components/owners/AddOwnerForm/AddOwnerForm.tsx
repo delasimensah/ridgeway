@@ -4,14 +4,19 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { Button, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-import { type AddOwnerFormValues, addOwnerSchema } from "@/utils";
+import {
+  type AddOwnerFormValues,
+  addOwnerSchema,
+  NEW_OWNER_CHOICE,
+} from "@/utils";
 
 import Text from "../../ui/Text/Text";
+import BuildingOwnerFields from "../BuildingOwnerFields/BuildingOwnerFields";
 
 const INPUT_CLASSNAMES = {
   label: "mb-2 text-[15px] font-semibold text-darkGrey",
@@ -34,23 +39,45 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
   initialValues,
 }) => {
   const router = useRouter();
+  const isAssigningToBuilding =
+    buildingId !== undefined && ownerId === undefined;
+  const owners = useQuery(
+    api.owners.listForStaff,
+    isAssigningToBuilding ? {} : "skip"
+  );
   const createOwner = useMutation(api.owners.create);
   const updateOwner = useMutation(api.owners.update);
+  const assignOwner = useMutation(api.buildings.assignOwner);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const cancelHref =
     buildingId !== undefined ? `/buildings/${buildingId}` : "/buildings";
 
-  const form = useForm<AddOwnerFormValues>({
-    initialValues: initialValues ?? {
-      displayName: "",
-      contactEmail: "",
-      contactPhone: "",
+  const form = useForm<AddOwnerFormValues & { ownerChoice: string }>({
+    initialValues: {
+      displayName: initialValues?.displayName ?? "",
+      contactEmail: initialValues?.contactEmail ?? "",
+      contactPhone: initialValues?.contactPhone ?? "",
+      ownerChoice: isAssigningToBuilding ? "" : NEW_OWNER_CHOICE,
     },
-    validate: zod4Resolver(addOwnerSchema),
+    validate: (values) => {
+      if (isAssigningToBuilding && values.ownerChoice.length === 0) {
+        return { ownerChoice: "Pick an owner or add a new one" };
+      }
+      if (
+        ownerId !== undefined ||
+        values.ownerChoice === NEW_OWNER_CHOICE ||
+        !isAssigningToBuilding
+      ) {
+        return zod4Resolver(addOwnerSchema)(values);
+      }
+      return {};
+    },
   });
 
-  const handleSubmit = async (values: AddOwnerFormValues) => {
+  const handleSubmit = async (
+    values: AddOwnerFormValues & { ownerChoice: string }
+  ) => {
     setError(null);
     setIsSubmitting(true);
     try {
@@ -60,6 +87,14 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
           displayName: values.displayName,
           contactEmail: values.contactEmail,
           contactPhone: values.contactPhone,
+        });
+      } else if (
+        isAssigningToBuilding &&
+        values.ownerChoice !== NEW_OWNER_CHOICE
+      ) {
+        await assignOwner({
+          buildingId,
+          ownerId: values.ownerChoice as Id<"owners">,
         });
       } else {
         await createOwner({
@@ -77,8 +112,8 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
     }
   };
 
-  return (
-    <form className="space-y-6" onSubmit={form.onSubmit(handleSubmit)}>
+  const ownerFields = (
+    <>
       <TextInput
         id="displayName"
         label="Full name"
@@ -103,9 +138,30 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
         classNames={INPUT_CLASSNAMES}
         {...form.getInputProps("contactPhone")}
       />
-      <Text className="rounded-[8px] border border-border bg-sidebar p-4 text-sm leading-relaxed text-grey">
-        This person will see only buildings linked to them.
-      </Text>
+    </>
+  );
+
+  return (
+    <form className="space-y-6" onSubmit={form.onSubmit(handleSubmit)}>
+      {isAssigningToBuilding ? (
+        <BuildingOwnerFields
+          owners={owners ?? []}
+          ownerChoice={form.values.ownerChoice}
+          onOwnerChoice={(value) => {
+            form.setFieldValue("ownerChoice", value);
+          }}
+          ownerChoiceError={form.errors.ownerChoice}
+        >
+          {ownerFields}
+        </BuildingOwnerFields>
+      ) : (
+        <>
+          {ownerFields}
+          <Text className="rounded-[8px] border border-border bg-sidebar p-4 text-sm leading-relaxed text-grey">
+            This person will see only buildings linked to them.
+          </Text>
+        </>
+      )}
       {error ? <Text className="text-sm text-overdue">{error}</Text> : null}
       <Group
         justify="flex-end"

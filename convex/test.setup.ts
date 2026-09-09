@@ -34,8 +34,9 @@ export async function insertPerson(
   args: {
     email: string;
     displayName: string;
-    role: "staff" | "field" | null;
+    role: "staff" | "field" | "owner" | null;
     organizationId?: Id<"organizations">;
+    ownerId?: Id<"owners">;
   }
 ) {
   return await t.run(async (ctx) => {
@@ -54,14 +55,25 @@ export async function insertPerson(
       userId,
       displayName: args.displayName,
     });
+    let ownerId = args.ownerId;
+    if (args.role === "owner") {
+      ownerId =
+        ownerId ??
+        (await ctx.db.insert("owners", {
+          organizationId,
+          displayName: args.displayName,
+          contactEmail: args.email,
+        }));
+    }
     if (args.role !== null) {
       await ctx.db.insert("memberships", {
         organizationId,
         profileId,
         role: args.role,
+        ...(args.role === "owner" && ownerId !== undefined ? { ownerId } : {}),
       });
     }
-    return { userId, profileId, organizationId };
+    return { userId, profileId, organizationId, ownerId };
   });
 }
 

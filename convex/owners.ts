@@ -1,5 +1,7 @@
 import { v } from "convex/values";
 
+import type { Id } from "./_generated/dataModel";
+import type { MutationCtx } from "./_generated/server";
 import { ERROR_CODES, raise } from "./lib/errors";
 import { staffMutation, staffQuery } from "./lib/functions";
 import { requireBuildingAccess } from "./lib/viewer";
@@ -29,6 +31,27 @@ function optionalEmail(value: string | undefined): string | undefined {
     raise(ERROR_CODES.INVALID, "Enter a valid email");
   }
   return trimmed.toLowerCase();
+}
+
+export async function insertOwnerForOrg(
+  ctx: Pick<MutationCtx, "db">,
+  organizationId: Id<"organizations">,
+  args: {
+    displayName: string;
+    contactEmail?: string;
+    contactPhone?: string;
+  }
+): Promise<Id<"owners">> {
+  const displayName = requireText(args.displayName, "Full name");
+  const contactEmail = optionalEmail(args.contactEmail);
+  const contactPhone = optionalText(args.contactPhone);
+
+  return await ctx.db.insert("owners", {
+    organizationId,
+    displayName,
+    ...(contactEmail !== undefined ? { contactEmail } : {}),
+    ...(contactPhone !== undefined ? { contactPhone } : {}),
+  });
 }
 
 const ownerListItem = v.object({
@@ -109,10 +132,6 @@ export const create = staffMutation({
       raise(ERROR_CODES.NOT_PERMITTED);
     }
 
-    const displayName = requireText(args.displayName, "Full name");
-    const contactEmail = optionalEmail(args.contactEmail);
-    const contactPhone = optionalText(args.contactPhone);
-
     if (args.buildingId !== undefined) {
       const building = await requireBuildingAccess(
         ctx,
@@ -124,11 +143,10 @@ export const create = staffMutation({
       }
     }
 
-    const ownerId = await ctx.db.insert("owners", {
-      organizationId,
-      displayName,
-      ...(contactEmail !== undefined ? { contactEmail } : {}),
-      ...(contactPhone !== undefined ? { contactPhone } : {}),
+    const ownerId = await insertOwnerForOrg(ctx, organizationId, {
+      displayName: args.displayName,
+      contactEmail: args.contactEmail,
+      contactPhone: args.contactPhone,
     });
 
     if (args.buildingId !== undefined) {
@@ -166,6 +184,46 @@ export const update = staffMutation({
       displayName,
       ...(contactEmail !== undefined ? { contactEmail } : {}),
       ...(contactPhone !== undefined ? { contactPhone } : {}),
+    });
+    return null;
+  },
+});
+
+export const grantMembership = staffMutation({
+  args: {
+    ownerId: v.id("owners"),
+    profileId: v.id("profiles"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const organizationId = ctx.viewer.organizationId;
+    if (organizationId === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const owner = await ctx.db.get(args.ownerId);
+    if (owner === null || owner.organizationId !== organizationId) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const profile = await ctx.db.get(args.profileId);
+    if (profile === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const memberships = await ctx.db
+      .query("memberships")
+      .withIndex("by_profileId", (q) => q.eq("profileId", args.profileId))
+      .take(8);
+    if (memberships.some((row) => row.role === "owner")) {
+      raise(ERROR_CODES.INVALID, "This person already acts for an owner");
+    }
+
+    await ctx.db.insert("memberships", {
+      organizationId,
+      profileId: args.profileId,
+      role: "owner",
+      ownerId: args.ownerId,
     });
     return null;
   },
