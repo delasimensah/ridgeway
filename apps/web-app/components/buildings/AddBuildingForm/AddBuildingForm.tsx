@@ -2,9 +2,9 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { Button, Group, Select, SimpleGrid, TextInput } from "@mantine/core";
+import { Button, Group, SimpleGrid, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -13,8 +13,10 @@ import {
   ACCRA_CITY,
   type AddBuildingFormValues,
   addBuildingSchema,
+  NEW_OWNER_CHOICE,
 } from "@/utils";
 
+import BuildingOwnerFields from "../../owners/BuildingOwnerFields/BuildingOwnerFields";
 import Text from "../../ui/Text/Text";
 
 const INPUT_CLASSNAMES = {
@@ -26,34 +28,37 @@ const INPUT_CLASSNAMES = {
 const PRIMARY_BUTTON =
   "h-auto rounded-[8px] bg-primary px-8 py-3 text-[15px] font-semibold text-white hover:bg-primaryHover";
 
-export interface BuildingOwnerOption {
-  _id: string;
-  displayName: string;
-}
-
 interface AddBuildingFormProps {
   buildingId?: Id<"buildings">;
-  owners?: BuildingOwnerOption[];
   initialValues?: AddBuildingFormValues;
 }
 
+const EMPTY_VALUES: AddBuildingFormValues = {
+  name: "",
+  street: "",
+  area: "",
+  ownerChoice: "",
+  displayName: "",
+  contactEmail: "",
+  contactPhone: "",
+};
+
 const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
   buildingId,
-  owners = [],
   initialValues,
 }) => {
   const router = useRouter();
+  const isEditing = buildingId !== undefined;
+  const owners = useQuery(api.owners.listForStaff, isEditing ? "skip" : {});
   const createBuilding = useMutation(api.buildings.create);
   const updateBuilding = useMutation(api.buildings.update);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<AddBuildingFormValues>({
-    initialValues: initialValues ?? {
-      name: "",
-      street: "",
-      area: "",
-      ownerId: "",
+    initialValues: {
+      ...EMPTY_VALUES,
+      ...initialValues,
     },
     validate: zod4Resolver(addBuildingSchema),
   });
@@ -62,25 +67,30 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
     setError(null);
     setIsSubmitting(true);
     try {
-      const ownerId =
-        values.ownerId !== undefined && values.ownerId.length > 0
-          ? (values.ownerId as Id<"owners">)
-          : undefined;
-
       if (buildingId !== undefined) {
         await updateBuilding({
           buildingId,
           name: values.name,
           street: values.street,
           area: values.area,
-          ...(ownerId !== undefined ? { ownerId } : {}),
         });
       } else {
+        const ownerChoice = values.ownerChoice ?? "";
         await createBuilding({
           name: values.name,
           street: values.street,
           area: values.area,
-          ...(ownerId !== undefined ? { ownerId } : {}),
+          ...(ownerChoice === NEW_OWNER_CHOICE
+            ? {
+                newOwner: {
+                  displayName: values.displayName ?? "",
+                  contactEmail: values.contactEmail,
+                  contactPhone: values.contactPhone,
+                },
+              }
+            : ownerChoice.length > 0
+              ? { ownerId: ownerChoice as Id<"owners"> }
+              : {}),
         });
       }
       router.replace("/buildings");
@@ -100,28 +110,6 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
         withAsterisk
         classNames={INPUT_CLASSNAMES}
         {...form.getInputProps("name")}
-      />
-      <Select
-        id="ownerId"
-        label="Owner"
-        placeholder={
-          owners.length === 0 ? "Add an owner first" : "Pick an owner"
-        }
-        data={owners.map((owner) => ({
-          value: owner._id,
-          label: owner.displayName,
-        }))}
-        clearable
-        pointer
-        comboboxProps={{ shadow: "sm" }}
-        classNames={{
-          label: INPUT_CLASSNAMES.label,
-          input: INPUT_CLASSNAMES.input,
-          dropdown: "rounded-[8px] border border-border bg-white",
-          option:
-            "rounded-[6px] text-[15px] text-darkGrey bg-white hover:bg-sidebar data-[combobox-selected]:bg-sidebar data-[combobox-active]:bg-sidebar",
-        }}
-        {...form.getInputProps("ownerId")}
       />
       <TextInput
         id="street"
@@ -151,6 +139,41 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
           }}
         />
       </SimpleGrid>
+      {isEditing ? null : (
+        <BuildingOwnerFields
+          owners={owners ?? []}
+          ownerChoice={form.values.ownerChoice ?? ""}
+          onOwnerChoice={(value) => {
+            form.setFieldValue("ownerChoice", value);
+          }}
+          ownerChoiceError={form.errors.ownerChoice}
+        >
+          <TextInput
+            id="displayName"
+            label="Full name"
+            placeholder="Kwesi Mensah"
+            withAsterisk
+            classNames={INPUT_CLASSNAMES}
+            {...form.getInputProps("displayName")}
+          />
+          <TextInput
+            id="contactEmail"
+            label="Email"
+            type="email"
+            placeholder="kwesi@example.com"
+            classNames={INPUT_CLASSNAMES}
+            {...form.getInputProps("contactEmail")}
+          />
+          <TextInput
+            id="contactPhone"
+            label="Phone"
+            type="tel"
+            placeholder="024 555 0000"
+            classNames={INPUT_CLASSNAMES}
+            {...form.getInputProps("contactPhone")}
+          />
+        </BuildingOwnerFields>
+      )}
       {error ? <Text className="text-sm text-overdue">{error}</Text> : null}
       <Group
         justify="flex-end"

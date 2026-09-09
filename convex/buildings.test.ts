@@ -26,12 +26,96 @@ describe("buildings", () => {
         _id: buildingId,
         name: "Ridge Court",
         address: formatAccraAddress("14 Ridge Road", "Cantonments"),
+        ownerName: null,
         unitCount: 0,
       },
     ]);
 
     const stored = await t.run(async (ctx) => ctx.db.get(buildingId));
     expect(stored?.organizationId).toBe(organizationId);
+  });
+
+  it("lets staff create a building and a new owner in one save", async () => {
+    const t = makeBackend();
+    const { userId } = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+
+    const buildingId = await asUser(t, userId).mutation(api.buildings.create, {
+      name: "Ridge Court",
+      street: "14 Ridge Road",
+      area: "Cantonments",
+      newOwner: {
+        displayName: "Kwesi Mensah",
+        contactEmail: "kwesi@example.com",
+      },
+    });
+
+    const list = await asUser(t, userId).query(api.buildings.listForViewer, {});
+    expect(list).toEqual([
+      {
+        _id: buildingId,
+        name: "Ridge Court",
+        address: formatAccraAddress("14 Ridge Road", "Cantonments"),
+        ownerName: "Kwesi Mensah",
+        unitCount: 0,
+      },
+    ]);
+  });
+
+  it("refuses create when an existing owner and a new owner are both sent", async () => {
+    const t = makeBackend();
+    const { userId } = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const ownerId = await asUser(t, userId).mutation(api.owners.create, {
+      displayName: "Kwesi Mensah",
+    });
+
+    try {
+      await asUser(t, userId).mutation(api.buildings.create, {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+        ownerId,
+        newOwner: { displayName: "Adwoa Owusu" },
+      });
+      throw new Error("expected create to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("INVALID");
+    }
+  });
+
+  it("lets staff assign an existing owner to a building", async () => {
+    const t = makeBackend();
+    const { userId } = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const buildingId = await asUser(t, userId).mutation(api.buildings.create, {
+      name: "Ridge Court",
+      street: "14 Ridge Road",
+      area: "Cantonments",
+    });
+    const ownerId = await asUser(t, userId).mutation(api.owners.create, {
+      displayName: "Kwesi Mensah",
+    });
+
+    await asUser(t, userId).mutation(api.buildings.assignOwner, {
+      buildingId,
+      ownerId,
+    });
+
+    const building = await asUser(t, userId).query(api.buildings.get, {
+      buildingId,
+    });
+    expect(building?.ownerId).toBe(ownerId);
+    expect(building?.ownerName).toBe("Kwesi Mensah");
   });
 
   it("returns an empty list when the staff organization has no buildings", async () => {
@@ -196,6 +280,7 @@ describe("buildings", () => {
         _id: buildingId,
         name: "Ridge Court East",
         address: formatAccraAddress("16 Ridge Road", "Labone"),
+        ownerName: null,
         unitCount: 0,
       },
     ]);
@@ -275,10 +360,14 @@ describe("buildings", () => {
       }
     );
 
-    const loaded = await asUser(t, other.userId).query(api.buildings.get, {
-      buildingId,
-    });
-    expect(loaded).toBeNull();
+    try {
+      await asUser(t, other.userId).query(api.buildings.get, {
+        buildingId,
+      });
+      throw new Error("expected get to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
   });
 
   it("refuses update when the caller is a field worker", async () => {
@@ -310,6 +399,85 @@ describe("buildings", () => {
         area: "Labone",
       });
       throw new Error("expected update to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
+
+  it("lets owner A see only owner A's buildings and refuses owner B's building by id", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const ownerA = await insertPerson(t, {
+      email: "kwesi.mensah@ridgeway.gh",
+      displayName: "Kwesi Mensah",
+      role: "owner",
+    });
+    const ownerB = await insertPerson(t, {
+      email: "adwoa.owusu@ridgeway.gh",
+      displayName: "Adwoa Owusu",
+      role: "owner",
+    });
+    const ownerAId = ownerA.ownerId;
+    const ownerBId = ownerB.ownerId;
+    if (ownerAId === undefined || ownerBId === undefined) {
+      throw new Error("expected owner ids");
+    }
+
+    const ownerABuildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+        ownerId: ownerAId,
+      }
+    );
+    const ownerBBuildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Labone walk-up",
+        street: "32 Labone Crescent",
+        area: "Labone",
+        ownerId: ownerBId,
+      }
+    );
+
+    const ownerAList = await asUser(t, ownerA.userId).query(
+      api.buildings.listForViewer,
+      {}
+    );
+    const ownerBList = await asUser(t, ownerB.userId).query(
+      api.buildings.listForViewer,
+      {}
+    );
+
+    expect(ownerAList.map((row) => row.name)).toEqual(["Ridge Court"]);
+    expect(ownerBList.map((row) => row.name)).toEqual(["Labone walk-up"]);
+
+    const ownBuilding = await asUser(t, ownerA.userId).query(
+      api.buildings.get,
+      { buildingId: ownerABuildingId }
+    );
+    expect(ownBuilding._id).toBe(ownerABuildingId);
+
+    try {
+      await asUser(t, ownerA.userId).query(api.buildings.get, {
+        buildingId: ownerBBuildingId,
+      });
+      throw new Error("expected get to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    try {
+      await asUser(t, ownerA.userId).query(api.units.listByBuilding, {
+        buildingId: ownerBBuildingId,
+      });
+      throw new Error("expected unit list to refuse");
     } catch (error) {
       expect(errorCode(error)).toBe("NOT_PERMITTED");
     }

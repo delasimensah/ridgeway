@@ -18,6 +18,7 @@ describe("profiles", () => {
       displayName: "Ama Boateng",
       isStaff: true,
       isField: false,
+      ownerId: null,
     });
   });
 
@@ -54,5 +55,24 @@ describe("profiles", () => {
     const viewer = await asUser(t, userId).query(api.profiles.getCurrent, {});
     expect(viewer.isStaff).toBe(false);
     expect(viewer.displayName).toBe("new.person");
+    expect(viewer.ownerId).toBeNull();
+  });
+
+  it("returns the owner id for a person who acts for an owner", async () => {
+    const t = makeBackend();
+    const { userId, ownerId } = await insertPerson(t, {
+      email: "kwesi.mensah@ridgeway.gh",
+      displayName: "Kwesi Mensah",
+      role: "owner",
+    });
+
+    const viewer = await asUser(t, userId).query(api.profiles.getCurrent, {});
+
+    expect(viewer).toMatchObject({
+      displayName: "Kwesi Mensah",
+      isStaff: false,
+      isField: false,
+      ownerId,
+    });
   });
 });

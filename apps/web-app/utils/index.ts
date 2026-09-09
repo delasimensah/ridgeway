@@ -22,7 +22,11 @@ export {
   type AddUnitFormValues,
   type UnitKind,
 } from "./addUnitSchema";
-export { addOwnerSchema, type AddOwnerFormValues } from "./addOwnerSchema";
+export {
+  addOwnerSchema,
+  NEW_OWNER_CHOICE,
+  type AddOwnerFormValues,
+} from "./addOwnerSchema";
 export {
   addTenantSchema,
   utcToday,

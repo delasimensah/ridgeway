@@ -12,6 +12,7 @@ const currentViewerValidator = v.object({
   organizationId: v.union(v.id("organizations"), v.null()),
   isStaff: v.boolean(),
   isField: v.boolean(),
+  ownerId: v.union(v.id("owners"), v.null()),
 });
 
 export const getCurrent = authedQuery({
@@ -25,6 +26,7 @@ export const getCurrent = authedQuery({
       organizationId: ctx.viewer.organizationId,
       isStaff: ctx.viewer.isStaff,
       isField: ctx.viewer.isField,
+      ownerId: ctx.viewer.ownerId,
     };
   },
 });

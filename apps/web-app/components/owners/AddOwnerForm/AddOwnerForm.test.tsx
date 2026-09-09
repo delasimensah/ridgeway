@@ -8,6 +8,7 @@ import AddOwnerForm from "./AddOwnerForm";
 const mockReplace = jest.fn();
 const mockPush = jest.fn();
 const mockMutate = jest.fn();
+let mockOwners: { _id: string; displayName: string }[] = [];
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -18,6 +19,7 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("convex/react", () => ({
   useMutation: () => mockMutate,
+  useQuery: () => mockOwners,
 }));
 
 describe("AddOwnerForm", () => {
@@ -25,6 +27,7 @@ describe("AddOwnerForm", () => {
     mockReplace.mockReset();
     mockPush.mockReset();
     mockMutate.mockReset();
+    mockOwners = [];
   });
 
   it("renders name, email, and phone", () => {
@@ -65,6 +68,13 @@ describe("AddOwnerForm", () => {
     mockMutate.mockResolvedValue("owner-id");
     render(<AddOwnerForm buildingId={"building-id" as never} />);
 
+    await user.click(screen.getByRole("combobox", { name: /owner/i }));
+    await user.click(
+      await screen.findByRole("option", {
+        name: /Add a new owner/i,
+        hidden: true,
+      })
+    );
     await user.type(screen.getByLabelText(/full name/i), "Kwesi Mensah");
     await user.click(screen.getByRole("button", { name: "Save owner" }));
 
@@ -74,6 +84,27 @@ describe("AddOwnerForm", () => {
         contactEmail: "",
         contactPhone: "",
         buildingId: "building-id",
+      });
+    });
+    expect(mockReplace).toHaveBeenCalledWith("/buildings/building-id");
+  });
+
+  it("links a building to an owner already on file", async () => {
+    const user = userEvent.setup();
+    mockOwners = [{ _id: "owner-1", displayName: "Kwesi Mensah" }];
+    mockMutate.mockResolvedValue(null);
+    render(<AddOwnerForm buildingId={"building-id" as never} />);
+
+    await user.click(screen.getByRole("combobox", { name: /owner/i }));
+    await user.click(
+      await screen.findByRole("option", { name: "Kwesi Mensah", hidden: true })
+    );
+    await user.click(screen.getByRole("button", { name: "Save owner" }));
+
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith({
+        buildingId: "building-id",
+        ownerId: "owner-1",
       });
     });
     expect(mockReplace).toHaveBeenCalledWith("/buildings/building-id");

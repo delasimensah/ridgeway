@@ -10,6 +10,7 @@ export type Viewer = {
   organizationId: Id<"organizations"> | null;
   isStaff: boolean;
   isField: boolean;
+  ownerId: Id<"owners"> | null;
 };
 
 export async function resolveViewer(ctx: QueryCtx): Promise<Viewer> {
@@ -33,9 +34,11 @@ export async function resolveViewer(ctx: QueryCtx): Promise<Viewer> {
 
   const staffMembership = memberships.find((row) => row.role === "staff");
   const fieldMembership = memberships.find((row) => row.role === "field");
+  const ownerMembership = memberships.find((row) => row.role === "owner");
   const organizationId =
     staffMembership?.organizationId ??
     fieldMembership?.organizationId ??
+    ownerMembership?.organizationId ??
     memberships[0]?.organizationId ??
     null;
 
@@ -45,6 +48,7 @@ export async function resolveViewer(ctx: QueryCtx): Promise<Viewer> {
     organizationId,
     isStaff: staffMembership !== undefined,
     isField: fieldMembership !== undefined,
+    ownerId: ownerMembership?.ownerId ?? null,
   };
 }
 
@@ -98,6 +102,14 @@ export async function requireBuildingAccess(
   }
 
   if (viewer.isStaff && viewer.organizationId === building.organizationId) {
+    return building;
+  }
+
+  if (
+    viewer.ownerId !== null &&
+    building.ownerId !== undefined &&
+    viewer.ownerId === building.ownerId
+  ) {
     return building;
   }
 

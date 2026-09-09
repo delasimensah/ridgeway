@@ -9,6 +9,7 @@ export interface BuildingListItem {
   _id: string;
   name: string;
   address: string;
+  ownerName: string | null;
   unitCount: number;
 }
 
@@ -40,7 +41,7 @@ const BuildingListTable: React.FC<BuildingListTableProps> = ({ buildings }) => {
                 buildingId={building._id}
                 name={building.name}
                 address={building.address}
-                ownerLabel="—"
+                ownerLabel={building.ownerName ?? "—"}
                 unitCount={building.unitCount}
                 openRepairCount={0}
               />

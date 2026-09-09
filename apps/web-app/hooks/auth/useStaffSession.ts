@@ -60,6 +60,7 @@ export function useStaffSession() {
   return {
     isSessionLoading,
     isStaff: viewer?.isStaff === true,
+    isOwner: viewer?.ownerId !== null && viewer?.ownerId !== undefined,
     displayName: viewer?.displayName ?? "",
     isSigningOut,
     handleSignOut,

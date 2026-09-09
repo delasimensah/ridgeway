@@ -10,8 +10,8 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-4 done** (add an owner and a tenant with a lease). Next is RIDGE-5 (owner A cannot see owner B's buildings).
-- **Last updated:** 8 Sep 2026
+- **Current phase:** Build slices — **RIDGE-5 done** (owner A cannot see owner B's buildings). Next is [RIDGE-27](https://linear.app/dm-studios/issue/RIDGE-27/staff-can-give-an-owner-a-login) (staff can give an owner a login), then RIDGE-6.
+- **Last updated:** 9 Sep 2026
 - **Blocked / open:** none
 
 ---
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, and RIDGE-4 Done; RIDGE-5–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, and RIDGE-5 Done; next is RIDGE-27; then RIDGE-6–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,7 +58,7 @@
 
 ## Next action (one line)
 
-Start RIDGE-5 (owner A cannot see owner B's buildings).
+Start [RIDGE-27](https://linear.app/dm-studios/issue/RIDGE-27/staff-can-give-an-owner-a-login) (staff can give an owner a login). Then RIDGE-6.
 
 ---
 
@@ -67,7 +67,9 @@ Start RIDGE-5 (owner A cannot see owner B's buildings).
 - RIDGE-1 PR (merged): https://github.com/delasimensah/ridgeway/pull/1
 - RIDGE-2 PR (merged): https://github.com/delasimensah/ridgeway/pull/2
 - RIDGE-25 PR (merged): https://github.com/delasimensah/ridgeway/pull/3
-- RIDGE-3 PR: https://github.com/delasimensah/ridgeway/pull/4
+- RIDGE-3 PR (merged): https://github.com/delasimensah/ridgeway/pull/4
+- RIDGE-4 PR (merged): https://github.com/delasimensah/ridgeway/pull/5
+- RIDGE-5 PR: https://github.com/delasimensah/ridgeway/pull/6
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
