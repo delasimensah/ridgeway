@@ -69,6 +69,7 @@ Start [RIDGE-27](https://linear.app/dm-studios/issue/RIDGE-27/staff-can-give-an-
 - RIDGE-25 PR (merged): https://github.com/delasimensah/ridgeway/pull/3
 - RIDGE-3 PR (merged): https://github.com/delasimensah/ridgeway/pull/4
 - RIDGE-4 PR (merged): https://github.com/delasimensah/ridgeway/pull/5
+- RIDGE-5 PR: https://github.com/delasimensah/ridgeway/pull/6
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
