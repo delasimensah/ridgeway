@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 
+import { insertLeaseForExistingTenant, insertLeaseWithTenant } from "./leases";
 import { ERROR_CODES, raise } from "./lib/errors";
 import { authedQuery, staffMutation, staffQuery } from "./lib/functions";
 import { isLeaseCurrent, requireBuildingAccess, utcToday } from "./lib/viewer";
@@ -102,17 +103,51 @@ export const create = staffMutation({
     buildingId: v.id("buildings"),
     label: v.string(),
     kind: unitKind,
+    newTenant: v.optional(
+      v.object({
+        displayName: v.string(),
+        email: v.string(),
+        phone: v.optional(v.string()),
+        startedOn: v.string(),
+        endedOn: v.optional(v.string()),
+      })
+    ),
+    existingTenant: v.optional(
+      v.object({
+        tenantProfileId: v.id("profiles"),
+        startedOn: v.string(),
+        endedOn: v.optional(v.string()),
+      })
+    ),
   },
   returns: v.id("units"),
   handler: async (ctx, args) => {
     await requireBuildingAccess(ctx, ctx.viewer, args.buildingId);
     const label = requireText(args.label, "Unit label");
 
-    return await ctx.db.insert("units", {
+    if (args.newTenant !== undefined && args.existingTenant !== undefined) {
+      raise(ERROR_CODES.INVALID, "Pick a tenant or add a new one, not both");
+    }
+
+    const unitId = await ctx.db.insert("units", {
       buildingId: args.buildingId,
       label,
       kind: args.kind,
     });
+
+    if (args.newTenant !== undefined) {
+      await insertLeaseWithTenant(ctx, ctx.viewer, unitId, args.newTenant);
+    }
+    if (args.existingTenant !== undefined) {
+      await insertLeaseForExistingTenant(
+        ctx,
+        ctx.viewer,
+        unitId,
+        args.existingTenant
+      );
+    }
+
+    return unitId;
   },
 });
 

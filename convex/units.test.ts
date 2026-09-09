@@ -119,6 +119,98 @@ describe("units", () => {
     }
   });
 
+  it("creates a unit with a tenant already living there", async () => {
+    const t = makeBackend();
+    const { userId } = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const buildingId = await asUser(t, userId).mutation(api.buildings.create, {
+      name: "Ridge Court",
+      street: "14 Ridge Road",
+      area: "Cantonments",
+    });
+
+    const unitId = await asUser(t, userId).mutation(api.units.create, {
+      buildingId,
+      label: "B12",
+      kind: "apartment",
+      newTenant: {
+        displayName: "Akosua Darko",
+        email: "akosua@example.com",
+        phone: "024 555 0101",
+        startedOn: "2024-01-15",
+        endedOn: "2027-12-31",
+      },
+    });
+
+    const list = await asUser(t, userId).query(api.units.listByBuilding, {
+      buildingId,
+    });
+
+    expect(list).toMatchObject([
+      {
+        _id: unitId,
+        label: "B12",
+        kind: "apartment",
+        tenantName: "Akosua Darko",
+        leaseEndedOn: "2027-12-31",
+      },
+    ]);
+    expect(list[0]?.leaseId).not.toBeNull();
+  });
+
+  it("creates a unit for a tenant whose earlier lease has ended", async () => {
+    const t = makeBackend();
+    const { userId } = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const buildingId = await asUser(t, userId).mutation(api.buildings.create, {
+      name: "Ridge Court",
+      street: "14 Ridge Road",
+      area: "Cantonments",
+    });
+    const firstUnitId = await asUser(t, userId).mutation(api.units.create, {
+      buildingId,
+      label: "4B",
+      kind: "apartment",
+      newTenant: {
+        displayName: "Sofia Herrera",
+        email: "sofia.herrera@example.com",
+        startedOn: "2024-01-15",
+        endedOn: "2024-12-31",
+      },
+    });
+
+    const available = await asUser(t, userId).query(
+      api.leases.listAvailableForStaff,
+      {}
+    );
+    expect(available).toHaveLength(1);
+    const pastTenant = available[0];
+
+    const secondUnitId = await asUser(t, userId).mutation(api.units.create, {
+      buildingId,
+      label: "8",
+      kind: "apartment",
+      existingTenant: {
+        tenantProfileId: pastTenant._id,
+        startedOn: "2025-03-03",
+      },
+    });
+
+    const list = await asUser(t, userId).query(api.units.listByBuilding, {
+      buildingId,
+    });
+    expect(list.find((row) => row._id === secondUnitId)?.tenantName).toBe(
+      "Sofia Herrera"
+    );
+    expect(list.find((row) => row._id === firstUnitId)?.tenantName).toBeNull();
+  });
+
   it("refuses listByBuilding when the building belongs to another organization", async () => {
     const t = makeBackend();
     const ama = await insertPerson(t, {

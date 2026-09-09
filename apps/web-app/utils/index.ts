@@ -29,6 +29,8 @@ export {
 } from "./addOwnerSchema";
 export {
   addTenantSchema,
+  isExistingTenantChoice,
+  NEW_TENANT_CHOICE,
   utcToday,
   type AddTenantFormValues,
 } from "./addTenantSchema";

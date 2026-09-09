@@ -21,14 +21,21 @@ const AddTenantRoute = () => {
   useEffect(() => {
     if (building === null) {
       router.replace("/buildings");
+      return;
     }
-  }, [building, router]);
+    if (units !== undefined && units.every((unit) => unit.leaseId !== null)) {
+      router.replace(`/buildings/${buildingId}`);
+    }
+  }, [building, buildingId, router, units]);
 
   if (building === undefined || building === null || units === undefined) {
     return <LoadingScreen fillViewport={false} />;
   }
 
   const vacantUnits = units.filter((unit) => unit.leaseId === null);
+  if (vacantUnits.length === 0) {
+    return <LoadingScreen fillViewport={false} />;
+  }
 
   return (
     <AddTenantPage

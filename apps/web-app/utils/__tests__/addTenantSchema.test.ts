@@ -56,4 +56,26 @@ describe("addTenantSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("accepts a past tenant without typing name and email again", () => {
+    expect(
+      addTenantSchema.parse({
+        unitId: "unit-1",
+        tenantChoice: "profile-1",
+        displayName: "",
+        phone: "",
+        email: "",
+        startedOn: "2024-01-15",
+        endedOn: "",
+      })
+    ).toEqual({
+      unitId: "unit-1",
+      tenantChoice: "profile-1",
+      displayName: "",
+      phone: "",
+      email: "",
+      startedOn: "2024-01-15",
+      endedOn: "",
+    });
+  });
 });
