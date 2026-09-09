@@ -52,10 +52,59 @@ Parent issues. Children sit under them.
 4. [RIDGE-3 Staff can add a unit under a building](https://linear.app/dm-studios/issue/RIDGE-3/staff-can-add-a-unit-under-a-building) — Staff portfolio. Design: `exports/web/staff/building-detail.html`, `add-unit.html`. Includes correcting the unit label.
 5. [RIDGE-4 Staff can add an owner and a tenant with a lease that already started](https://linear.app/dm-studios/issue/RIDGE-4/staff-can-add-an-owner-and-a-tenant-with-a-lease-that-already-started) — Staff portfolio. Design: `exports/web/staff/add-owner.html`, `add-tenant.html`. Includes correcting typed owner and tenant fields.
 6. [RIDGE-5 Owner A cannot see Owner B's buildings](https://linear.app/dm-studios/issue/RIDGE-5/owner-a-cannot-see-owner-bs-buildings) — Owner isolation. Design: `exports/web/owner/home.html`. Integration tests on Convex functions.
-7. [RIDGE-27 Staff can give an owner a login](https://linear.app/dm-studios/issue/RIDGE-27/staff-can-give-an-owner-a-login) — Auth. Staff types that owner's email and a temporary password on the existing add-owner form. Convex `createAccount` plus owner membership. No public sign-up. No email reset. Tenant and field logins are not this ticket; same pattern later on those slices. Design: `exports/web/staff/add-owner.html` (password field added; no new screen).
+7. [RIDGE-27 Staff can give an owner a login](https://linear.app/dm-studios/issue/RIDGE-27/staff-can-give-an-owner-a-login) — Auth. New owners and owners already saved. Email and a temporary password on add owner and on edit owner. Convex `createAccount` (staff action) plus owner membership. First grant only; no password reset. Tenant and field logins are not this ticket. Design: `exports/web/staff/add-owner.html` (same form in edit; no new screen). Full text in **RIDGE-27** below.
 8. [RIDGE-6 Tenant can file a repair with a photo and see status received](https://linear.app/dm-studios/issue/RIDGE-6/tenant-can-file-a-repair-with-a-photo-and-see-status-received) — Work orders. Design: `exports/web/tenant/file-repair.html`. Includes correcting the typed description while the ticket is still received.
 9. [RIDGE-7 Field worker can move a job received → assigned → scheduled → done and attach a completion photo](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) — Work orders. Design: `exports/mobile/field/job-detail.html`.
 10. [RIDGE-8 After staff end a lease, that tenant cannot see the unit](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-lease-that-tenant-cannot-see-the-unit) — Staff portfolio. Design: `exports/web/staff/end-lease.html`, `exports/web/tenant/lease-ended.html`.
+
+---
+
+## RIDGE-27. Staff can give an owner a login
+
+**Epic:** Auth ([RIDGE-19](https://linear.app/dm-studios/issue/RIDGE-19/epic-auth))  
+**Apps:** web, Convex  
+**Branch:** `feature/RIDGE-27`
+
+Staff can give a person a website login for an owner. That includes a **new** owner and an owner **already saved** who still has no login. Without the edit path, owners added in RIDGE-4 cannot sign in.
+
+**Design:**
+
+- Export: `docs/ui-design/ridgeway/exports/web/staff/add-owner.html`
+- Same add-owner form in edit. Password field added. No new screen.
+
+**Who gets a login**
+
+- New owner: staff may type email and a temporary password when they add the owner (`/owners/new`, or add a new owner on a building). If they set a password, email is required and the login is created on that save.
+- Existing owner with no login: staff open edit owner (`/owners/:id/edit`), type email and a temporary password, and save. That is how owners already in the product get access.
+- Existing owner who already has a login (including seed Kwesi and Adwoa): the form shows they can sign in. Do not create a second account. Do not change the password.
+
+**How it is built**
+
+- Staff type email and password. They do not pick a profile id. The existing `owners.grantMembership` mutation is not the staff UI.
+- `createAccount` cannot run inside `owners.create` or `owners.update`. Use a staff-callable action (same pattern as seed), then write the profile and the owner membership.
+- No public sign-up. Sign-up on the sign-in screen stays refused.
+
+**Rules**
+
+- First grant only. No forgot-password and no reset on this slice. A mistyped temporary password cannot be fixed here.
+- Contact email stays optional when staff are not granting a login. Email is required when they are.
+- Refuse the email if it already belongs to staff, field, another owner's login, or a tenant (tenants already have a `users` row by email).
+- Add building or assign-on-building may still save an owner with no login. Edit owner is how they get a login later.
+
+**Acceptance (yes or no)**
+
+- Staff add a new owner with email and a temporary password. That person can sign in and see only that owner's buildings.
+- Staff open an owner who was saved earlier with no login, set email and a temporary password, save. That person can sign in the same way.
+- Staff open an owner who already has a login. Save does not create another account and does not change the password.
+- The same email as Ama, Yaw, another owner login, or a tenant is refused with a clear error.
+- A person who is not staff cannot create an owner account from sign-in.
+- Tests cover grant on create, grant on edit, refuse when a login already exists, and refuse a taken email.
+
+**Out of scope**
+
+- Tenant login and field login (same pattern on those slices later).
+- Forgot password, email reset, or changing a password after the first grant.
+- Occupancy, open issues, and rent on owner home (RIDGE-11).
 
 ---
 
