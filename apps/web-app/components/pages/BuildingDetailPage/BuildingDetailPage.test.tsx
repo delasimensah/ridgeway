@@ -67,4 +67,37 @@ describe("BuildingDetailPage", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Add unit" })).toBeInTheDocument();
   });
+
+  it("shows open repairs for the building", () => {
+    render(
+      <BuildingDetailPage
+        buildingId="building-1"
+        name="Ridge Court"
+        address="14 Ridge Road, Cantonments, Accra"
+        units={[
+          {
+            _id: "1",
+            label: "B12",
+            tenantName: "Akosua Darko",
+            leaseId: "lease-1",
+          },
+        ]}
+        openRepairs={[
+          {
+            _id: "wo-1",
+            title: "Kitchen tap leak",
+            status: "received",
+            unitLabel: "B12",
+          },
+        ]}
+      />
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Open repairs" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /kitchen tap leak/i })
+    ).toHaveAttribute("href", "/repairs/wo-1");
+  });
 });

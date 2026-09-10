@@ -53,7 +53,9 @@ git commit -m "feature/user-auth - Added user authentication flow"
 
 ## Agent pause before commit
 
-When an AI agent is doing the work: branch, implement, and run checks. Then stop. Do not commit, push, or open a pull request until this message explicitly asks for that. A yes earlier in the chat does not cover a later commit or push. A red GitHub Action is not that ask. Fix CI locally and wait.
+When an AI agent is doing the work: branch, implement, and run checks. Then stop. Do not commit, push, or open a pull request until this message explicitly asks for that. A yes earlier in the chat does not cover a later commit or push.
+
+When this message asks to open a PR: local `yarn lint`, `yarn format:check`, `yarn type-check`, and `yarn test:ci` first, then commit, push, and create the PR. Do not wait on GitHub Actions. If a test is too slow for the default 5s timeout, rewrite the test.
 
 ## STATUS.md in a feature pull request
 

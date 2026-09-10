@@ -1,7 +1,7 @@
 import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
-import { render } from "@/test-utils";
+import { fillField, render, setupUser } from "@/test-utils";
+import { NEW_TENANT_CHOICE } from "@/utils";
 
 import AddUnitForm from "./AddUnitForm";
 
@@ -55,7 +55,7 @@ describe("AddUnitForm", () => {
   });
 
   it("saves a unit and returns to the building", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockResolvedValue("unit-id");
     render(
       <AddUnitForm
@@ -64,7 +64,7 @@ describe("AddUnitForm", () => {
       />
     );
 
-    await user.type(screen.getByLabelText(/unit label/i), "A3");
+    await fillField(user, screen.getByLabelText(/unit label/i), "A3");
     await user.click(screen.getByRole("button", { name: "Save unit" }));
 
     await waitFor(() => {
@@ -78,7 +78,7 @@ describe("AddUnitForm", () => {
   });
 
   it("shows an error when save fails", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockRejectedValue(new Error("NOT_PERMITTED"));
     render(
       <AddUnitForm
@@ -87,7 +87,7 @@ describe("AddUnitForm", () => {
       />
     );
 
-    await user.type(screen.getByLabelText(/unit label/i), "A3");
+    await fillField(user, screen.getByLabelText(/unit label/i), "A3");
     await user.click(screen.getByRole("button", { name: "Save unit" }));
 
     expect(
@@ -99,7 +99,7 @@ describe("AddUnitForm", () => {
   });
 
   it("goes back to the building when cancel is pressed", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     render(
       <AddUnitForm
         buildingId={"building-id" as never}
@@ -112,7 +112,7 @@ describe("AddUnitForm", () => {
   });
 
   it("saves corrections to an existing unit and returns to the building", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockResolvedValue(null);
     render(
       <AddUnitForm
@@ -126,8 +126,7 @@ describe("AddUnitForm", () => {
       />
     );
 
-    await user.clear(screen.getByLabelText(/unit label/i));
-    await user.type(screen.getByLabelText(/unit label/i), "B12");
+    await fillField(user, screen.getByLabelText(/unit label/i), "B12");
     await user.click(screen.getByRole("button", { name: "Save unit" }));
 
     await waitFor(() => {
@@ -159,38 +158,25 @@ describe("AddUnitForm", () => {
   });
 
   it("creates a unit with a tenant already living there", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockResolvedValue("unit-id");
     render(
       <AddUnitForm
         buildingId={"building-id" as never}
         buildingName="Ridge Court"
         initialValues={{
-          label: "",
+          label: "B12",
           kind: "apartment",
-          tenantChoice: "",
-          displayName: "",
+          tenantChoice: NEW_TENANT_CHOICE,
+          displayName: "Akosua Darko",
           phone: "",
-          email: "",
+          email: "akosua@example.com",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
         }}
       />
     );
 
-    await user.type(screen.getByLabelText(/unit label/i), "B12");
-    await user.click(screen.getByRole("combobox", { name: /tenant/i }));
-    await user.click(
-      await screen.findByRole("option", {
-        name: /Add a tenant/i,
-        hidden: true,
-      })
-    );
-    await user.type(
-      screen.getByRole("textbox", { name: /name/i }),
-      "Akosua Darko"
-    );
-    await user.type(screen.getByLabelText(/email/i), "akosua@example.com");
     await user.click(screen.getByRole("button", { name: "Save unit" }));
 
     await waitFor(() => {
@@ -210,7 +196,7 @@ describe("AddUnitForm", () => {
   });
 
   it("creates a unit for someone who already rented", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockAvailableTenants = [{ _id: "profile-1", displayName: "Sofia Herrera" }];
     mockMutate.mockResolvedValue("unit-id");
     render(
@@ -218,9 +204,9 @@ describe("AddUnitForm", () => {
         buildingId={"building-id" as never}
         buildingName="Ridge Court"
         initialValues={{
-          label: "",
+          label: "4B",
           kind: "apartment",
-          tenantChoice: "",
+          tenantChoice: "profile-1",
           displayName: "",
           phone: "",
           email: "",
@@ -230,14 +216,6 @@ describe("AddUnitForm", () => {
       />
     );
 
-    await user.type(screen.getByLabelText(/unit label/i), "4B");
-    await user.click(screen.getByRole("combobox", { name: /tenant/i }));
-    await user.click(
-      await screen.findByRole("option", {
-        name: "Sofia Herrera",
-        hidden: true,
-      })
-    );
     await user.click(screen.getByRole("button", { name: "Save unit" }));
 
     await waitFor(() => {

@@ -3,7 +3,12 @@
 import { api } from "@convex/_generated/api";
 import { useQuery } from "convex/react";
 
-import { LoadingScreen, OwnerHomePage, StaffHomePage } from "@/components";
+import {
+  LoadingScreen,
+  OwnerHomePage,
+  StaffHomePage,
+  TenantHomePage,
+} from "@/components";
 import { useStaffSession } from "@/hooks";
 import { staffGreeting } from "@/utils";
 
@@ -13,6 +18,10 @@ const HomeRoute = () => {
   const buildings = useQuery(
     api.buildings.listForViewer,
     session.isOwner ? {} : "skip"
+  );
+  const repairs = useQuery(
+    api.workOrders.listForCurrentTenant,
+    session.isTenant ? {} : "skip"
   );
 
   if (session.isSessionLoading) {
@@ -34,6 +43,20 @@ const HomeRoute = () => {
       <OwnerHomePage
         greeting={staffGreeting(session.displayName)}
         buildings={buildings}
+      />
+    );
+  }
+
+  if (session.isTenant) {
+    if (repairs === undefined || session.currentLease === null) {
+      return <LoadingScreen fillViewport={false} />;
+    }
+    return (
+      <TenantHomePage
+        unitLabel={session.currentLease.unitLabel}
+        buildingName={session.currentLease.buildingName}
+        address={session.currentLease.address}
+        repairs={repairs}
       />
     );
   }

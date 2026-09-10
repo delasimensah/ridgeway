@@ -15,6 +15,7 @@ describe("BuildingListTable", () => {
             address: "14 Ridge Road, Cantonments, Accra",
             ownerName: "Kwesi Mensah",
             unitCount: 0,
+            openRepairCount: 0,
           },
           {
             _id: "2",
@@ -22,6 +23,7 @@ describe("BuildingListTable", () => {
             address: "32 Labone Crescent, Labone, Accra",
             ownerName: null,
             unitCount: 0,
+            openRepairCount: 0,
           },
         ]}
       />

@@ -17,10 +17,11 @@ Permission is **this message only**. A yes earlier in the chat, including “com
 - Ticket text, STATUS.md, or git guidelines that mention a pull request
 - A prior chat or summary that lists commit / push / PR as leftover work
 - Finishing the implementation and tests
-- GitHub Actions red, failing quality checks, or “CI is failing”
-- Making a PR merge-ready, Autopilot, or “the check only goes green after a push”
+- Autopilot, or noticing CI is red when this message did not ask to open or update a PR
 
-If CI fails: fix the files locally, say what failed, **do not commit or push**.
+If CI fails and this message did **not** ask to open or update a PR: fix the files locally, say what failed, **do not commit or push**.
+
+If this message asked to open a PR (or commit and PR): local tests first, then publish. Do not wait on GitHub. See `wait-for-github-checks-on-pr.mdc`.
 
 ## Is permission
 

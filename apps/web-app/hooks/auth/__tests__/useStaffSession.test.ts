@@ -1,13 +1,26 @@
 import { renderHook, waitFor } from "@testing-library/react";
 
-import { useStaffSession } from "../useStaffSession";
+import { StaffSessionProvider, useStaffSession } from "../useStaffSession";
 
 const mockReplace = jest.fn();
 const mockSignOut = jest.fn();
 const mockEnsureProfile = jest.fn();
 let mockAuth = { isAuthenticated: false, isLoading: true };
 let mockViewer:
-  { isStaff: boolean; displayName: string; ownerId: string | null } | undefined;
+  | {
+      isStaff: boolean;
+      displayName: string;
+      ownerId: string | null;
+      currentLease: {
+        leaseId: string;
+        unitId: string;
+        buildingId: string;
+        unitLabel: string;
+        buildingName: string;
+        address: string;
+      } | null;
+    }
+  | undefined;
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -28,6 +41,12 @@ jest.mock("convex/react", () => ({
   useQuery: () => mockViewer,
 }));
 
+function renderSession() {
+  return renderHook(() => useStaffSession(), {
+    wrapper: StaffSessionProvider,
+  });
+}
+
 describe("useStaffSession", () => {
   beforeEach(() => {
     mockReplace.mockReset();
@@ -40,7 +59,7 @@ describe("useStaffSession", () => {
 
   it("sends a signed-out person to sign in", async () => {
     mockAuth = { isAuthenticated: false, isLoading: false };
-    renderHook(() => useStaffSession());
+    renderSession();
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith("/sign-in");
@@ -49,8 +68,13 @@ describe("useStaffSession", () => {
 
   it("reports staff once the profile is ready", async () => {
     mockAuth = { isAuthenticated: true, isLoading: false };
-    mockViewer = { isStaff: true, displayName: "Ama Boateng", ownerId: null };
-    const { result } = renderHook(() => useStaffSession());
+    mockViewer = {
+      isStaff: true,
+      displayName: "Ama Boateng",
+      ownerId: null,
+      currentLease: null,
+    };
+    const { result } = renderSession();
 
     await waitFor(() => {
       expect(result.current.isStaff).toBe(true);
@@ -65,13 +89,38 @@ describe("useStaffSession", () => {
       isStaff: false,
       displayName: "Kwesi Mensah",
       ownerId: "owner-1",
+      currentLease: null,
     };
-    const { result } = renderHook(() => useStaffSession());
+    const { result } = renderSession();
 
     await waitFor(() => {
       expect(result.current.isOwner).toBe(true);
     });
     expect(result.current.isStaff).toBe(false);
     expect(result.current.displayName).toBe("Kwesi Mensah");
+  });
+
+  it("reports a tenant once the profile is ready", async () => {
+    mockAuth = { isAuthenticated: true, isLoading: false };
+    mockViewer = {
+      isStaff: false,
+      displayName: "Akosua Darko",
+      ownerId: null,
+      currentLease: {
+        leaseId: "lease-1",
+        unitId: "unit-1",
+        buildingId: "building-1",
+        unitLabel: "B12",
+        buildingName: "Ridge Court",
+        address: "14 Ridge Road, Cantonments, Accra",
+      },
+    };
+    const { result } = renderSession();
+
+    await waitFor(() => {
+      expect(result.current.isTenant).toBe(true);
+    });
+    expect(result.current.isStaff).toBe(false);
+    expect(result.current.currentLease?.unitLabel).toBe("B12");
   });
 });

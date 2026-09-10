@@ -28,6 +28,7 @@ describe("buildings", () => {
         address: formatAccraAddress("14 Ridge Road", "Cantonments"),
         ownerName: null,
         unitCount: 0,
+        openRepairCount: 0,
       },
     ]);
 
@@ -61,6 +62,7 @@ describe("buildings", () => {
         address: formatAccraAddress("14 Ridge Road", "Cantonments"),
         ownerName: "Kwesi Mensah",
         unitCount: 0,
+        openRepairCount: 0,
       },
     ]);
   });
@@ -282,6 +284,7 @@ describe("buildings", () => {
         address: formatAccraAddress("16 Ridge Road", "Labone"),
         ownerName: null,
         unitCount: 0,
+        openRepairCount: 0,
       },
     ]);
   });

@@ -52,6 +52,7 @@ describe("owners", () => {
         address: "14 Ridge Road, Cantonments, Accra",
         ownerName: "Kwesi Mensah",
         unitCount: 0,
+        openRepairCount: 0,
       },
     ]);
   });

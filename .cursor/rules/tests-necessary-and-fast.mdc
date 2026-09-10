@@ -1,0 +1,12 @@
+---
+description: Write few, fast, necessary tests. If a test needs more than 5s, rewrite it.
+alwaysApply: true
+---
+
+# Tests must be necessary and fast
+
+- Cover the behaviour the ticket promised. Do not add extra cases, snapshots, or a second test that fills the same form.
+- Fill text with `fillField()` from the web `test-utils`. Do not `user.type` long strings.
+- Query the exact field. `getByLabelText(/name/i)` also matches Full name. Use `getByRole("textbox", { name: /^name/i })`.
+- Set Select values with `initialValues`. Do not open a Mantine dropdown in a form submit test. A picker component can click the dropdown once.
+- Keep the default 5s Jest timeout. Do not raise it. If a test cannot finish in 5s on a laptop, it is not a good test.

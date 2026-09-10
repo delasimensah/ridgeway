@@ -6,6 +6,7 @@ import {
   ORGANIZATION_NAME,
   OWNER_A_SEED,
   STAFF_SEED,
+  TENANT_SEED,
 } from "./seed";
 import { asUser, errorCode, makeBackend } from "./test.setup";
 
@@ -68,6 +69,40 @@ describe("seed.attachIdentity", () => {
 
     const list = await asUser(t, userId).query(api.buildings.listForViewer, {});
     expect(list.map((row) => row.name)).toEqual([OWNER_A_SEED.buildingName]);
+  });
+
+  it("puts Akosua on Ridge Court B12 with a current lease", async () => {
+    const t = makeBackend();
+    const userId = await t.run(async (ctx) => {
+      return await ctx.db.insert("users", {
+        email: TENANT_SEED.email,
+        name: TENANT_SEED.displayName,
+      });
+    });
+    const ownerId = await t.mutation(internal.seed.ensureOwner, {
+      displayName: OWNER_A_SEED.displayName,
+      contactEmail: OWNER_A_SEED.email,
+      organizationName: ORGANIZATION_NAME,
+    });
+    await t.mutation(internal.seed.ensureBuildingForOwner, {
+      ownerId,
+      name: OWNER_A_SEED.buildingName,
+      street: OWNER_A_SEED.street,
+      area: OWNER_A_SEED.area,
+    });
+    await t.mutation(internal.seed.ensureTenantOnBuilding, {
+      userId,
+      displayName: TENANT_SEED.displayName,
+      buildingName: OWNER_A_SEED.buildingName,
+      unitLabel: TENANT_SEED.unitLabel,
+      startedOn: TENANT_SEED.startedOn,
+    });
+
+    const viewer = await asUser(t, userId).query(api.profiles.getCurrent, {});
+    expect(viewer.currentLease).toMatchObject({
+      unitLabel: TENANT_SEED.unitLabel,
+      buildingName: OWNER_A_SEED.buildingName,
+    });
   });
 
   it("does not give a field worker the staff home", async () => {

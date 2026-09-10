@@ -56,6 +56,7 @@ describe("profiles", () => {
     expect(viewer.isStaff).toBe(false);
     expect(viewer.displayName).toBe("new.person");
     expect(viewer.ownerId).toBeNull();
+    expect(viewer.currentLease).toBeNull();
   });
 
   it("returns the owner id for a person who acts for an owner", async () => {
@@ -73,6 +74,61 @@ describe("profiles", () => {
       isStaff: false,
       isField: false,
       ownerId,
+      currentLease: null,
+    });
+  });
+
+  it("returns the current lease for a tenant", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const buildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+    await asUser(t, staff.userId).mutation(api.units.create, {
+      buildingId,
+      label: "B12",
+      kind: "apartment",
+      newTenant: {
+        displayName: "Akosua Darko",
+        email: "akosua.darko@ridgeway.gh",
+        startedOn: "2025-01-01",
+      },
+    });
+    const tenantUserId = await t.run(async (ctx) => {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("email", (q) => q.eq("email", "akosua.darko@ridgeway.gh"))
+        .unique();
+      if (user === null) {
+        throw new Error("tenant user missing");
+      }
+      return user._id;
+    });
+
+    const viewer = await asUser(t, tenantUserId).query(
+      api.profiles.getCurrent,
+      {}
+    );
+
+    expect(viewer).toMatchObject({
+      displayName: "Akosua Darko",
+      isStaff: false,
+      isField: false,
+      ownerId: null,
+      currentLease: {
+        unitLabel: "B12",
+        buildingName: "Ridge Court",
+        address: "14 Ridge Road, Cantonments, Accra",
+      },
     });
   });
 });

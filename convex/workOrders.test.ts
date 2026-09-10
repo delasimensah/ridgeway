@@ -1,0 +1,272 @@
+import { describe, expect, it } from "vitest";
+
+import { api } from "./_generated/api";
+import { asUser, errorCode, insertPerson, makeBackend } from "./test.setup";
+
+async function tenantUserIdByEmail(
+  t: ReturnType<typeof makeBackend>,
+  email: string
+) {
+  return await t.run(async (ctx) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", email))
+      .unique();
+    if (user === null) {
+      throw new Error("tenant user missing");
+    }
+    return user._id;
+  });
+}
+
+async function seedCurrentTenant(t: ReturnType<typeof makeBackend>) {
+  const staff = await insertPerson(t, {
+    email: "ama.boateng@ridgeway.gh",
+    displayName: "Ama Boateng",
+    role: "staff",
+  });
+  const buildingId = await asUser(t, staff.userId).mutation(
+    api.buildings.create,
+    {
+      name: "Ridge Court",
+      street: "14 Ridge Road",
+      area: "Cantonments",
+    }
+  );
+  const unitId = await asUser(t, staff.userId).mutation(api.units.create, {
+    buildingId,
+    label: "B12",
+    kind: "apartment",
+    newTenant: {
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      startedOn: "2025-01-01",
+    },
+  });
+  const tenantUserId = await tenantUserIdByEmail(t, "akosua.darko@ridgeway.gh");
+  return { staff, buildingId, unitId, tenantUserId };
+}
+
+describe("workOrders", () => {
+  it("lets a tenant on a current lease file a repair at received", async () => {
+    const t = makeBackend();
+    const { staff, buildingId, unitId, tenantUserId } =
+      await seedCurrentTenant(t);
+
+    const workOrderId = await asUser(t, tenantUserId).mutation(
+      api.workOrders.createByTenant,
+      {
+        unitId,
+        description: "Kitchen tap leak\nIt drips all night.",
+        category: "plumbing",
+        urgency: "normal",
+      }
+    );
+
+    const ticket = await asUser(t, tenantUserId).query(api.workOrders.get, {
+      workOrderId,
+    });
+    expect(ticket?.status).toBe("received");
+    expect(ticket?.title).toBe("Kitchen tap leak");
+    expect(ticket?.description).toBe("Kitchen tap leak\nIt drips all night.");
+    expect(ticket?.canEditDescription).toBe(true);
+    expect(ticket?.events.map((event) => event.toStatus)).toEqual(["received"]);
+
+    const again = await asUser(t, tenantUserId).query(api.workOrders.get, {
+      workOrderId,
+    });
+    expect(again?.status).toBe("received");
+
+    const staffList = await asUser(t, staff.userId).query(
+      api.workOrders.listForBuilding,
+      { buildingId }
+    );
+    expect(staffList).toEqual([
+      expect.objectContaining({
+        _id: workOrderId,
+        title: "Kitchen tap leak",
+        status: "received",
+        unitLabel: "B12",
+        buildingName: "Ridge Court",
+      }),
+    ]);
+
+    const orgList = await asUser(t, staff.userId).query(
+      api.workOrders.listForStaff,
+      {}
+    );
+    expect(orgList.map((row) => row._id)).toEqual([workOrderId]);
+
+    const buildings = await asUser(t, staff.userId).query(
+      api.buildings.listForViewer,
+      {}
+    );
+    expect(
+      buildings.find((row) => row._id === buildingId)?.openRepairCount
+    ).toBe(1);
+  });
+
+  it("refuses create when the lease has ended", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const buildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+    const unitId = await asUser(t, staff.userId).mutation(api.units.create, {
+      buildingId,
+      label: "B12",
+      kind: "apartment",
+      newTenant: {
+        displayName: "Akosua Darko",
+        email: "akosua.darko@ridgeway.gh",
+        startedOn: "2024-01-01",
+        endedOn: "2025-01-01",
+      },
+    });
+    const tenantUserId = await tenantUserIdByEmail(
+      t,
+      "akosua.darko@ridgeway.gh"
+    );
+
+    try {
+      await asUser(t, tenantUserId).mutation(api.workOrders.createByTenant, {
+        unitId,
+        description: "Kitchen tap leak",
+        category: "plumbing",
+        urgency: "normal",
+      });
+      throw new Error("expected createByTenant to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
+
+  it("refuses create for staff and for an owner", async () => {
+    const t = makeBackend();
+    const { staff, unitId } = await seedCurrentTenant(t);
+    const owner = await insertPerson(t, {
+      email: "kwesi.mensah@ridgeway.gh",
+      displayName: "Kwesi Mensah",
+      role: "owner",
+    });
+
+    try {
+      await asUser(t, staff.userId).mutation(api.workOrders.createByTenant, {
+        unitId,
+        description: "Kitchen tap leak",
+        category: "plumbing",
+        urgency: "normal",
+      });
+      throw new Error("expected staff create to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    try {
+      await asUser(t, owner.userId).mutation(api.workOrders.createByTenant, {
+        unitId,
+        description: "Kitchen tap leak",
+        category: "plumbing",
+        urgency: "normal",
+      });
+      throw new Error("expected owner create to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
+
+  it("lets the tenant correct the description only while received", async () => {
+    const t = makeBackend();
+    const { tenantUserId, unitId } = await seedCurrentTenant(t);
+    const workOrderId = await asUser(t, tenantUserId).mutation(
+      api.workOrders.createByTenant,
+      {
+        unitId,
+        description: "Kitchen tap leak",
+        category: "plumbing",
+        urgency: "normal",
+      }
+    );
+
+    await asUser(t, tenantUserId).mutation(api.workOrders.updateDescription, {
+      workOrderId,
+      description: "Bathroom tap leak",
+    });
+    const updated = await asUser(t, tenantUserId).query(api.workOrders.get, {
+      workOrderId,
+    });
+    expect(updated?.title).toBe("Bathroom tap leak");
+    expect(updated?.description).toBe("Bathroom tap leak");
+
+    await t.run(async (ctx) => {
+      await ctx.db.patch(workOrderId, { status: "assigned" });
+    });
+
+    try {
+      await asUser(t, tenantUserId).mutation(api.workOrders.updateDescription, {
+        workOrderId,
+        description: "Still leaking",
+      });
+      throw new Error("expected updateDescription to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
+
+  it("hides a ticket from a tenant on a different lease", async () => {
+    const t = makeBackend();
+    const { staff, buildingId, unitId, tenantUserId } =
+      await seedCurrentTenant(t);
+    const otherUnitId = await asUser(t, staff.userId).mutation(
+      api.units.create,
+      {
+        buildingId,
+        label: "A4",
+        kind: "apartment",
+        newTenant: {
+          displayName: "Sofia Herrera",
+          email: "sofia.herrera@ridgeway.gh",
+          startedOn: "2025-01-01",
+        },
+      }
+    );
+    const otherTenantUserId = await tenantUserIdByEmail(
+      t,
+      "sofia.herrera@ridgeway.gh"
+    );
+    const workOrderId = await asUser(t, tenantUserId).mutation(
+      api.workOrders.createByTenant,
+      {
+        unitId,
+        description: "Kitchen tap leak",
+        category: "plumbing",
+        urgency: "normal",
+      }
+    );
+
+    try {
+      await asUser(t, otherTenantUserId).query(api.workOrders.get, {
+        workOrderId,
+      });
+      throw new Error("expected get to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    const otherList = await asUser(t, otherTenantUserId).query(
+      api.workOrders.listForCurrentTenant,
+      {}
+    );
+    expect(otherList).toEqual([]);
+    expect(otherUnitId).toEqual(expect.any(String));
+  });
+});

@@ -11,6 +11,7 @@ export interface BuildingListItem {
   address: string;
   ownerName: string | null;
   unitCount: number;
+  openRepairCount: number;
 }
 
 interface BuildingListTableProps {
@@ -43,7 +44,7 @@ const BuildingListTable: React.FC<BuildingListTableProps> = ({ buildings }) => {
                 address={building.address}
                 ownerLabel={building.ownerName ?? "—"}
                 unitCount={building.unitCount}
-                openRepairCount={0}
+                openRepairCount={building.openRepairCount}
               />
             ))}
           </Table.Tbody>

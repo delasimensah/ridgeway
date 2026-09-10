@@ -1,1 +1,1 @@
-export { useStaffSession } from "./auth/useStaffSession";
+export { StaffSessionProvider, useStaffSession } from "./auth/useStaffSession";

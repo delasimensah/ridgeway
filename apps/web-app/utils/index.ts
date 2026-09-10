@@ -35,6 +35,24 @@ export {
   type AddTenantFormValues,
 } from "./addTenantSchema";
 export { getConvexErrorInfo, getConvexErrorMessage } from "./convexError";
+export {
+  fileRepairSchema,
+  REPAIR_CATEGORIES,
+  REPAIR_CATEGORY_OPTIONS,
+  REPAIR_URGENCIES,
+  REPAIR_URGENCY_OPTIONS,
+  type FileRepairFormValues,
+  type RepairCategory,
+  type RepairUrgency,
+} from "./fileRepairSchema";
+export {
+  formatRepairDate,
+  repairCategoryLabel,
+  repairEventTitle,
+  repairStatusLabel,
+  repairUrgencyLabel,
+} from "./repairLabels";
+export { uploadRepairPhoto } from "./uploadRepairPhoto";
 
 // Add more utilities as needed:
 // export { default as formatDate } from "./formatDate";
