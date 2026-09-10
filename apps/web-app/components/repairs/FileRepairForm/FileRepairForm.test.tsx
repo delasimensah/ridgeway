@@ -1,6 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
 
-import { render, setupUser } from "@/test-utils";
+import { fillField, render, setupUser } from "@/test-utils";
 
 import FileRepairForm from "./FileRepairForm";
 
@@ -31,7 +31,8 @@ describe("FileRepairForm", () => {
     expect(screen.getByText("Add a photo")).toBeInTheDocument();
     expect(screen.getByText("PNG, JPG up to 10MB")).toBeInTheDocument();
 
-    await user.type(
+    await fillField(
+      user,
       screen.getByRole("textbox", { name: /what’s wrong/i }),
       "Kitchen tap leak"
     );

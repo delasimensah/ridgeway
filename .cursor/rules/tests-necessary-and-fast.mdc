@@ -6,6 +6,6 @@ alwaysApply: true
 # Tests must be necessary and fast
 
 - Cover the behaviour the ticket promised. Do not add extra cases, snapshots, or a second test that fills the same form.
-- Type with `setupUser()` from the web `test-utils` (delay null). Never `userEvent.setup()` with the default delay.
+- Fill text with `fillField()` from the web `test-utils` (click, clear, paste). Do not `user.type` long strings.
 - Query the exact field. `getByLabelText(/name/i)` also matches Full name. Use `getByRole("textbox", { name: /^name/i })`.
-- Do not raise a timeout to hide slow typing.
+- Web Jest `testTimeout` is 20s for Mantine on GitHub. Do not add a per-test timeout to hide a hang.

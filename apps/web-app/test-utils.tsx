@@ -23,3 +23,13 @@ export function render(
 export function setupUser() {
   return userEvent.setup({ delay: null });
 }
+
+export async function fillField(
+  user: ReturnType<typeof setupUser>,
+  element: HTMLElement,
+  value: string
+): Promise<void> {
+  await user.click(element);
+  await user.clear(element);
+  await user.paste(value);
+}

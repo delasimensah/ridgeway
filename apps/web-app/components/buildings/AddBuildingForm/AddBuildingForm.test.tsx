@@ -1,6 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
 
-import { render, setupUser } from "@/test-utils";
+import { fillField, render, setupUser } from "@/test-utils";
 
 import AddBuildingForm from "./AddBuildingForm";
 
@@ -29,15 +29,18 @@ jest.mock("convex/react", () => ({
 }));
 
 async function fillAddress(user: ReturnType<typeof setupUser>): Promise<void> {
-  await user.type(
+  await fillField(
+    user,
     screen.getByRole("textbox", { name: /^name/i }),
     "Ridge Court"
   );
-  await user.type(
+  await fillField(
+    user,
     screen.getByRole("textbox", { name: /^street/i }),
     "14 Ridge Road"
   );
-  await user.type(
+  await fillField(
+    user,
     screen.getByRole("textbox", { name: /^area/i }),
     "Cantonments"
   );
@@ -128,8 +131,8 @@ describe("AddBuildingForm", () => {
       />
     );
 
-    await user.clear(screen.getByRole("textbox", { name: /^name/i }));
-    await user.type(
+    await fillField(
+      user,
       screen.getByRole("textbox", { name: /^name/i }),
       "Ridge Court East"
     );
@@ -176,8 +179,8 @@ describe("AddBuildingForm", () => {
         hidden: true,
       })
     );
-    await user.type(screen.getByLabelText(/full name/i), "Kwesi Mensah");
-    await user.type(screen.getByLabelText(/email/i), "kwesi@example.com");
+    await fillField(user, screen.getByLabelText(/full name/i), "Kwesi Mensah");
+    await fillField(user, screen.getByLabelText(/email/i), "kwesi@example.com");
     await user.click(screen.getByRole("button", { name: "Save building" }));
 
     await waitFor(() => {
@@ -208,9 +211,13 @@ describe("AddBuildingForm", () => {
         hidden: true,
       })
     );
-    await user.type(screen.getByLabelText(/full name/i), "Kwesi Mensah");
-    await user.type(screen.getByLabelText(/email/i), "kwesi@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "RidgewayOwnerA26");
+    await fillField(user, screen.getByLabelText(/full name/i), "Kwesi Mensah");
+    await fillField(user, screen.getByLabelText(/email/i), "kwesi@example.com");
+    await fillField(
+      user,
+      screen.getByLabelText(/^password$/i),
+      "RidgewayOwnerA26"
+    );
     await user.click(screen.getByRole("button", { name: "Save building" }));
 
     await waitFor(() => {
@@ -276,7 +283,11 @@ describe("AddBuildingForm", () => {
         hidden: true,
       })
     );
-    await user.type(screen.getByLabelText(/^password$/i), "RidgewayOwnerA26");
+    await fillField(
+      user,
+      screen.getByLabelText(/^password$/i),
+      "RidgewayOwnerA26"
+    );
     await user.click(screen.getByRole("button", { name: "Save building" }));
 
     await waitFor(() => {
