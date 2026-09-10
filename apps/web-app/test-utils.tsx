@@ -3,6 +3,7 @@ import {
   render as rtlRender,
   type RenderOptions,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React from "react";
 
 import { mantineTheme } from "@/theme/mantine-theme";
@@ -17,4 +18,8 @@ export function render(
       <MantineProvider theme={mantineTheme}>{children}</MantineProvider>
     ),
   });
+}
+
+export function setupUser() {
+  return userEvent.setup({ delay: null });
 }

@@ -1,7 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
-import { render } from "@/test-utils";
+import { render, setupUser } from "@/test-utils";
 
 import FileRepairForm from "./FileRepairForm";
 
@@ -25,7 +24,7 @@ describe("FileRepairForm", () => {
   });
 
   it("submits a repair without a photo", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockResolvedValue("wo-1");
     render(<FileRepairForm unitId={"unit-1" as never} />);
 

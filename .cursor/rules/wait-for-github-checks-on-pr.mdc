@@ -1,0 +1,16 @@
+---
+description: After opening a PR the user asked for, wait until GitHub checks are green. Local pass is not enough.
+alwaysApply: true
+---
+
+# GitHub checks must pass on a PR
+
+When this message asks to create a pull request, the job is not done at `gh pr create`.
+
+1. Run local `yarn lint`, `yarn format:check`, `yarn type-check`, and `yarn test:ci` first.
+2. Commit, push, and open the PR only if this message asked.
+3. Wait on GitHub: `gh pr checks --watch` (or poll `gh pr checks`) until every required check has a conclusion.
+4. Do not tell the user the PR is done while checks are pending or red.
+5. If a check fails: fix it, commit, and push on that same branch. That is part of the PR ask. Then wait again until green.
+
+Local `yarn test:ci` is not GitHub. Do not skip the wait because a file was not touched or because it passed on the laptop.

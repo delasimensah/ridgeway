@@ -1,0 +1,11 @@
+---
+description: Write few, fast, necessary tests. Instant userEvent. Exact field queries.
+alwaysApply: true
+---
+
+# Tests must be necessary and fast
+
+- Cover the behaviour the ticket promised. Do not add extra cases, snapshots, or a second test that fills the same form.
+- Type with `setupUser()` from the web `test-utils` (delay null). Never `userEvent.setup()` with the default delay.
+- Query the exact field. `getByLabelText(/name/i)` also matches Full name. Use `getByRole("textbox", { name: /^name/i })`.
+- Do not raise a timeout to hide slow typing.

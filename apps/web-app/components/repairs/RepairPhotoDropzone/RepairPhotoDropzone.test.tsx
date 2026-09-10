@@ -1,8 +1,7 @@
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import React, { useState } from "react";
 
-import { render } from "@/test-utils";
+import { render, setupUser } from "@/test-utils";
 
 import RepairPhotoDropzone from "./RepairPhotoDropzone";
 
@@ -21,7 +20,7 @@ describe("RepairPhotoDropzone", () => {
   });
 
   it("shows a preview of the selected photo", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     const previewUrl = "blob:http://localhost/repair-photo";
     const createObjectURL = jest
       .spyOn(URL, "createObjectURL")
