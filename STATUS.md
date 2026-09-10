@@ -69,7 +69,8 @@ Start [RIDGE-6](https://linear.app/dm-studios/issue/RIDGE-6/tenant-can-file-a-re
 - RIDGE-25 PR (merged): https://github.com/delasimensah/ridgeway/pull/3
 - RIDGE-3 PR (merged): https://github.com/delasimensah/ridgeway/pull/4
 - RIDGE-4 PR (merged): https://github.com/delasimensah/ridgeway/pull/5
-- RIDGE-5 PR: https://github.com/delasimensah/ridgeway/pull/6
+- RIDGE-5 PR (merged): https://github.com/delasimensah/ridgeway/pull/6
+- RIDGE-27 PR: https://github.com/delasimensah/ridgeway/pull/8
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
