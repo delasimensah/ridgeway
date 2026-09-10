@@ -6,6 +6,7 @@ import {
   Alert,
   Button,
   Group,
+  PasswordInput,
   Select,
   SimpleGrid,
   TextInput,
@@ -13,7 +14,7 @@ import {
 import { DatePickerInput } from "@mantine/dates";
 import { useForm, type UseFormReturnType } from "@mantine/form";
 import { IconAlertCircle, IconCalendar } from "@tabler/icons-react";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -26,6 +27,8 @@ import {
   NEW_TENANT_CHOICE,
   utcToday,
 } from "@/utils";
+
+import Text from "../../ui/Text/Text";
 
 const INPUT_CLASSNAMES = {
   label: "mb-2 text-[15px] font-semibold text-darkGrey",
@@ -86,7 +89,10 @@ const FIELD_BY_MESSAGE: Record<string, keyof AddTenantFormValues> = {
   "Enter a valid email": "email",
   "That email already belongs to someone on staff": "email",
   "That email already belongs to someone else": "email",
+  "That email already belongs to someone who can sign in": "email",
   "This person already has a current lease": "email",
+  "This tenant already has a login": "password",
+  "Password must be at least 8 characters long": "password",
 };
 
 export interface TenantUnitOption {
@@ -100,6 +106,7 @@ interface AddTenantFormProps {
   leaseId?: Id<"leases">;
   lockUnit?: boolean;
   initialValues?: AddTenantFormValues;
+  hasLogin?: boolean;
 }
 
 const AddTenantForm: React.FC<AddTenantFormProps> = ({
@@ -108,6 +115,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
   leaseId,
   lockUnit = false,
   initialValues,
+  hasLogin = false,
 }) => {
   const router = useRouter();
   const isEditing = leaseId !== undefined;
@@ -118,6 +126,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
   const createLease = useMutation(api.leases.createWithTenant);
   const createForExisting = useMutation(api.leases.createForExistingTenant);
   const updateTenant = useMutation(api.leases.updateTenant);
+  const grantLogin = useAction(api.leases.grantLogin);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const buildingHref = `/buildings/${buildingId}`;
@@ -127,7 +136,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
   const latestStart = utcToday();
 
   const form = useForm<AddTenantFormValues>({
-    initialValues: initialValues ?? {
+    initialValues: {
       unitId: units.length === 1 ? units[0]._id : "",
       tenantChoice: NEW_TENANT_CHOICE,
       displayName: "",
@@ -135,6 +144,8 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
       email: "",
       startedOn: "",
       endedOn: "",
+      password: "",
+      ...initialValues,
     },
     validate: zod4Resolver(addTenantSchema),
   });
@@ -143,7 +154,24 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
     setError(null);
     setIsSubmitting(true);
     try {
-      if (leaseId !== undefined) {
+      const shouldGrantLogin =
+        !hasLogin &&
+        !isExistingTenantChoice(values.tenantChoice) &&
+        values.password.length > 0;
+
+      if (shouldGrantLogin) {
+        await grantLogin({
+          ...(leaseId !== undefined
+            ? { leaseId }
+            : { unitId: values.unitId as Id<"units"> }),
+          displayName: values.displayName,
+          email: values.email,
+          phone: values.phone,
+          startedOn: values.startedOn,
+          endedOn: values.endedOn,
+          password: values.password,
+        });
+      } else if (leaseId !== undefined) {
         await updateTenant({
           leaseId,
           displayName: values.displayName,
@@ -279,6 +307,21 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
               {...form.getInputProps("email")}
             />
           </SimpleGrid>
+          {hasLogin ? null : (
+            <PasswordInput
+              id="password"
+              label="Password"
+              placeholder="Temporary password"
+              description="Optional. Set one to give this person a website login. You cannot change it later from here."
+              classNames={INPUT_CLASSNAMES}
+              {...form.getInputProps("password")}
+            />
+          )}
+          <Text className="rounded-[8px] border border-border bg-sidebar p-4 text-sm leading-relaxed text-grey">
+            {hasLogin
+              ? "This person can already sign in. They can file a repair on their current unit."
+              : "Set a password to let this person sign in and file a repair on their current unit."}
+          </Text>
         </>
       ) : null}
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">

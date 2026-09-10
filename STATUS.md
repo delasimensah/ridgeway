@@ -10,7 +10,7 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-6 done** (tenant can file a repair with a photo). Next is [RIDGE-29](https://linear.app/dm-studios/issue/RIDGE-29/staff-can-give-a-tenant-a-login) (staff can give a tenant a login). [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Todo (forgot password from sign-in).
+- **Current phase:** Build slices — **RIDGE-29 done** (staff can give a tenant a login). Next is [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) (field worker can move a job received → assigned → scheduled → done). [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Todo (forgot password from sign-in).
 - **Last updated:** 10 Sep 2026
 - **Blocked / open:** none
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, and RIDGE-6 Done; next is RIDGE-29 (staff can give a tenant a login); RIDGE-28 (forgot password) Todo; then RIDGE-7–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, and RIDGE-29 Done; next is RIDGE-7 (field worker job status); RIDGE-28 (forgot password) Todo; then RIDGE-8–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,7 +58,7 @@
 
 ## Next action (one line)
 
-Start [RIDGE-29](https://linear.app/dm-studios/issue/RIDGE-29/staff-can-give-a-tenant-a-login) (staff can give a tenant a login).
+Start [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) (field worker can move a job received → assigned → scheduled → done).
 
 ---
 
@@ -71,7 +71,7 @@ Start [RIDGE-29](https://linear.app/dm-studios/issue/RIDGE-29/staff-can-give-a-t
 - RIDGE-4 PR (merged): https://github.com/delasimensah/ridgeway/pull/5
 - RIDGE-5 PR (merged): https://github.com/delasimensah/ridgeway/pull/6
 - RIDGE-27 PR (merged): https://github.com/delasimensah/ridgeway/pull/8
-- RIDGE-6 PR: https://github.com/delasimensah/ridgeway/pull/9
+- RIDGE-6 PR (merged): https://github.com/delasimensah/ridgeway/pull/9
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`

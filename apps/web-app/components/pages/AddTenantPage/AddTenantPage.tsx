@@ -21,6 +21,7 @@ interface AddTenantPageProps {
   leaseId?: Id<"leases">;
   lockUnit?: boolean;
   initialValues?: AddTenantFormValues;
+  hasLogin?: boolean;
 }
 
 const AddTenantPage: React.FC<AddTenantPageProps> = ({
@@ -31,6 +32,7 @@ const AddTenantPage: React.FC<AddTenantPageProps> = ({
   leaseId,
   lockUnit,
   initialValues,
+  hasLogin,
 }) => {
   return (
     <Box className="max-w-[800px]">
@@ -69,6 +71,7 @@ const AddTenantPage: React.FC<AddTenantPageProps> = ({
           leaseId={leaseId}
           lockUnit={lockUnit}
           initialValues={initialValues}
+          hasLogin={hasLogin}
         />
       </Box>
     </Box>

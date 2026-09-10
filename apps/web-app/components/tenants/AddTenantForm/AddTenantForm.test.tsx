@@ -7,6 +7,7 @@ import AddTenantForm from "./AddTenantForm";
 const mockReplace = jest.fn();
 const mockPush = jest.fn();
 const mockMutate = jest.fn();
+const mockGrantLogin = jest.fn();
 let mockAvailableTenants: { _id: string; displayName: string }[] = [];
 
 jest.mock("next/navigation", () => ({
@@ -18,6 +19,7 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("convex/react", () => ({
   useMutation: () => mockMutate,
+  useAction: () => mockGrantLogin,
   useQuery: () => mockAvailableTenants,
 }));
 
@@ -28,6 +30,7 @@ describe("AddTenantForm", () => {
     mockReplace.mockReset();
     mockPush.mockReset();
     mockMutate.mockReset();
+    mockGrantLogin.mockReset();
     mockAvailableTenants = [];
   });
 
@@ -36,6 +39,7 @@ describe("AddTenantForm", () => {
 
     expect(screen.getByRole("textbox", { name: /name/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/lease start/i)).toBeInTheDocument();
     expect(
       screen.queryByText(/started before Ridgeway the product existed/i)
@@ -59,6 +63,7 @@ describe("AddTenantForm", () => {
           email: "akosua@example.com",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
+          password: "",
         }}
       />
     );
@@ -94,6 +99,7 @@ describe("AddTenantForm", () => {
           email: "akosua@example.com",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
+          password: "",
         }}
       />
     );
@@ -131,6 +137,7 @@ describe("AddTenantForm", () => {
           email: "akosua@example.com",
           startedOn: "2024-01-15",
           endedOn: "",
+          password: "",
         }}
       />
     );
@@ -162,6 +169,7 @@ describe("AddTenantForm", () => {
           email: "akosua@example.com",
           startedOn: "2024-01-15",
           endedOn: "",
+          password: "",
         }}
       />
     );
@@ -199,6 +207,7 @@ describe("AddTenantForm", () => {
           email: "",
           startedOn: "2024-01-15",
           endedOn: "",
+          password: "",
         }}
       />
     );
@@ -213,5 +222,74 @@ describe("AddTenantForm", () => {
         endedOn: "",
       });
     });
+  });
+
+  it("grants a login when a password is set", async () => {
+    const user = setupUser();
+    mockGrantLogin.mockResolvedValue("lease-id");
+    render(
+      <AddTenantForm
+        buildingId={"building-id" as never}
+        units={units}
+        initialValues={{
+          unitId: "unit-1",
+          displayName: "Akosua Darko",
+          phone: "",
+          email: "akosua@example.com",
+          startedOn: "2024-01-15",
+          endedOn: "2027-12-31",
+          password: "",
+        }}
+      />
+    );
+
+    await fillField(
+      user,
+      screen.getByLabelText(/^password$/i),
+      "RidgewayTenant26"
+    );
+    await user.click(screen.getByRole("button", { name: "Save tenant" }));
+
+    await waitFor(() => {
+      expect(mockGrantLogin).toHaveBeenCalledWith({
+        unitId: "unit-1",
+        displayName: "Akosua Darko",
+        email: "akosua@example.com",
+        phone: "",
+        startedOn: "2024-01-15",
+        endedOn: "2027-12-31",
+        password: "RidgewayTenant26",
+      });
+    });
+    expect(mockMutate).not.toHaveBeenCalled();
+    expect(mockReplace).toHaveBeenCalledWith("/buildings/building-id");
+  });
+
+  it("hides the password field when the tenant can already sign in", () => {
+    render(
+      <AddTenantForm
+        buildingId={"building-id" as never}
+        units={units}
+        leaseId={"lease-id" as never}
+        lockUnit
+        hasLogin
+        initialValues={{
+          unitId: "unit-1",
+          displayName: "Akosua Darko",
+          phone: "024 111 2222",
+          email: "akosua@example.com",
+          startedOn: "2024-01-15",
+          endedOn: "2027-12-31",
+          password: "",
+        }}
+      />
+    );
+
+    expect(screen.queryByLabelText(/^password$/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "This person can already sign in. They can file a repair on their current unit."
+      )
+    ).toBeInTheDocument();
   });
 });

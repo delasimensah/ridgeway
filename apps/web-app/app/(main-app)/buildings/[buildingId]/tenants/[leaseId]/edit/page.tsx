@@ -54,6 +54,7 @@ const EditTenantRoute = () => {
       unitLabel={unit?.label}
       leaseId={lease._id}
       lockUnit
+      hasLogin={lease.hasLogin}
       initialValues={{
         unitId: lease.unitId,
         displayName: lease.displayName,
@@ -61,6 +62,7 @@ const EditTenantRoute = () => {
         email: lease.email,
         startedOn: lease.startedOn,
         endedOn: lease.endedOn ?? "",
+        password: "",
       }}
     />
   );

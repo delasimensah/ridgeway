@@ -3,6 +3,8 @@ import { z } from "zod";
 
 export const NEW_TENANT_CHOICE = "__new_tenant__";
 
+export const MIN_TENANT_PASSWORD_LENGTH = 8;
+
 export function utcToday(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -55,6 +57,7 @@ export const addTenantSchema = z
     email: z.string().trim(),
     startedOn: z.string().trim(),
     endedOn: z.string().trim(),
+    password: z.string(),
   })
   .superRefine((values, ctx) => {
     if (!isExistingTenantChoice(values.tenantChoice)) {
@@ -76,6 +79,16 @@ export const addTenantSchema = z
           code: "custom",
           path: ["email"],
           message: "Enter a valid email",
+        });
+      }
+      if (
+        values.password.length > 0 &&
+        values.password.length < MIN_TENANT_PASSWORD_LENGTH
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["password"],
+          message: "Password must be at least 8 characters long",
         });
       }
     }
