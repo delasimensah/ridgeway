@@ -1,7 +1,6 @@
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
-import { render } from "@/test-utils";
+import { fillField, render, setupUser } from "@/test-utils";
 
 import TenantRepairTimelinePage from "./TenantRepairTimelinePage";
 
@@ -37,14 +36,14 @@ describe("TenantRepairTimelinePage", () => {
   });
 
   it("shows received status and lets the tenant correct the description", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockResolvedValue(null);
     render(<TenantRepairTimelinePage {...ticket} canEditDescription />);
 
     expect(screen.getByText("RECEIVED")).toBeInTheDocument();
     expect(screen.getByText("Repair received")).toBeInTheDocument();
-    await user.clear(screen.getByRole("textbox", { name: /description/i }));
-    await user.type(
+    await fillField(
+      user,
       screen.getByRole("textbox", { name: /description/i }),
       "Bathroom tap leak"
     );

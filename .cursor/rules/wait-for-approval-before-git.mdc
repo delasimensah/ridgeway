@@ -21,7 +21,7 @@ Permission is **this message only**. A yes earlier in the chat, including “com
 
 If CI fails and this message did **not** ask to open or update a PR: fix the files locally, say what failed, **do not commit or push**.
 
-If this message asked to open a PR (or commit and PR): wait for GitHub checks. A red check on that PR is permission to commit and push the fix to that same branch, then wait until green. See `wait-for-github-checks-on-pr.mdc`.
+If this message asked to open a PR (or commit and PR): local tests first, then publish. Do not wait on GitHub. See `wait-for-github-checks-on-pr.mdc`.
 
 ## Is permission
 

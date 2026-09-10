@@ -1,7 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
-import { render } from "@/test-utils";
+import { fillField, render, setupUser } from "@/test-utils";
 
 import SignInForm from "./SignInForm";
 
@@ -39,15 +38,17 @@ describe("SignInForm", () => {
   });
 
   it("shows a clear error for a wrong password and does not leave the page", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockSignIn.mockRejectedValue(new Error("Invalid credentials"));
     render(<SignInForm />);
 
-    await user.type(
+    await fillField(
+      user,
       screen.getByLabelText(/email address/i),
       "ama.boateng@ridgeway.gh"
     );
-    await user.type(
+    await fillField(
+      user,
       screen.getByPlaceholderText("••••••••"),
       "not-the-password"
     );
@@ -62,15 +63,17 @@ describe("SignInForm", () => {
   });
 
   it("signs in with email and password and lands on home", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockSignIn.mockResolvedValue({ signingIn: true });
     render(<SignInForm />);
 
-    await user.type(
+    await fillField(
+      user,
       screen.getByLabelText(/email address/i),
       "ama.boateng@ridgeway.gh"
     );
-    await user.type(
+    await fillField(
+      user,
       screen.getByPlaceholderText("••••••••"),
       "RidgewayOffice26"
     );

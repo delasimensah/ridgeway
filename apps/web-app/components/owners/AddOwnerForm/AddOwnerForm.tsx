@@ -33,7 +33,7 @@ const SAVE_ERROR = "Could not save this owner. Check the fields and try again.";
 interface AddOwnerFormProps {
   ownerId?: Id<"owners">;
   buildingId?: Id<"buildings">;
-  initialValues?: AddOwnerFormValues;
+  initialValues?: AddOwnerFormValues & { ownerChoice?: string };
   hasLogin?: boolean;
 }
 
@@ -65,7 +65,9 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
       contactEmail: initialValues?.contactEmail ?? "",
       contactPhone: initialValues?.contactPhone ?? "",
       password: initialValues?.password ?? "",
-      ownerChoice: isAssigningToBuilding ? "" : NEW_OWNER_CHOICE,
+      ownerChoice:
+        initialValues?.ownerChoice ??
+        (isAssigningToBuilding ? "" : NEW_OWNER_CHOICE),
     },
     validate: (values) => {
       if (isAssigningToBuilding && values.ownerChoice.length === 0) {

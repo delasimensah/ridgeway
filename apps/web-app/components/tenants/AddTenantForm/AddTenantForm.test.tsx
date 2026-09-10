@@ -1,7 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
-import { render } from "@/test-utils";
+import { fillField, render, setupUser } from "@/test-utils";
 
 import AddTenantForm from "./AddTenantForm";
 
@@ -47,7 +46,7 @@ describe("AddTenantForm", () => {
   });
 
   it("saves a tenant and lease on the named unit", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockResolvedValue("lease-id");
     render(
       <AddTenantForm
@@ -55,20 +54,15 @@ describe("AddTenantForm", () => {
         units={units}
         initialValues={{
           unitId: "unit-1",
-          displayName: "",
+          displayName: "Akosua Darko",
           phone: "",
-          email: "",
+          email: "akosua@example.com",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
         }}
       />
     );
 
-    await user.type(
-      screen.getByRole("textbox", { name: /name/i }),
-      "Akosua Darko"
-    );
-    await user.type(screen.getByLabelText(/email/i), "akosua@example.com");
     await user.click(screen.getByRole("button", { name: "Save tenant" }));
 
     await waitFor(() => {
@@ -85,7 +79,7 @@ describe("AddTenantForm", () => {
   });
 
   it("saves corrections to an existing tenant", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockResolvedValue(null);
     render(
       <AddTenantForm
@@ -104,8 +98,8 @@ describe("AddTenantForm", () => {
       />
     );
 
-    await user.clear(screen.getByRole("textbox", { name: /name/i }));
-    await user.type(
+    await fillField(
+      user,
       screen.getByRole("textbox", { name: /name/i }),
       "Akosua A. Darko"
     );
@@ -124,7 +118,7 @@ describe("AddTenantForm", () => {
   });
 
   it("shows an error when save fails", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockRejectedValue(new Error("NOT_PERMITTED"));
     render(
       <AddTenantForm
@@ -132,20 +126,15 @@ describe("AddTenantForm", () => {
         units={units}
         initialValues={{
           unitId: "unit-1",
-          displayName: "",
+          displayName: "Akosua Darko",
           phone: "",
-          email: "",
+          email: "akosua@example.com",
           startedOn: "2024-01-15",
           endedOn: "",
         }}
       />
     );
 
-    await user.type(
-      screen.getByRole("textbox", { name: /name/i }),
-      "Akosua Darko"
-    );
-    await user.type(screen.getByLabelText(/email/i), "akosua@example.com");
     await user.click(screen.getByRole("button", { name: "Save tenant" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -155,7 +144,7 @@ describe("AddTenantForm", () => {
   });
 
   it("shows the lease start error on the date field", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockRejectedValue({
       data: {
         code: "INVALID",
@@ -168,20 +157,15 @@ describe("AddTenantForm", () => {
         units={units}
         initialValues={{
           unitId: "unit-1",
-          displayName: "",
+          displayName: "Akosua Darko",
           phone: "",
-          email: "",
+          email: "akosua@example.com",
           startedOn: "2024-01-15",
           endedOn: "",
         }}
       />
     );
 
-    await user.type(
-      screen.getByRole("textbox", { name: /name/i }),
-      "Akosua Darko"
-    );
-    await user.type(screen.getByLabelText(/email/i), "akosua@example.com");
     await user.click(screen.getByRole("button", { name: "Save tenant" }));
 
     expect(
@@ -192,7 +176,7 @@ describe("AddTenantForm", () => {
   });
 
   it("goes back to the building when cancel is pressed", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     render(<AddTenantForm buildingId={"building-id" as never} units={units} />);
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
@@ -200,7 +184,7 @@ describe("AddTenantForm", () => {
   });
 
   it("leases a vacant unit to someone who already rented", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockAvailableTenants = [{ _id: "profile-1", displayName: "Sofia Herrera" }];
     mockMutate.mockResolvedValue("lease-id");
     render(
@@ -209,7 +193,7 @@ describe("AddTenantForm", () => {
         units={units}
         initialValues={{
           unitId: "unit-1",
-          tenantChoice: "",
+          tenantChoice: "profile-1",
           displayName: "",
           phone: "",
           email: "",
@@ -219,13 +203,6 @@ describe("AddTenantForm", () => {
       />
     );
 
-    await user.click(screen.getByRole("combobox", { name: /tenant/i }));
-    await user.click(
-      await screen.findByRole("option", {
-        name: "Sofia Herrera",
-        hidden: true,
-      })
-    );
     await user.click(screen.getByRole("button", { name: "Save tenant" }));
 
     await waitFor(() => {

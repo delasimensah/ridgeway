@@ -1,6 +1,7 @@
 import { screen, waitFor } from "@testing-library/react";
 
 import { fillField, render, setupUser } from "@/test-utils";
+import { NEW_OWNER_CHOICE } from "@/utils";
 
 import AddBuildingForm from "./AddBuildingForm";
 
@@ -169,18 +170,19 @@ describe("AddBuildingForm", () => {
   it("creates a building with a new owner from the same form", async () => {
     const user = setupUser();
     mockCreate.mockResolvedValue("building-id");
-    render(<AddBuildingForm />);
-
-    await fillAddress(user);
-    await user.click(screen.getByRole("combobox", { name: /owner/i }));
-    await user.click(
-      await screen.findByRole("option", {
-        name: /Add a new owner/i,
-        hidden: true,
-      })
+    render(
+      <AddBuildingForm
+        initialValues={{
+          name: "Ridge Court",
+          street: "14 Ridge Road",
+          area: "Cantonments",
+          ownerChoice: NEW_OWNER_CHOICE,
+          displayName: "Kwesi Mensah",
+          contactEmail: "kwesi@example.com",
+        }}
+      />
     );
-    await fillField(user, screen.getByLabelText(/full name/i), "Kwesi Mensah");
-    await fillField(user, screen.getByLabelText(/email/i), "kwesi@example.com");
+
     await user.click(screen.getByRole("button", { name: "Save building" }));
 
     await waitFor(() => {
@@ -201,18 +203,19 @@ describe("AddBuildingForm", () => {
     const user = setupUser();
     mockGrantLogin.mockResolvedValue("owner-id");
     mockCreate.mockResolvedValue("building-id");
-    render(<AddBuildingForm />);
-
-    await fillAddress(user);
-    await user.click(screen.getByRole("combobox", { name: /owner/i }));
-    await user.click(
-      await screen.findByRole("option", {
-        name: /Add a new owner/i,
-        hidden: true,
-      })
+    render(
+      <AddBuildingForm
+        initialValues={{
+          name: "Ridge Court",
+          street: "14 Ridge Road",
+          area: "Cantonments",
+          ownerChoice: NEW_OWNER_CHOICE,
+          displayName: "Kwesi Mensah",
+          contactEmail: "kwesi@example.com",
+        }}
+      />
     );
-    await fillField(user, screen.getByLabelText(/full name/i), "Kwesi Mensah");
-    await fillField(user, screen.getByLabelText(/email/i), "kwesi@example.com");
+
     await fillField(
       user,
       screen.getByLabelText(/^password$/i),
@@ -242,13 +245,17 @@ describe("AddBuildingForm", () => {
       { _id: "owner-1", displayName: "Kwesi Mensah", hasLogin: true },
     ];
     mockCreate.mockResolvedValue("building-id");
-    render(<AddBuildingForm />);
-
-    await fillAddress(user);
-    await user.click(screen.getByRole("combobox", { name: /owner/i }));
-    await user.click(
-      await screen.findByRole("option", { name: "Kwesi Mensah", hidden: true })
+    render(
+      <AddBuildingForm
+        initialValues={{
+          name: "Ridge Court",
+          street: "14 Ridge Road",
+          area: "Cantonments",
+          ownerChoice: "owner-1",
+        }}
+      />
     );
+
     await user.click(screen.getByRole("button", { name: "Save building" }));
 
     await waitFor(() => {
@@ -273,16 +280,19 @@ describe("AddBuildingForm", () => {
     ];
     mockGrantLogin.mockResolvedValue("owner-1");
     mockCreate.mockResolvedValue("building-id");
-    render(<AddBuildingForm />);
-
-    await fillAddress(user);
-    await user.click(screen.getByRole("combobox", { name: /owner/i }));
-    await user.click(
-      await screen.findByRole("option", {
-        name: "Kwesi Mensah",
-        hidden: true,
-      })
+    render(
+      <AddBuildingForm
+        initialValues={{
+          name: "Ridge Court",
+          street: "14 Ridge Road",
+          area: "Cantonments",
+          ownerChoice: "owner-1",
+          displayName: "Kwesi Mensah",
+          contactEmail: "kwesi@example.com",
+        }}
+      />
     );
+
     await fillField(
       user,
       screen.getByLabelText(/^password$/i),

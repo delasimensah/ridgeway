@@ -36,9 +36,19 @@ const SAVE_ERROR =
 
 interface FileRepairFormProps {
   unitId: Id<"units">;
+  initialValues?: Partial<FileRepairFormValues>;
 }
 
-const FileRepairForm: React.FC<FileRepairFormProps> = ({ unitId }) => {
+const EMPTY_VALUES: FileRepairFormValues = {
+  description: "",
+  category: "" as FileRepairFormValues["category"],
+  urgency: "" as FileRepairFormValues["urgency"],
+};
+
+const FileRepairForm: React.FC<FileRepairFormProps> = ({
+  unitId,
+  initialValues,
+}) => {
   const router = useRouter();
   const createRepair = useMutation(api.workOrders.createByTenant);
   const createUploadUrl = useMutation(api.files.createUploadUrl);
@@ -49,9 +59,8 @@ const FileRepairForm: React.FC<FileRepairFormProps> = ({ unitId }) => {
 
   const form = useForm<FileRepairFormValues>({
     initialValues: {
-      description: "",
-      category: "" as FileRepairFormValues["category"],
-      urgency: "" as FileRepairFormValues["urgency"],
+      ...EMPTY_VALUES,
+      ...initialValues,
     },
     validate: zod4Resolver(fileRepairSchema),
   });

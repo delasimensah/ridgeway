@@ -1,7 +1,7 @@
 import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
-import { render } from "@/test-utils";
+import { fillField, render, setupUser } from "@/test-utils";
+import { NEW_OWNER_CHOICE } from "@/utils";
 
 import AddOwnerForm from "./AddOwnerForm";
 
@@ -54,12 +54,19 @@ describe("AddOwnerForm", () => {
   });
 
   it("saves an owner and returns to the buildings list", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockResolvedValue("owner-id");
-    render(<AddOwnerForm />);
+    render(
+      <AddOwnerForm
+        initialValues={{
+          displayName: "Kwesi Mensah",
+          contactEmail: "kwesi@example.com",
+          contactPhone: "",
+          password: "",
+        }}
+      />
+    );
 
-    await user.type(screen.getByLabelText(/full name/i), "Kwesi Mensah");
-    await user.type(screen.getByLabelText(/^email$/i), "kwesi@example.com");
     await user.click(screen.getByRole("button", { name: "Save owner" }));
 
     await waitFor(() => {
@@ -74,13 +81,24 @@ describe("AddOwnerForm", () => {
   });
 
   it("grants a login when a password is set", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockGrantLogin.mockResolvedValue("owner-id");
-    render(<AddOwnerForm />);
+    render(
+      <AddOwnerForm
+        initialValues={{
+          displayName: "Kwesi Mensah",
+          contactEmail: "kwesi@example.com",
+          contactPhone: "",
+          password: "",
+        }}
+      />
+    );
 
-    await user.type(screen.getByLabelText(/full name/i), "Kwesi Mensah");
-    await user.type(screen.getByLabelText(/^email$/i), "kwesi@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "RidgewayOwnerA26");
+    await fillField(
+      user,
+      screen.getByLabelText(/^password$/i),
+      "RidgewayOwnerA26"
+    );
     await user.click(screen.getByRole("button", { name: "Save owner" }));
 
     await waitFor(() => {
@@ -118,18 +136,21 @@ describe("AddOwnerForm", () => {
   });
 
   it("attaches a new owner to a building when a building is named", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockResolvedValue("owner-id");
-    render(<AddOwnerForm buildingId={"building-id" as never} />);
-
-    await user.click(screen.getByRole("combobox", { name: /owner/i }));
-    await user.click(
-      await screen.findByRole("option", {
-        name: /Add a new owner/i,
-        hidden: true,
-      })
+    render(
+      <AddOwnerForm
+        buildingId={"building-id" as never}
+        initialValues={{
+          displayName: "Kwesi Mensah",
+          contactEmail: "",
+          contactPhone: "",
+          password: "",
+          ownerChoice: NEW_OWNER_CHOICE,
+        }}
+      />
     );
-    await user.type(screen.getByLabelText(/full name/i), "Kwesi Mensah");
+
     await user.click(screen.getByRole("button", { name: "Save owner" }));
 
     await waitFor(() => {
@@ -144,17 +165,24 @@ describe("AddOwnerForm", () => {
   });
 
   it("links a building to an owner already on file", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockOwners = [
       { _id: "owner-1", displayName: "Kwesi Mensah", hasLogin: true },
     ];
     mockMutate.mockResolvedValue(null);
-    render(<AddOwnerForm buildingId={"building-id" as never} />);
-
-    await user.click(screen.getByRole("combobox", { name: /owner/i }));
-    await user.click(
-      await screen.findByRole("option", { name: "Kwesi Mensah", hidden: true })
+    render(
+      <AddOwnerForm
+        buildingId={"building-id" as never}
+        initialValues={{
+          displayName: "",
+          contactEmail: "",
+          contactPhone: "",
+          password: "",
+          ownerChoice: "owner-1",
+        }}
+      />
     );
+
     await user.click(screen.getByRole("button", { name: "Save owner" }));
 
     await waitFor(() => {
@@ -167,7 +195,7 @@ describe("AddOwnerForm", () => {
   });
 
   it("grants a login when the chosen owner has none", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockOwners = [
       {
         _id: "owner-1",
@@ -177,13 +205,24 @@ describe("AddOwnerForm", () => {
       },
     ];
     mockGrantLogin.mockResolvedValue("owner-1");
-    render(<AddOwnerForm buildingId={"building-id" as never} />);
-
-    await user.click(screen.getByRole("combobox", { name: /owner/i }));
-    await user.click(
-      await screen.findByRole("option", { name: "Kwesi Mensah", hidden: true })
+    render(
+      <AddOwnerForm
+        buildingId={"building-id" as never}
+        initialValues={{
+          displayName: "Kwesi Mensah",
+          contactEmail: "kwesi@example.com",
+          contactPhone: "",
+          password: "",
+          ownerChoice: "owner-1",
+        }}
+      />
     );
-    await user.type(screen.getByLabelText(/^password$/i), "RidgewayOwnerA26");
+
+    await fillField(
+      user,
+      screen.getByLabelText(/^password$/i),
+      "RidgewayOwnerA26"
+    );
     await user.click(screen.getByRole("button", { name: "Save owner" }));
 
     await waitFor(() => {
@@ -200,7 +239,7 @@ describe("AddOwnerForm", () => {
   });
 
   it("saves corrections to an existing owner", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockResolvedValue(null);
     render(
       <AddOwnerForm
@@ -214,8 +253,11 @@ describe("AddOwnerForm", () => {
       />
     );
 
-    await user.clear(screen.getByLabelText(/full name/i));
-    await user.type(screen.getByLabelText(/full name/i), "Kwesi A. Mensah");
+    await fillField(
+      user,
+      screen.getByLabelText(/full name/i),
+      "Kwesi A. Mensah"
+    );
     await user.click(screen.getByRole("button", { name: "Save owner" }));
 
     await waitFor(() => {
@@ -229,22 +271,25 @@ describe("AddOwnerForm", () => {
   });
 
   it("grants a login from edit when the owner has none", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockGrantLogin.mockResolvedValue("owner-id");
     render(
       <AddOwnerForm
         ownerId={"owner-id" as never}
         initialValues={{
           displayName: "Kwesi Mensah",
-          contactEmail: "",
+          contactEmail: "kwesi@example.com",
           contactPhone: "",
           password: "",
         }}
       />
     );
 
-    await user.type(screen.getByLabelText(/^email$/i), "kwesi@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "RidgewayOwnerA26");
+    await fillField(
+      user,
+      screen.getByLabelText(/^password$/i),
+      "RidgewayOwnerA26"
+    );
     await user.click(screen.getByRole("button", { name: "Save owner" }));
 
     await waitFor(() => {
@@ -259,11 +304,19 @@ describe("AddOwnerForm", () => {
   });
 
   it("shows an error when save fails", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     mockMutate.mockRejectedValue(new Error("NOT_PERMITTED"));
-    render(<AddOwnerForm />);
+    render(
+      <AddOwnerForm
+        initialValues={{
+          displayName: "Kwesi Mensah",
+          contactEmail: "",
+          contactPhone: "",
+          password: "",
+        }}
+      />
+    );
 
-    await user.type(screen.getByLabelText(/full name/i), "Kwesi Mensah");
     await user.click(screen.getByRole("button", { name: "Save owner" }));
 
     expect(
@@ -275,7 +328,7 @@ describe("AddOwnerForm", () => {
   });
 
   it("goes back to the list when cancel is pressed", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     render(<AddOwnerForm />);
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));

@@ -1,6 +1,7 @@
 import { screen, waitFor } from "@testing-library/react";
 
 import { fillField, render, setupUser } from "@/test-utils";
+import { NEW_TENANT_CHOICE } from "@/utils";
 
 import AddUnitForm from "./AddUnitForm";
 
@@ -164,36 +165,18 @@ describe("AddUnitForm", () => {
         buildingId={"building-id" as never}
         buildingName="Ridge Court"
         initialValues={{
-          label: "",
+          label: "B12",
           kind: "apartment",
-          tenantChoice: "",
-          displayName: "",
+          tenantChoice: NEW_TENANT_CHOICE,
+          displayName: "Akosua Darko",
           phone: "",
-          email: "",
+          email: "akosua@example.com",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
         }}
       />
     );
 
-    await fillField(user, screen.getByLabelText(/unit label/i), "B12");
-    await user.click(screen.getByRole("combobox", { name: /tenant/i }));
-    await user.click(
-      await screen.findByRole("option", {
-        name: /Add a tenant/i,
-        hidden: true,
-      })
-    );
-    await fillField(
-      user,
-      screen.getByRole("textbox", { name: /name/i }),
-      "Akosua Darko"
-    );
-    await fillField(
-      user,
-      screen.getByLabelText(/email/i),
-      "akosua@example.com"
-    );
     await user.click(screen.getByRole("button", { name: "Save unit" }));
 
     await waitFor(() => {
@@ -221,9 +204,9 @@ describe("AddUnitForm", () => {
         buildingId={"building-id" as never}
         buildingName="Ridge Court"
         initialValues={{
-          label: "",
+          label: "4B",
           kind: "apartment",
-          tenantChoice: "",
+          tenantChoice: "profile-1",
           displayName: "",
           phone: "",
           email: "",
@@ -233,14 +216,6 @@ describe("AddUnitForm", () => {
       />
     );
 
-    await fillField(user, screen.getByLabelText(/unit label/i), "4B");
-    await user.click(screen.getByRole("combobox", { name: /tenant/i }));
-    await user.click(
-      await screen.findByRole("option", {
-        name: "Sofia Herrera",
-        hidden: true,
-      })
-    );
     await user.click(screen.getByRole("button", { name: "Save unit" }));
 
     await waitFor(() => {

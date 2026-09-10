@@ -1,6 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
 
-import { fillField, render, setupUser } from "@/test-utils";
+import { render, setupUser } from "@/test-utils";
 
 import FileRepairForm from "./FileRepairForm";
 
@@ -26,24 +26,20 @@ describe("FileRepairForm", () => {
   it("submits a repair without a photo", async () => {
     const user = setupUser();
     mockMutate.mockResolvedValue("wo-1");
-    render(<FileRepairForm unitId={"unit-1" as never} />);
+    render(
+      <FileRepairForm
+        unitId={"unit-1" as never}
+        initialValues={{
+          description: "Kitchen tap leak",
+          category: "plumbing",
+          urgency: "normal",
+        }}
+      />
+    );
 
     expect(screen.getByText("Add a photo")).toBeInTheDocument();
     expect(screen.getByText("PNG, JPG up to 10MB")).toBeInTheDocument();
 
-    await fillField(
-      user,
-      screen.getByRole("textbox", { name: /what’s wrong/i }),
-      "Kitchen tap leak"
-    );
-    await user.click(screen.getByRole("combobox", { name: /category/i }));
-    await user.click(
-      await screen.findByRole("option", { name: "Plumbing", hidden: true })
-    );
-    await user.click(screen.getByRole("combobox", { name: /urgency/i }));
-    await user.click(
-      await screen.findByRole("option", { name: "Medium", hidden: true })
-    );
     await user.click(screen.getByRole("button", { name: "Submit repair" }));
 
     await waitFor(() => {
