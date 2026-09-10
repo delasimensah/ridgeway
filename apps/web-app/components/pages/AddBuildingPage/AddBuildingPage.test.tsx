@@ -13,6 +13,7 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("convex/react", () => ({
   useMutation: () => jest.fn(),
+  useAction: () => jest.fn(),
   useQuery: () => [],
 }));
 

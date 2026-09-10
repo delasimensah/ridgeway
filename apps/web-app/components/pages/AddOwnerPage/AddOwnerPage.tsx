@@ -13,12 +13,14 @@ interface AddOwnerPageProps {
   ownerId?: Id<"owners">;
   buildingId?: Id<"buildings">;
   initialValues?: AddOwnerFormValues;
+  hasLogin?: boolean;
 }
 
 const AddOwnerPage: React.FC<AddOwnerPageProps> = ({
   ownerId,
   buildingId,
   initialValues,
+  hasLogin,
 }) => {
   return (
     <Box className="max-w-[800px]">
@@ -26,13 +28,15 @@ const AddOwnerPage: React.FC<AddOwnerPageProps> = ({
         variant="page"
         className="mb-6 text-[24px] font-bold text-darkGrey sm:mb-10 sm:text-[28px] md:text-[32px]"
       >
-        Add owner
+        {ownerId === undefined ? "Add owner" : "Edit owner"}
       </Heading>
       <Box className="rounded-[8px] border border-border bg-white p-4 shadow-sm sm:p-6 md:p-8">
         <AddOwnerForm
+          key={ownerId ?? "new"}
           ownerId={ownerId}
           buildingId={buildingId}
           initialValues={initialValues}
+          hasLogin={hasLogin}
         />
       </Box>
     </Box>

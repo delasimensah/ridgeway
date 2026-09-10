@@ -2,9 +2,15 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { Button, Group, SimpleGrid, TextInput } from "@mantine/core";
+import {
+  Button,
+  Group,
+  PasswordInput,
+  SimpleGrid,
+  TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -13,6 +19,7 @@ import {
   ACCRA_CITY,
   type AddBuildingFormValues,
   addBuildingSchema,
+  getConvexErrorInfo,
   NEW_OWNER_CHOICE,
 } from "@/utils";
 
@@ -28,6 +35,9 @@ const INPUT_CLASSNAMES = {
 const PRIMARY_BUTTON =
   "h-auto rounded-[8px] bg-primary px-8 py-3 text-[15px] font-semibold text-white hover:bg-primaryHover";
 
+const SAVE_ERROR =
+  "Could not save this building. Check the fields and try again.";
+
 interface AddBuildingFormProps {
   buildingId?: Id<"buildings">;
   initialValues?: AddBuildingFormValues;
@@ -41,6 +51,7 @@ const EMPTY_VALUES: AddBuildingFormValues = {
   displayName: "",
   contactEmail: "",
   contactPhone: "",
+  password: "",
 };
 
 const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
@@ -52,6 +63,7 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
   const owners = useQuery(api.owners.listForStaff, isEditing ? "skip" : {});
   const createBuilding = useMutation(api.buildings.create);
   const updateBuilding = useMutation(api.buildings.update);
+  const grantLogin = useAction(api.owners.grantLogin);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -62,6 +74,10 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
     },
     validate: zod4Resolver(addBuildingSchema),
   });
+
+  const selectedOwner =
+    owners?.find((owner) => owner._id === form.values.ownerChoice) ?? null;
+  const formHasLogin = selectedOwner?.hasLogin === true;
 
   const handleSubmit = async (values: AddBuildingFormValues) => {
     setError(null);
@@ -76,26 +92,49 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
         });
       } else {
         const ownerChoice = values.ownerChoice ?? "";
+        const password = values.password ?? "";
+        const shouldGrantLogin = password.length > 0 && !formHasLogin;
+        let ownerId: Id<"owners"> | undefined;
+
+        if (shouldGrantLogin) {
+          ownerId = await grantLogin({
+            ...(ownerChoice !== NEW_OWNER_CHOICE && ownerChoice.length > 0
+              ? { ownerId: ownerChoice as Id<"owners"> }
+              : {}),
+            displayName: values.displayName ?? "",
+            contactEmail: values.contactEmail ?? "",
+            contactPhone: values.contactPhone,
+            password,
+          });
+        }
+
         await createBuilding({
           name: values.name,
           street: values.street,
           area: values.area,
-          ...(ownerChoice === NEW_OWNER_CHOICE
-            ? {
-                newOwner: {
-                  displayName: values.displayName ?? "",
-                  contactEmail: values.contactEmail,
-                  contactPhone: values.contactPhone,
-                },
-              }
-            : ownerChoice.length > 0
-              ? { ownerId: ownerChoice as Id<"owners"> }
-              : {}),
+          ...(ownerId !== undefined
+            ? { ownerId }
+            : ownerChoice === NEW_OWNER_CHOICE
+              ? {
+                  newOwner: {
+                    displayName: values.displayName ?? "",
+                    contactEmail: values.contactEmail,
+                    contactPhone: values.contactPhone,
+                  },
+                }
+              : ownerChoice.length > 0
+                ? { ownerId: ownerChoice as Id<"owners"> }
+                : {}),
         });
       }
       router.replace("/buildings");
-    } catch {
-      setError("Could not save this building. Check the fields and try again.");
+    } catch (caught) {
+      const info = getConvexErrorInfo(caught);
+      if (info.code === "NOT_PERMITTED" || info.message === "NOT_PERMITTED") {
+        setError(SAVE_ERROR);
+      } else {
+        setError(info.message.length > 0 ? info.message : SAVE_ERROR);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -145,6 +184,14 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
           ownerChoice={form.values.ownerChoice ?? ""}
           onOwnerChoice={(value) => {
             form.setFieldValue("ownerChoice", value);
+            const selected = owners?.find((owner) => owner._id === value);
+            if (selected === undefined) {
+              return;
+            }
+            form.setFieldValue("displayName", selected.displayName);
+            form.setFieldValue("contactEmail", selected.contactEmail ?? "");
+            form.setFieldValue("contactPhone", selected.contactPhone ?? "");
+            form.setFieldValue("password", "");
           }}
           ownerChoiceError={form.errors.ownerChoice}
         >
@@ -161,6 +208,7 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
             label="Email"
             type="email"
             placeholder="kwesi@example.com"
+            withAsterisk={(form.values.password ?? "").length > 0}
             classNames={INPUT_CLASSNAMES}
             {...form.getInputProps("contactEmail")}
           />
@@ -172,6 +220,16 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
             classNames={INPUT_CLASSNAMES}
             {...form.getInputProps("contactPhone")}
           />
+          {formHasLogin ? null : (
+            <PasswordInput
+              id="password"
+              label="Password"
+              placeholder="Temporary password"
+              description="Optional. Set one to give this person a website login. You cannot change it later from here."
+              classNames={INPUT_CLASSNAMES}
+              {...form.getInputProps("password")}
+            />
+          )}
         </BuildingOwnerFields>
       )}
       {error ? <Text className="text-sm text-overdue">{error}</Text> : null}

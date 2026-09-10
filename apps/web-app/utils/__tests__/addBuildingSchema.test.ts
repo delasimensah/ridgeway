@@ -35,4 +35,23 @@ describe("addBuildingSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("requires email when a password is set", () => {
+    const result = addBuildingSchema.safeParse({
+      name: "Ridge Court",
+      street: "14 Ridge Road",
+      area: "Cantonments",
+      ownerChoice: NEW_OWNER_CHOICE,
+      displayName: "Kwesi Mensah",
+      contactEmail: "",
+      password: "RidgewayOwnerA26",
+    });
+    expect(result.success).toBe(false);
+    if (result.success) {
+      return;
+    }
+    expect(
+      result.error.issues.some((issue) => issue.path[0] === "contactEmail")
+    ).toBe(true);
+  });
 });

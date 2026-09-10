@@ -45,7 +45,12 @@ describe("BuildingDetailHeader", () => {
       />
     );
 
-    expect(screen.getByRole("link", { name: "Kwesi Mensah" })).toHaveAttribute(
+    expect(
+      screen.getByText(
+        "14 Ridge Road, Cantonments, Accra · Owner: Kwesi Mensah"
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Edit owner" })).toHaveAttribute(
       "href",
       "/owners/owner-1/edit"
     );

@@ -8,7 +8,13 @@ import AddBuildingForm from "./AddBuildingForm";
 const mockReplace = jest.fn();
 const mockPush = jest.fn();
 const mockCreate = jest.fn();
-let mockOwners: { _id: string; displayName: string }[] = [];
+const mockGrantLogin = jest.fn();
+let mockOwners: {
+  _id: string;
+  displayName: string;
+  contactEmail?: string;
+  hasLogin?: boolean;
+}[] = [];
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -19,6 +25,7 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("convex/react", () => ({
   useMutation: () => mockCreate,
+  useAction: () => mockGrantLogin,
   useQuery: () => mockOwners,
 }));
 
@@ -27,6 +34,7 @@ describe("AddBuildingForm", () => {
     mockReplace.mockReset();
     mockPush.mockReset();
     mockCreate.mockReset();
+    mockGrantLogin.mockReset();
     mockOwners = [];
   });
 
@@ -171,9 +179,48 @@ describe("AddBuildingForm", () => {
     });
   });
 
+  it("grants a login when a new owner is given a password", async () => {
+    const user = userEvent.setup();
+    mockGrantLogin.mockResolvedValue("owner-id");
+    mockCreate.mockResolvedValue("building-id");
+    render(<AddBuildingForm />);
+
+    await user.type(screen.getByLabelText(/name/i), "Ridge Court");
+    await user.type(screen.getByLabelText(/street/i), "14 Ridge Road");
+    await user.type(screen.getByLabelText(/area/i), "Cantonments");
+    await user.click(screen.getByRole("combobox", { name: /owner/i }));
+    await user.click(
+      await screen.findByRole("option", {
+        name: /Add a new owner/i,
+        hidden: true,
+      })
+    );
+    await user.type(screen.getByLabelText(/full name/i), "Kwesi Mensah");
+    await user.type(screen.getByLabelText(/email/i), "kwesi@example.com");
+    await user.type(screen.getByLabelText(/^password$/i), "RidgewayOwnerA26");
+    await user.click(screen.getByRole("button", { name: "Save building" }));
+
+    await waitFor(() => {
+      expect(mockGrantLogin).toHaveBeenCalledWith({
+        displayName: "Kwesi Mensah",
+        contactEmail: "kwesi@example.com",
+        contactPhone: "",
+        password: "RidgewayOwnerA26",
+      });
+    });
+    expect(mockCreate).toHaveBeenCalledWith({
+      name: "Ridge Court",
+      street: "14 Ridge Road",
+      area: "Cantonments",
+      ownerId: "owner-id",
+    });
+  });
+
   it("links a building to an owner already on file", async () => {
     const user = userEvent.setup();
-    mockOwners = [{ _id: "owner-1", displayName: "Kwesi Mensah" }];
+    mockOwners = [
+      { _id: "owner-1", displayName: "Kwesi Mensah", hasLogin: true },
+    ];
     mockCreate.mockResolvedValue("building-id");
     render(<AddBuildingForm />);
 
@@ -193,6 +240,50 @@ describe("AddBuildingForm", () => {
         area: "Cantonments",
         ownerId: "owner-1",
       });
+    });
+  });
+
+  it("grants a login when the chosen owner has none", async () => {
+    const user = userEvent.setup();
+    mockOwners = [
+      {
+        _id: "owner-1",
+        displayName: "Kwesi Mensah",
+        contactEmail: "kwesi@example.com",
+        hasLogin: false,
+      },
+    ];
+    mockGrantLogin.mockResolvedValue("owner-1");
+    mockCreate.mockResolvedValue("building-id");
+    render(<AddBuildingForm />);
+
+    await user.type(screen.getByLabelText(/name/i), "Ridge Court");
+    await user.type(screen.getByLabelText(/street/i), "14 Ridge Road");
+    await user.type(screen.getByLabelText(/area/i), "Cantonments");
+    await user.click(screen.getByRole("combobox", { name: /owner/i }));
+    await user.click(
+      await screen.findByRole("option", {
+        name: "Kwesi Mensah",
+        hidden: true,
+      })
+    );
+    await user.type(screen.getByLabelText(/^password$/i), "RidgewayOwnerA26");
+    await user.click(screen.getByRole("button", { name: "Save building" }));
+
+    await waitFor(() => {
+      expect(mockGrantLogin).toHaveBeenCalledWith({
+        ownerId: "owner-1",
+        displayName: "Kwesi Mensah",
+        contactEmail: "kwesi@example.com",
+        contactPhone: "",
+        password: "RidgewayOwnerA26",
+      });
+    });
+    expect(mockCreate).toHaveBeenCalledWith({
+      name: "Ridge Court",
+      street: "14 Ridge Road",
+      area: "Cantonments",
+      ownerId: "owner-1",
     });
   });
 });

@@ -13,6 +13,7 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("convex/react", () => ({
   useMutation: () => jest.fn(),
+  useAction: () => jest.fn(),
   useQuery: () => [],
 }));
 
@@ -37,10 +38,14 @@ describe("AddOwnerPage", () => {
           displayName: "Kwesi Mensah",
           contactEmail: "kwesi@example.com",
           contactPhone: "024 555 0000",
+          password: "",
         }}
       />
     );
 
+    expect(
+      screen.getByRole("heading", { name: "Edit owner" })
+    ).toBeInTheDocument();
     expect(screen.getByLabelText(/full name/i)).toHaveValue("Kwesi Mensah");
     expect(screen.getByLabelText(/email/i)).toHaveValue("kwesi@example.com");
   });
