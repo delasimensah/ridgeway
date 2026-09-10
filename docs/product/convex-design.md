@@ -275,6 +275,8 @@ Where a function is described as staff-only, that means it is declared with `sta
 
 - `leases.listByBuilding` is a query for staff and for that building's owner. The owner sees occupancy, so this is where an owner's view of who is in a unit comes from.
 - `leases.createWithTenant` is a staff-only mutation that creates the tenant's profile if needed and the lease in one transaction, so a half-created tenancy cannot exist.
+- `leases.updateTenant` is a staff-only mutation that corrects typed tenant and lease fields. It does not create a website login.
+- `leases.grantLogin` is a staff-only action. Staff type an email and a temporary password, for a new tenant or for a tenant who still has no login. Add tenant and edit tenant call it when a password is set. It calls Convex Auth `createAccount`, then attaches that Auth user to the tenant profile the lease already points at (or creates the profile and lease for a new tenant). First grant only: it refuses when that email already belongs to a login (staff, field, an owner, or another tenant) and it refuses when the tenant already has a login. It does not reset a password. `leases.get` includes whether that tenant already has a login.
 - `leases.end` is a staff-only mutation that sets `endedOn`. It writes one field and nothing else, because everything downstream of a tenancy ending is derived rather than stored. This single small mutation is what the ended-lease requirement rests on, and it is worth noticing how little it has to do.
 
 ### Work orders

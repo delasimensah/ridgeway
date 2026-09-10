@@ -13,6 +13,7 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("convex/react", () => ({
   useMutation: () => jest.fn(),
+  useAction: () => jest.fn(),
   useQuery: () => [],
 }));
 
@@ -54,6 +55,7 @@ describe("AddTenantPage", () => {
           email: "akosua@example.com",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
+          password: "",
         }}
       />
     );

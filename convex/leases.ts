@@ -1,9 +1,16 @@
+import { createAccount } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
+import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
-import type { MutationCtx, QueryCtx } from "./_generated/server";
+import {
+  internalMutation,
+  internalQuery,
+  type MutationCtx,
+  type QueryCtx,
+} from "./_generated/server";
 import { ERROR_CODES, raise } from "./lib/errors";
-import { staffMutation, staffQuery } from "./lib/functions";
+import { staffAction, staffMutation, staffQuery } from "./lib/functions";
 import {
   isCalendarDate,
   isLeaseCurrent,
@@ -11,6 +18,13 @@ import {
   utcToday,
   type Viewer,
 } from "./lib/viewer";
+
+const MIN_PASSWORD_LENGTH = 8;
+const EMAIL_TAKEN = "That email already belongs to someone who can sign in";
+const LOGIN_ALREADY_GRANTED = "This tenant already has a login";
+const PASSWORD_TOO_SHORT = "Password must be at least 8 characters long";
+const EMAIL_BELONGS_TO_SOMEONE_ELSE =
+  "That email already belongs to someone else";
 
 function requireText(value: string, field: string): string {
   const trimmed = value.trim();
@@ -34,6 +48,26 @@ function requireEmail(value: string): string {
     raise(ERROR_CODES.INVALID, "Enter a valid email");
   }
   return trimmed;
+}
+
+function requirePassword(value: string): string {
+  if (value.length < MIN_PASSWORD_LENGTH) {
+    raise(ERROR_CODES.INVALID, PASSWORD_TOO_SHORT);
+  }
+  return value;
+}
+
+async function userHasPasswordLogin(
+  ctx: { db: QueryCtx["db"] },
+  userId: Id<"users">
+): Promise<boolean> {
+  const account = await ctx.db
+    .query("authAccounts")
+    .withIndex("userIdAndProvider", (q) =>
+      q.eq("userId", userId).eq("provider", "password")
+    )
+    .unique();
+  return account !== null;
 }
 
 function requireCalendarDate(value: string, field: string): string {
@@ -72,6 +106,7 @@ const leaseFormFields = v.object({
   phone: v.union(v.string(), v.null()),
   startedOn: v.string(),
   endedOn: v.union(v.string(), v.null()),
+  hasLogin: v.boolean(),
 });
 
 async function requireUnitInStaffOrg(
@@ -184,6 +219,7 @@ export const get = staffQuery({
       phone: profile.phone ?? null,
       startedOn: lease.startedOn,
       endedOn: lease.endedOn ?? null,
+      hasLogin: await userHasPasswordLogin(ctx, profile.userId),
     };
   },
 });
@@ -485,5 +521,370 @@ export const updateTenant = staffMutation({
       ...(endedOn !== undefined ? { endedOn } : {}),
     });
     return null;
+  },
+});
+
+async function requireUnitInOrg(
+  ctx: { db: QueryCtx["db"] },
+  organizationId: Id<"organizations">,
+  unitId: Id<"units">
+) {
+  const unit = await ctx.db.get(unitId);
+  if (unit === null) {
+    raise(ERROR_CODES.NOT_PERMITTED);
+  }
+  const building = await ctx.db.get(unit.buildingId);
+  if (building === null || building.organizationId !== organizationId) {
+    raise(ERROR_CODES.NOT_PERMITTED);
+  }
+  return { unit, building };
+}
+
+export const getForStaffOrg = internalQuery({
+  args: {
+    organizationId: v.id("organizations"),
+    leaseId: v.id("leases"),
+  },
+  returns: v.union(
+    v.object({
+      _id: v.id("leases"),
+      unitId: v.id("units"),
+      profileId: v.id("profiles"),
+      userId: v.id("users"),
+      hasLogin: v.boolean(),
+    }),
+    v.null()
+  ),
+  handler: async (ctx, args) => {
+    const lease = await ctx.db.get(args.leaseId);
+    if (lease === null) {
+      return null;
+    }
+
+    const unit = await ctx.db.get(lease.unitId);
+    if (unit === null) {
+      return null;
+    }
+
+    const building = await ctx.db.get(unit.buildingId);
+    if (building === null || building.organizationId !== args.organizationId) {
+      return null;
+    }
+
+    const profile = await ctx.db.get(lease.tenantProfileId);
+    if (profile === null) {
+      return null;
+    }
+
+    return {
+      _id: lease._id,
+      unitId: lease.unitId,
+      profileId: profile._id,
+      userId: profile.userId,
+      hasLogin: await userHasPasswordLogin(ctx, profile.userId),
+    };
+  },
+});
+
+export const getUnitForGrant = internalQuery({
+  args: {
+    organizationId: v.id("organizations"),
+    unitId: v.id("units"),
+  },
+  returns: v.union(
+    v.object({
+      unitId: v.id("units"),
+      occupied: v.boolean(),
+    }),
+    v.null()
+  ),
+  handler: async (ctx, args) => {
+    const unit = await ctx.db.get(args.unitId);
+    if (unit === null) {
+      return null;
+    }
+    const building = await ctx.db.get(unit.buildingId);
+    if (building === null || building.organizationId !== args.organizationId) {
+      return null;
+    }
+
+    const occupied =
+      (await currentLeaseForUnit(ctx, unit._id, utcToday())) !== null;
+    return { unitId: unit._id, occupied };
+  },
+});
+
+export const getUserForGrant = internalQuery({
+  args: {
+    email: v.string(),
+  },
+  returns: v.union(
+    v.object({
+      userId: v.id("users"),
+      profileId: v.union(v.id("profiles"), v.null()),
+      hasLogin: v.boolean(),
+      hasMembership: v.boolean(),
+    }),
+    v.null()
+  ),
+  handler: async (ctx, args) => {
+    const user = await findUserByEmail(ctx, args.email);
+    if (user === null) {
+      return null;
+    }
+
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+      .unique();
+
+    return {
+      userId: user._id,
+      profileId: profile?._id ?? null,
+      hasLogin: await userHasPasswordLogin(ctx, user._id),
+      hasMembership:
+        profile !== null && (await profileHasMembership(ctx, profile._id)),
+    };
+  },
+});
+
+export const markEmailVerified = internalMutation({
+  args: {
+    userId: v.id("users"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (user === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+    if (user.emailVerificationTime === undefined) {
+      await ctx.db.patch(args.userId, {
+        emailVerificationTime: Date.now(),
+      });
+    }
+    return null;
+  },
+});
+
+export const attachLogin = internalMutation({
+  args: {
+    organizationId: v.id("organizations"),
+    userId: v.id("users"),
+    leaseId: v.optional(v.id("leases")),
+    unitId: v.optional(v.id("units")),
+    displayName: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    startedOn: v.string(),
+    endedOn: v.optional(v.string()),
+  },
+  returns: v.id("leases"),
+  handler: async (ctx, args) => {
+    const displayName = requireText(args.displayName, "Name");
+    const email = requireEmail(args.email);
+    const phone = optionalText(args.phone);
+    const startedOn = requireCalendarDate(args.startedOn, "Lease start");
+    const endedOn = optionalCalendarDate(args.endedOn, "Lease end");
+    validateLeaseDates(startedOn, endedOn);
+
+    const authUser = await ctx.db.get(args.userId);
+    if (authUser === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+    await ctx.db.patch(args.userId, {
+      email,
+      name: displayName,
+    });
+
+    if (args.leaseId !== undefined) {
+      const lease = await ctx.db.get(args.leaseId);
+      if (lease === null) {
+        raise(ERROR_CODES.NOT_PERMITTED);
+      }
+      await requireUnitInOrg(ctx, args.organizationId, lease.unitId);
+
+      const profile = await ctx.db.get(lease.tenantProfileId);
+      if (profile === null) {
+        raise(ERROR_CODES.NOT_PERMITTED);
+      }
+      if (await userHasPasswordLogin(ctx, profile.userId)) {
+        if (profile.userId !== args.userId) {
+          raise(ERROR_CODES.INVALID, LOGIN_ALREADY_GRANTED);
+        }
+      }
+
+      const oldUserId = profile.userId;
+      await ctx.db.patch(profile._id, {
+        userId: args.userId,
+        displayName,
+        ...(phone !== undefined ? { phone } : {}),
+      });
+      if (
+        oldUserId !== args.userId &&
+        !(await userHasPasswordLogin(ctx, oldUserId))
+      ) {
+        await ctx.db.delete(oldUserId);
+      }
+      await ctx.db.patch(lease._id, {
+        startedOn,
+        ...(endedOn !== undefined ? { endedOn } : {}),
+      });
+      return lease._id;
+    }
+
+    if (args.unitId === undefined) {
+      raise(ERROR_CODES.INVALID, "Unit is required");
+    }
+
+    const { unit } = await requireUnitInOrg(
+      ctx,
+      args.organizationId,
+      args.unitId
+    );
+    const today = utcToday();
+    const occupied = await currentLeaseForUnit(ctx, unit._id, today);
+    if (occupied !== null) {
+      raise(ERROR_CODES.INVALID, "This unit already has a current lease");
+    }
+
+    const existingProfile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .unique();
+    let tenantProfileId: Id<"profiles">;
+    if (existingProfile === null) {
+      tenantProfileId = await ctx.db.insert("profiles", {
+        userId: args.userId,
+        displayName,
+        ...(phone !== undefined ? { phone } : {}),
+      });
+    } else {
+      if (await profileHasMembership(ctx, existingProfile._id)) {
+        raise(
+          ERROR_CODES.INVALID,
+          "That email already belongs to someone on staff"
+        );
+      }
+      const current = await currentLeaseForProfile(
+        ctx,
+        existingProfile._id,
+        today
+      );
+      if (current !== null) {
+        raise(ERROR_CODES.INVALID, "This person already has a current lease");
+      }
+      await ctx.db.patch(existingProfile._id, {
+        displayName,
+        ...(phone !== undefined ? { phone } : {}),
+      });
+      tenantProfileId = existingProfile._id;
+    }
+
+    return await ctx.db.insert("leases", {
+      unitId: unit._id,
+      tenantProfileId,
+      startedOn,
+      ...(endedOn !== undefined ? { endedOn } : {}),
+    });
+  },
+});
+
+export const grantLogin = staffAction({
+  args: {
+    leaseId: v.optional(v.id("leases")),
+    unitId: v.optional(v.id("units")),
+    displayName: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    startedOn: v.string(),
+    endedOn: v.optional(v.string()),
+    password: v.string(),
+  },
+  returns: v.id("leases"),
+  handler: async (ctx, args): Promise<Id<"leases">> => {
+    const viewer: {
+      userId: Id<"users">;
+      profileId: Id<"profiles">;
+      organizationId: Id<"organizations">;
+    } = await ctx.runQuery(internal.lib.viewer.requireStaffByUserId, {
+      userId: ctx.staffUserId,
+    });
+    const displayName = requireText(args.displayName, "Name");
+    const email = requireEmail(args.email);
+    const password = requirePassword(args.password);
+    const phone = optionalText(args.phone);
+    const startedOn = requireCalendarDate(args.startedOn, "Lease start");
+    const endedOn = optionalCalendarDate(args.endedOn, "Lease end");
+    validateLeaseDates(startedOn, endedOn);
+
+    if (args.leaseId === undefined && args.unitId === undefined) {
+      raise(ERROR_CODES.INVALID, "Unit is required");
+    }
+
+    let existingTenantUserId: Id<"users"> | undefined;
+    if (args.leaseId !== undefined) {
+      const lease = await ctx.runQuery(internal.leases.getForStaffOrg, {
+        organizationId: viewer.organizationId,
+        leaseId: args.leaseId,
+      });
+      if (lease === null) {
+        raise(ERROR_CODES.NOT_PERMITTED);
+      }
+      if (lease.hasLogin) {
+        raise(ERROR_CODES.INVALID, LOGIN_ALREADY_GRANTED);
+      }
+      existingTenantUserId = lease.userId;
+    } else if (args.unitId !== undefined) {
+      const unit = await ctx.runQuery(internal.leases.getUnitForGrant, {
+        organizationId: viewer.organizationId,
+        unitId: args.unitId,
+      });
+      if (unit === null) {
+        raise(ERROR_CODES.NOT_PERMITTED);
+      }
+      if (unit.occupied) {
+        raise(ERROR_CODES.INVALID, "This unit already has a current lease");
+      }
+    }
+
+    const existingUser = await ctx.runQuery(internal.leases.getUserForGrant, {
+      email,
+    });
+    if (existingUser !== null) {
+      const isThisTenant =
+        existingTenantUserId !== undefined &&
+        existingUser.userId === existingTenantUserId;
+      if (!isThisTenant) {
+        if (existingUser.hasLogin || existingUser.hasMembership) {
+          raise(ERROR_CODES.INVALID, EMAIL_TAKEN);
+        }
+        if (args.leaseId !== undefined) {
+          raise(ERROR_CODES.INVALID, EMAIL_BELONGS_TO_SOMEONE_ELSE);
+        }
+      }
+      await ctx.runMutation(internal.leases.markEmailVerified, {
+        userId: existingUser.userId,
+      });
+    }
+
+    const created = await createAccount(ctx as never, {
+      provider: "password",
+      account: { id: email, secret: password },
+      profile: { email, name: displayName },
+      shouldLinkViaEmail: existingUser !== null,
+    });
+
+    return await ctx.runMutation(internal.leases.attachLogin, {
+      organizationId: viewer.organizationId,
+      userId: created.user._id,
+      leaseId: args.leaseId,
+      unitId: args.unitId,
+      displayName,
+      email,
+      phone,
+      startedOn,
+      endedOn,
+    });
   },
 });

@@ -70,6 +70,7 @@ describe("leases", () => {
       phone: "024 111 2222",
       startedOn: "2024-01-15",
       endedOn: "2027-12-31",
+      hasLogin: false,
     });
   });
 
@@ -232,5 +233,193 @@ describe("leases", () => {
     );
 
     expect(available.map((row) => row.displayName)).toEqual(["Sofia Herrera"]);
+  });
+
+  it("grants a login when staff add a tenant with a password", async () => {
+    const { t, userId, unitId } = await staffWithUnit();
+
+    const leaseId = await asUser(t, userId).action(api.leases.grantLogin, {
+      unitId,
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      phone: "024 111 2222",
+      startedOn: "2024-01-15",
+      password: "RidgewayTenant26",
+    });
+
+    const loaded = await asUser(t, userId).query(api.leases.get, { leaseId });
+    expect(loaded?.hasLogin).toBe(true);
+
+    const tenantUserId = await t.run(async (ctx) => {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("email", (q) => q.eq("email", "akosua.darko@ridgeway.gh"))
+        .unique();
+      return user?._id;
+    });
+    expect(tenantUserId).toBeDefined();
+
+    const viewer = await asUser(t, tenantUserId!).query(
+      api.profiles.getCurrent,
+      {}
+    );
+    expect(viewer.isStaff).toBe(false);
+    expect(viewer.ownerId).toBeNull();
+
+    const workOrderId = await asUser(t, tenantUserId!).mutation(
+      api.workOrders.createByTenant,
+      {
+        unitId,
+        description: "The kitchen tap drips.",
+        category: "plumbing",
+        urgency: "normal",
+      }
+    );
+    expect(workOrderId).toBeDefined();
+  });
+
+  it("grants a login when staff edit a tenant who has none", async () => {
+    const { t, userId, unitId } = await staffWithUnit();
+    const leaseId = await asUser(t, userId).mutation(
+      api.leases.createWithTenant,
+      {
+        unitId,
+        displayName: "Akosua Darko",
+        email: "akosua.darko@ridgeway.gh",
+        startedOn: "2024-01-15",
+      }
+    );
+
+    await asUser(t, userId).action(api.leases.grantLogin, {
+      leaseId,
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      startedOn: "2024-01-15",
+      password: "RidgewayTenant26",
+    });
+
+    const loaded = await asUser(t, userId).query(api.leases.get, { leaseId });
+    expect(loaded).toMatchObject({
+      email: "akosua.darko@ridgeway.gh",
+      hasLogin: true,
+    });
+
+    const tenantUserId = await t.run(async (ctx) => {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("email", (q) => q.eq("email", "akosua.darko@ridgeway.gh"))
+        .unique();
+      return user?._id;
+    });
+    const viewer = await asUser(t, tenantUserId!).query(
+      api.profiles.getCurrent,
+      {}
+    );
+    expect(viewer.displayName).toBe("Akosua Darko");
+  });
+
+  it("refuses a second login for a tenant who already has one", async () => {
+    const { t, userId, unitId } = await staffWithUnit();
+    const leaseId = await asUser(t, userId).action(api.leases.grantLogin, {
+      unitId,
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      startedOn: "2024-01-15",
+      password: "RidgewayTenant26",
+    });
+
+    try {
+      await asUser(t, userId).action(api.leases.grantLogin, {
+        leaseId,
+        displayName: "Akosua Darko",
+        email: "akosua.other@ridgeway.gh",
+        startedOn: "2024-01-15",
+        password: "RidgewayTenant26",
+      });
+      throw new Error("expected grantLogin to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("INVALID");
+    }
+  });
+
+  it("refuses an email that already belongs to staff, field, an owner, or a tenant login", async () => {
+    const { t, userId, unitId, otherUnitId } = await staffWithUnit();
+    await insertPerson(t, {
+      email: "yaw.darko@ridgeway.gh",
+      displayName: "Yaw Darko",
+      role: "field",
+    });
+    await asUser(t, userId).action(api.owners.grantLogin, {
+      displayName: "Adwoa Owusu",
+      contactEmail: "adwoa.owusu@ridgeway.gh",
+      password: "RidgewayOwnerB26",
+    });
+    await asUser(t, userId).action(api.leases.grantLogin, {
+      unitId,
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      startedOn: "2024-01-15",
+      password: "RidgewayTenant26",
+    });
+
+    const taken = [
+      "ama.boateng@ridgeway.gh",
+      "yaw.darko@ridgeway.gh",
+      "adwoa.owusu@ridgeway.gh",
+      "akosua.darko@ridgeway.gh",
+    ];
+    for (const email of taken) {
+      try {
+        await asUser(t, userId).action(api.leases.grantLogin, {
+          unitId: otherUnitId,
+          displayName: "Kofi Owusu",
+          email,
+          startedOn: "2024-01-15",
+          password: "RidgewayTenant26",
+        });
+        throw new Error(`expected grantLogin to refuse ${email}`);
+      } catch (error) {
+        expect(errorCode(error)).toBe("INVALID");
+      }
+    }
+  });
+
+  it("refuses grantLogin when the caller is a field worker", async () => {
+    const { t, unitId } = await staffWithUnit();
+    const { userId } = await insertPerson(t, {
+      email: "yaw.darko@ridgeway.gh",
+      displayName: "Yaw Darko",
+      role: "field",
+    });
+
+    try {
+      await asUser(t, userId).action(api.leases.grantLogin, {
+        unitId,
+        displayName: "Akosua Darko",
+        email: "akosua.darko@ridgeway.gh",
+        startedOn: "2024-01-15",
+        password: "RidgewayTenant26",
+      });
+      throw new Error("expected grantLogin to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
+
+  it("refuses grantLogin when nobody is signed in", async () => {
+    const { t, unitId } = await staffWithUnit();
+
+    try {
+      await t.action(api.leases.grantLogin, {
+        unitId,
+        displayName: "Akosua Darko",
+        email: "akosua.darko@ridgeway.gh",
+        startedOn: "2024-01-15",
+        password: "RidgewayTenant26",
+      });
+      throw new Error("expected grantLogin to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("UNAUTHENTICATED");
+    }
   });
 });

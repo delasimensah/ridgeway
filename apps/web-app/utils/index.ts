@@ -30,6 +30,7 @@ export {
 export {
   addTenantSchema,
   isExistingTenantChoice,
+  MIN_TENANT_PASSWORD_LENGTH,
   NEW_TENANT_CHOICE,
   utcToday,
   type AddTenantFormValues,
