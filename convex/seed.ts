@@ -39,6 +39,13 @@ export const OWNER_B_SEED = {
   area: "Labone",
 } as const;
 
+export const TENANT_SEED = {
+  email: "akosua.darko@ridgeway.gh",
+  displayName: "Akosua Darko",
+  unitLabel: "B12",
+  startedOn: "2025-01-01",
+} as const;
+
 export const findUserByEmail = internalQuery({
   args: { email: v.string() },
   returns: v.union(v.id("users"), v.null()),
@@ -172,6 +179,69 @@ export const ensureBuildingForOwner = internalMutation({
   },
 });
 
+export const ensureTenantOnBuilding = internalMutation({
+  args: {
+    userId: v.id("users"),
+    displayName: v.string(),
+    buildingName: v.string(),
+    unitLabel: v.string(),
+    startedOn: v.string(),
+  },
+  returns: v.id("leases"),
+  handler: async (ctx, args) => {
+    const existingProfile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .unique();
+    const profileId =
+      existingProfile?._id ??
+      (await ctx.db.insert("profiles", {
+        userId: args.userId,
+        displayName: args.displayName,
+      }));
+    if (
+      existingProfile !== null &&
+      existingProfile.displayName !== args.displayName
+    ) {
+      await ctx.db.patch(profileId, { displayName: args.displayName });
+    }
+
+    const buildings = await ctx.db.query("buildings").collect();
+    const building = buildings.find((row) => row.name === args.buildingName);
+    if (building === undefined) {
+      throw new Error("Building does not exist");
+    }
+
+    const units = await ctx.db
+      .query("units")
+      .withIndex("by_buildingId", (q) => q.eq("buildingId", building._id))
+      .collect();
+    const existingUnit = units.find((row) => row.label === args.unitLabel);
+    const unitId =
+      existingUnit?._id ??
+      (await ctx.db.insert("units", {
+        buildingId: building._id,
+        label: args.unitLabel,
+        kind: "apartment",
+      }));
+
+    const leases = await ctx.db
+      .query("leases")
+      .withIndex("by_unitId", (q) => q.eq("unitId", unitId))
+      .collect();
+    const current = leases.find((row) => row.endedOn === undefined);
+    if (current !== undefined) {
+      return current._id;
+    }
+
+    return await ctx.db.insert("leases", {
+      unitId,
+      tenantProfileId: profileId,
+      startedOn: args.startedOn,
+    });
+  },
+});
+
 async function ensureAccount(
   ctx: GenericActionCtx<DataModel>,
   email: string,
@@ -199,12 +269,14 @@ export const run = internalAction({
     fieldPassword: v.string(),
     ownerAPassword: v.string(),
     ownerBPassword: v.string(),
+    tenantPassword: v.string(),
   },
   returns: v.object({
     staffEmail: v.string(),
     fieldEmail: v.string(),
     ownerAEmail: v.string(),
     ownerBEmail: v.string(),
+    tenantEmail: v.string(),
   }),
   handler: async (ctx, args) => {
     const staffUserId = await ensureAccount(
@@ -230,6 +302,12 @@ export const run = internalAction({
       OWNER_B_SEED.email,
       args.ownerBPassword,
       OWNER_B_SEED.displayName
+    );
+    const tenantUserId = await ensureAccount(
+      ctx,
+      TENANT_SEED.email,
+      args.tenantPassword,
+      TENANT_SEED.displayName
     );
 
     await ctx.runMutation(internal.seed.attachIdentity, {
@@ -284,11 +362,20 @@ export const run = internalAction({
       area: OWNER_B_SEED.area,
     });
 
+    await ctx.runMutation(internal.seed.ensureTenantOnBuilding, {
+      userId: tenantUserId,
+      displayName: TENANT_SEED.displayName,
+      buildingName: OWNER_A_SEED.buildingName,
+      unitLabel: TENANT_SEED.unitLabel,
+      startedOn: TENANT_SEED.startedOn,
+    });
+
     return {
       staffEmail: STAFF_SEED.email,
       fieldEmail: FIELD_SEED.email,
       ownerAEmail: OWNER_A_SEED.email,
       ownerBEmail: OWNER_B_SEED.email,
+      tenantEmail: TENANT_SEED.email,
     };
   },
 });

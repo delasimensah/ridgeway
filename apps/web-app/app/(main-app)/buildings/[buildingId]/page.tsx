@@ -17,6 +17,10 @@ const BuildingDetailRoute = () => {
     api.units.listByBuilding,
     building ? { buildingId } : "skip"
   );
+  const openRepairs = useQuery(
+    api.workOrders.listForBuilding,
+    building ? { buildingId } : "skip"
+  );
 
   useEffect(() => {
     if (building === null) {
@@ -24,7 +28,12 @@ const BuildingDetailRoute = () => {
     }
   }, [building, router]);
 
-  if (building === undefined || building === null || units === undefined) {
+  if (
+    building === undefined ||
+    building === null ||
+    units === undefined ||
+    openRepairs === undefined
+  ) {
     return <LoadingScreen fillViewport={false} />;
   }
 
@@ -36,6 +45,7 @@ const BuildingDetailRoute = () => {
       ownerId={building.ownerId}
       ownerName={building.ownerName}
       units={units}
+      openRepairs={openRepairs}
     />
   );
 };

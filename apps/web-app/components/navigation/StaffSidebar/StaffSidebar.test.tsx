@@ -21,6 +21,10 @@ describe("StaffSidebar", () => {
       "href",
       "/buildings"
     );
+    expect(screen.getByRole("link", { name: "Repairs" })).toHaveAttribute(
+      "href",
+      "/repairs"
+    );
 
     await user.click(screen.getByRole("button", { name: /sign out/i }));
     expect(onSignOut).toHaveBeenCalledTimes(1);

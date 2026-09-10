@@ -122,6 +122,20 @@ export function isLeaseCurrent(
   return lease.endedOn === undefined || lease.endedOn >= today;
 }
 
+export async function currentLeaseForProfile(
+  ctx: { db: QueryCtx["db"] },
+  tenantProfileId: Id<"profiles">,
+  today: string
+): Promise<Doc<"leases"> | null> {
+  const rows = await ctx.db
+    .query("leases")
+    .withIndex("by_tenantProfileId", (q) =>
+      q.eq("tenantProfileId", tenantProfileId)
+    )
+    .collect();
+  return rows.find((row) => isLeaseCurrent(row, today)) ?? null;
+}
+
 export async function requireBuildingAccess(
   ctx: { db: QueryCtx["db"] },
   viewer: Viewer,
@@ -142,6 +156,59 @@ export async function requireBuildingAccess(
     viewer.ownerId === building.ownerId
   ) {
     return building;
+  }
+
+  const lease = await currentLeaseForProfile(
+    ctx,
+    viewer.profile._id,
+    utcToday()
+  );
+  if (lease !== null) {
+    const unit = await ctx.db.get(lease.unitId);
+    if (unit !== null && unit.buildingId === buildingId) {
+      return building;
+    }
+  }
+
+  raise(ERROR_CODES.NOT_PERMITTED);
+}
+
+export async function requireWorkOrderAccess(
+  ctx: { db: QueryCtx["db"] },
+  viewer: Viewer,
+  workOrderId: Id<"workOrders">,
+  intent: "read" | "write"
+): Promise<Doc<"workOrders">> {
+  const ticket = await ctx.db.get(workOrderId);
+  if (ticket === null) {
+    raise(ERROR_CODES.NOT_PERMITTED);
+  }
+
+  if (viewer.isStaff && viewer.organizationId === ticket.organizationId) {
+    return ticket;
+  }
+
+  if (viewer.ownerId !== null) {
+    const building = await ctx.db.get(ticket.buildingId);
+    if (
+      building !== null &&
+      building.ownerId !== undefined &&
+      building.ownerId === viewer.ownerId
+    ) {
+      if (intent === "write") {
+        raise(ERROR_CODES.NOT_PERMITTED);
+      }
+      return ticket;
+    }
+  }
+
+  const lease = await currentLeaseForProfile(
+    ctx,
+    viewer.profile._id,
+    utcToday()
+  );
+  if (lease !== null && ticket.leaseId === lease._id) {
+    return ticket;
   }
 
   raise(ERROR_CODES.NOT_PERMITTED);

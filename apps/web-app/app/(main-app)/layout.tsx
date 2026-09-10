@@ -8,8 +8,9 @@ import {
   NotAllowedPage,
   OwnerAppShell,
   StaffAppShell,
+  TenantAppShell,
 } from "@/components";
-import { useStaffSession } from "@/hooks";
+import { StaffSessionProvider, useStaffSession } from "@/hooks";
 
 const StaffQuerySubscriptions = () => {
   useQuery(api.staff.getHome, {});
@@ -17,7 +18,7 @@ const StaffQuerySubscriptions = () => {
   return null;
 };
 
-const MainAppLayout = ({ children }: { children: React.ReactNode }) => {
+const MainAppShell = ({ children }: { children: React.ReactNode }) => {
   const session = useStaffSession();
 
   if (session.isSessionLoading) {
@@ -51,11 +52,31 @@ const MainAppLayout = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
+  if (session.isTenant) {
+    return (
+      <TenantAppShell
+        displayName={session.displayName}
+        onSignOut={session.handleSignOut}
+        isSigningOut={session.isSigningOut}
+      >
+        {children}
+      </TenantAppShell>
+    );
+  }
+
   return (
     <NotAllowedPage
       onSignOut={session.handleSignOut}
       isSigningOut={session.isSigningOut}
     />
+  );
+};
+
+const MainAppLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <StaffSessionProvider>
+      <MainAppShell>{children}</MainAppShell>
+    </StaffSessionProvider>
   );
 };
 

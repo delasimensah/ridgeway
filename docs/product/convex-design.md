@@ -264,8 +264,7 @@ Where a function is described as staff-only, that means it is declared with `sta
 - `owners.get` is a staff-only query for the add-owner form in edit. It includes whether that owner already has a login.
 - `owners.create` and `owners.update` are staff-only mutations. They save contact details. They do not create a website login.
 - `owners.grantLogin` is a staff-only action. Staff type an email and a temporary password, for a new owner or for an owner who still has no login. Add owner, edit owner, and add building all call it when a password is set. It calls Convex Auth `createAccount`, then writes the owner row, the profile, and the owner membership. First grant only: it refuses when that email already belongs to a login (staff, field, another owner, or a tenant) and it refuses when the owner already has a login. It does not reset a password.
-- `buildings.listForViewer` is a query available to any signed-in person, and it returns a different set depending on who they are: staff get the buildings in their organization, an owner gets the buildings whose `ownerId` matches their own membership, and a tenant gets only the building above their current lease. The scope always comes from the viewer and never from an argument. There is one function rather than three because the alternative is three functions with three chances to get the scoping wrong, and one function makes the comparison between the three cases visible in one screen of code.
-- `buildings.listForViewer` is a query available to any signed-in person, and it returns a different set depending on who they are: staff get the buildings in their organization, an owner gets the buildings whose `ownerId` matches their own membership, and a tenant gets only the building above their current lease. The scope always comes from the viewer and never from an argument. There is one function rather than three because the alternative is three functions with three chances to get the scoping wrong, and one function makes the comparison between the three cases visible in one screen of code.
+- `buildings.listForViewer` is a query available to any signed-in person, and it returns a different set depending on who they are: staff get the buildings in their organization, an owner gets the buildings whose `ownerId` matches their own membership, and a tenant gets only the building above their current lease. The scope always comes from the viewer and never from an argument. There is one function rather than three because the alternative is three functions with three chances to get the scoping wrong, and one function makes the comparison between the three cases visible in one screen of code. Each row includes `unitCount` and `openRepairCount` (tickets that are not done).
 - `buildings.get` is a query guarded by `requireBuildingAccess`.
 - `buildings.create` and `buildings.update` are staff-only mutations. Creating a building requires the named owner to be in the caller's organization.
 - `units.listByBuilding` is a query guarded by `requireBuildingAccess`.
@@ -280,11 +279,13 @@ Where a function is described as staff-only, that means it is declared with `sta
 
 ### Work orders
 
-- `workOrders.listForBuilding` is a paginated query, guarded by `requireBuildingAccess`, filtered by status, defaulting to everything that is not done and offering done as an explicit filter.
-- `workOrders.listForCurrentTenant` is a paginated query returning the tickets filed under the caller's current leases.
+- `workOrders.listForBuilding` is a query, guarded by `requireBuildingAccess`, returning tickets for that building newest first. It defaults to everything that is not done and offers done as an explicit filter (`includeDone`).
+- `workOrders.listForStaff` is a staff-only query returning tickets in the caller's organization, newest first, with the same not-done default.
+- `workOrders.listForCurrentTenant` is a query returning the open tickets filed under the caller's current lease.
 - `workOrders.listForCurrentField` is a paginated query returning the tickets assigned to the caller.
 - `workOrders.get` is a query, guarded by `requireWorkOrderAccess` for reading, that returns the ticket, its history rows, and permission-checked URLs for its photos.
 - `workOrders.createByTenant` is a mutation available to a tenant with a current lease on the unit. It refuses when the lease that would cover the ticket is not current, which is the second half of the ended-lease requirement. It creates the ticket at `"received"`, copies the organization and building from the unit's building at that moment, and writes the first history row in the same transaction.
+- `workOrders.updateDescription` is a mutation available to the tenant who created the ticket, and only while status is still `"received"`.
 - `workOrders.createByStaff` is the staff equivalent, for a repair that comes in by phone.
 - `workOrders.assign` is a staff-only mutation that sets the assignee and moves the ticket to `"assigned"`.
 - `workOrders.schedule` is a staff-only mutation that sets `scheduledFor` and moves the ticket to `"scheduled"`.

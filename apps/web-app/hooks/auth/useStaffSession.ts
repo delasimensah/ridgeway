@@ -1,12 +1,42 @@
 "use client";
 
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react";
 import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import {
+  createContext,
+  createElement,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-export function useStaffSession() {
+export type StaffSessionLease = {
+  leaseId: Id<"leases">;
+  unitId: Id<"units">;
+  buildingId: Id<"buildings">;
+  unitLabel: string;
+  buildingName: string;
+  address: string;
+};
+
+export type StaffSession = {
+  isSessionLoading: boolean;
+  isStaff: boolean;
+  isOwner: boolean;
+  isTenant: boolean;
+  currentLease: StaffSessionLease | null;
+  displayName: string;
+  isSigningOut: boolean;
+  handleSignOut: () => Promise<void>;
+};
+
+const StaffSessionContext = createContext<StaffSession | null>(null);
+
+function useStaffSessionState(): StaffSession {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useConvexAuth();
   const { signOut } = useAuthActions();
@@ -61,8 +91,28 @@ export function useStaffSession() {
     isSessionLoading,
     isStaff: viewer?.isStaff === true,
     isOwner: viewer?.ownerId !== null && viewer?.ownerId !== undefined,
+    isTenant:
+      viewer?.currentLease !== null && viewer?.currentLease !== undefined,
+    currentLease: viewer?.currentLease ?? null,
     displayName: viewer?.displayName ?? "",
     isSigningOut,
     handleSignOut,
   };
+}
+
+export function StaffSessionProvider({ children }: { children: ReactNode }) {
+  const session = useStaffSessionState();
+  return createElement(
+    StaffSessionContext.Provider,
+    { value: session },
+    children
+  );
+}
+
+export function useStaffSession(): StaffSession {
+  const session = useContext(StaffSessionContext);
+  if (session === null) {
+    throw new Error("useStaffSession must be used under StaffSessionProvider");
+  }
+  return session;
 }

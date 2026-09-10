@@ -23,3 +23,13 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 HTMLElement.prototype.scrollIntoView = () => {};
+
+Object.defineProperty(URL, "createObjectURL", {
+  writable: true,
+  value: () => "blob:http://localhost/preview",
+});
+
+Object.defineProperty(URL, "revokeObjectURL", {
+  writable: true,
+  value: () => undefined,
+});

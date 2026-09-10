@@ -13,6 +13,7 @@ const buildingListItem = v.object({
   address: v.string(),
   ownerName: v.union(v.string(), v.null()),
   unitCount: v.number(),
+  openRepairCount: v.number(),
 });
 
 function requireText(value: string, field: string): string {
@@ -66,12 +67,20 @@ export const listForViewer = authedQuery({
           .collect();
         const owner =
           row.ownerId === undefined ? null : await ctx.db.get(row.ownerId);
+        const tickets = await ctx.db
+          .query("workOrders")
+          .withIndex("by_buildingId_and_status", (q) =>
+            q.eq("buildingId", row._id)
+          )
+          .collect();
         return {
           _id: row._id,
           name: row.name,
           address: row.address,
           ownerName: owner?.displayName ?? null,
           unitCount: units.length,
+          openRepairCount: tickets.filter((ticket) => ticket.status !== "done")
+            .length,
         };
       })
     );
