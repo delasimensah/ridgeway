@@ -27,10 +27,12 @@ const EditOwnerRoute = () => {
   return (
     <AddOwnerPage
       ownerId={owner._id}
+      hasLogin={owner.hasLogin}
       initialValues={{
         displayName: owner.displayName,
         contactEmail: owner.contactEmail ?? "",
         contactPhone: owner.contactPhone ?? "",
+        password: "",
       }}
     />
   );

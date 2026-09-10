@@ -217,6 +217,7 @@ No public function is declared with Convex's plain `query` or `mutation`. Instea
 
 - `authedQuery` and `authedMutation` resolve the viewer and pass it to the handler as `ctx.viewer`. A handler declared this way cannot execute for a caller who is not signed in and has no profile.
 - `staffQuery` and `staffMutation` do the same and additionally refuse a caller who is not staff, so the role requirement is visible in the declaration and cannot be deleted by editing the body.
+- `staffAction` is the signed-in wrapper for actions. An action cannot read the database itself, so the handler then loads staff through an internal query. `createAccount` from Convex Auth can only run in an action, which is why granting a website login uses this wrapper rather than a mutation.
 
 These are built with `customQuery` and `customMutation` from `convex-helpers/server/customFunctions`, which is Convex's own package for exactly this. It is one small dependency to add, and the exact shape of its API should be checked against [the convex-helpers documentation](https://github.com/get-convex/convex-helpers) when the first function is written, because I have not run it in this repository yet. If for any reason it does not fit, the fallback is a hand-written wrapper of our own that takes arguments and a handler and returns `query(...)`; the design does not depend on the package, only on the wrapping.
 
@@ -260,7 +261,10 @@ Where a function is described as staff-only, that means it is declared with `sta
 ### Owners, buildings, and units
 
 - `owners.listForStaff` is a staff-only query listing the owners in the caller's organization.
-- `owners.create` and `owners.update` are staff-only mutations.
+- `owners.get` is a staff-only query for the add-owner form in edit. It includes whether that owner already has a login.
+- `owners.create` and `owners.update` are staff-only mutations. They save contact details. They do not create a website login.
+- `owners.grantLogin` is a staff-only action. Staff type an email and a temporary password, for a new owner or for an owner who still has no login. Add owner, edit owner, and add building all call it when a password is set. It calls Convex Auth `createAccount`, then writes the owner row, the profile, and the owner membership. First grant only: it refuses when that email already belongs to a login (staff, field, another owner, or a tenant) and it refuses when the owner already has a login. It does not reset a password.
+- `buildings.listForViewer` is a query available to any signed-in person, and it returns a different set depending on who they are: staff get the buildings in their organization, an owner gets the buildings whose `ownerId` matches their own membership, and a tenant gets only the building above their current lease. The scope always comes from the viewer and never from an argument. There is one function rather than three because the alternative is three functions with three chances to get the scoping wrong, and one function makes the comparison between the three cases visible in one screen of code.
 - `buildings.listForViewer` is a query available to any signed-in person, and it returns a different set depending on who they are: staff get the buildings in their organization, an owner gets the buildings whose `ownerId` matches their own membership, and a tenant gets only the building above their current lease. The scope always comes from the viewer and never from an argument. There is one function rather than three because the alternative is three functions with three chances to get the scoping wrong, and one function makes the comparison between the three cases visible in one screen of code.
 - `buildings.get` is a query guarded by `requireBuildingAccess`.
 - `buildings.create` and `buildings.update` are staff-only mutations. Creating a building requires the named owner to be in the caller's organization.

@@ -1,7 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
 
 import type { Doc, Id } from "../_generated/dataModel";
-import type { QueryCtx } from "../_generated/server";
+import { internalQuery, type QueryCtx } from "../_generated/server";
 import { ERROR_CODES, raise } from "./errors";
 
 export type Viewer = {
@@ -13,12 +14,10 @@ export type Viewer = {
   ownerId: Id<"owners"> | null;
 };
 
-export async function resolveViewer(ctx: QueryCtx): Promise<Viewer> {
-  const userId = await getAuthUserId(ctx);
-  if (userId === null) {
-    raise(ERROR_CODES.UNAUTHENTICATED);
-  }
-
+export async function resolveViewerByUserId(
+  ctx: QueryCtx,
+  userId: Id<"users">
+): Promise<Viewer> {
   const profile = await ctx.db
     .query("profiles")
     .withIndex("by_userId", (q) => q.eq("userId", userId))
@@ -51,6 +50,38 @@ export async function resolveViewer(ctx: QueryCtx): Promise<Viewer> {
     ownerId: ownerMembership?.ownerId ?? null,
   };
 }
+
+export async function resolveViewer(ctx: QueryCtx): Promise<Viewer> {
+  const userId = await getAuthUserId(ctx);
+  if (userId === null) {
+    raise(ERROR_CODES.UNAUTHENTICATED);
+  }
+
+  return await resolveViewerByUserId(ctx, userId);
+}
+
+export const requireStaffByUserId = internalQuery({
+  args: {
+    userId: v.id("users"),
+  },
+  returns: v.object({
+    userId: v.id("users"),
+    profileId: v.id("profiles"),
+    organizationId: v.id("organizations"),
+  }),
+  handler: async (ctx, args) => {
+    const viewer = await resolveViewerByUserId(ctx, args.userId);
+    if (!viewer.isStaff || viewer.organizationId === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    return {
+      userId: viewer.userId,
+      profileId: viewer.profile._id,
+      organizationId: viewer.organizationId,
+    };
+  },
+});
 
 export async function requireStaff(ctx: QueryCtx): Promise<Viewer> {
   const viewer = await resolveViewer(ctx);

@@ -10,8 +10,8 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-5 done** (owner A cannot see owner B's buildings). Next is [RIDGE-27](https://linear.app/dm-studios/issue/RIDGE-27/staff-can-give-an-owner-a-login) (staff can give an owner a login), then RIDGE-6.
-- **Last updated:** 9 Sep 2026
+- **Current phase:** Build slices — **RIDGE-27 done** (staff can give an owner a login). Next is [RIDGE-6](https://linear.app/dm-studios/issue/RIDGE-6/tenant-can-file-a-repair-with-a-photo-and-see-status-received) (tenant can file a repair). [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Todo (forgot password from sign-in).
+- **Last updated:** 10 Sep 2026
 - **Blocked / open:** none
 
 ---
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, and RIDGE-5 Done; next is RIDGE-27; then RIDGE-6–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, and RIDGE-27 Done; next is RIDGE-6; RIDGE-28 (forgot password) Todo; then RIDGE-7–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,7 +58,7 @@
 
 ## Next action (one line)
 
-Start [RIDGE-27](https://linear.app/dm-studios/issue/RIDGE-27/staff-can-give-an-owner-a-login) (staff can give an owner a login). Then RIDGE-6.
+Start [RIDGE-6](https://linear.app/dm-studios/issue/RIDGE-6/tenant-can-file-a-repair-with-a-photo-and-see-status-received) (tenant can file a repair with a photo).
 
 ---
 
@@ -69,7 +69,8 @@ Start [RIDGE-27](https://linear.app/dm-studios/issue/RIDGE-27/staff-can-give-an-
 - RIDGE-25 PR (merged): https://github.com/delasimensah/ridgeway/pull/3
 - RIDGE-3 PR (merged): https://github.com/delasimensah/ridgeway/pull/4
 - RIDGE-4 PR (merged): https://github.com/delasimensah/ridgeway/pull/5
-- RIDGE-5 PR: https://github.com/delasimensah/ridgeway/pull/6
+- RIDGE-5 PR (merged): https://github.com/delasimensah/ridgeway/pull/6
+- RIDGE-27 PR: https://github.com/delasimensah/ridgeway/pull/8
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`

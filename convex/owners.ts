@@ -1,10 +1,23 @@
+import { createAccount } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
+import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
-import type { MutationCtx } from "./_generated/server";
+import {
+  internalMutation,
+  internalQuery,
+  type MutationCtx,
+  type QueryCtx,
+} from "./_generated/server";
 import { ERROR_CODES, raise } from "./lib/errors";
-import { staffMutation, staffQuery } from "./lib/functions";
+import { staffAction, staffMutation, staffQuery } from "./lib/functions";
 import { requireBuildingAccess } from "./lib/viewer";
+
+const MIN_PASSWORD_LENGTH = 8;
+const EMAIL_TAKEN = "That email already belongs to someone who can sign in";
+const LOGIN_ALREADY_GRANTED = "This owner already has a login";
+const PASSWORD_TOO_SHORT = "Password must be at least 8 characters long";
+const EMAIL_REQUIRED_FOR_LOGIN = "Email is required to give a login";
 
 function requireText(value: string, field: string): string {
   const trimmed = value.trim();
@@ -33,6 +46,49 @@ function optionalEmail(value: string | undefined): string | undefined {
   return trimmed.toLowerCase();
 }
 
+function requireEmail(value: string): string {
+  const email = optionalEmail(value);
+  if (email === undefined) {
+    raise(ERROR_CODES.INVALID, EMAIL_REQUIRED_FOR_LOGIN);
+  }
+  return email;
+}
+
+function requirePassword(value: string): string {
+  if (value.length < MIN_PASSWORD_LENGTH) {
+    raise(ERROR_CODES.INVALID, PASSWORD_TOO_SHORT);
+  }
+  return value;
+}
+
+async function ownerIdsWithLogin(
+  ctx: { db: QueryCtx["db"] },
+  organizationId: Id<"organizations">
+): Promise<Set<Id<"owners">>> {
+  const memberships = await ctx.db
+    .query("memberships")
+    .withIndex("by_organizationId_and_role", (q) =>
+      q.eq("organizationId", organizationId).eq("role", "owner")
+    )
+    .collect();
+  const ids = new Set<Id<"owners">>();
+  for (const row of memberships) {
+    if (row.ownerId !== undefined) {
+      ids.add(row.ownerId);
+    }
+  }
+  return ids;
+}
+
+async function ownerHasLogin(
+  ctx: { db: QueryCtx["db"] },
+  organizationId: Id<"organizations">,
+  ownerId: Id<"owners">
+): Promise<boolean> {
+  const ids = await ownerIdsWithLogin(ctx, organizationId);
+  return ids.has(ownerId);
+}
+
 export async function insertOwnerForOrg(
   ctx: Pick<MutationCtx, "db">,
   organizationId: Id<"organizations">,
@@ -59,6 +115,7 @@ const ownerListItem = v.object({
   displayName: v.string(),
   contactEmail: v.union(v.string(), v.null()),
   contactPhone: v.union(v.string(), v.null()),
+  hasLogin: v.boolean(),
 });
 
 const ownerFormFields = v.object({
@@ -66,6 +123,7 @@ const ownerFormFields = v.object({
   displayName: v.string(),
   contactEmail: v.union(v.string(), v.null()),
   contactPhone: v.union(v.string(), v.null()),
+  hasLogin: v.boolean(),
 });
 
 export const listForStaff = staffQuery({
@@ -84,11 +142,14 @@ export const listForStaff = staffQuery({
       )
       .collect();
 
+    const logins = await ownerIdsWithLogin(ctx, organizationId);
+
     return rows.map((row) => ({
       _id: row._id,
       displayName: row.displayName,
       contactEmail: row.contactEmail ?? null,
       contactPhone: row.contactPhone ?? null,
+      hasLogin: logins.has(row._id),
     }));
   },
 });
@@ -114,6 +175,7 @@ export const get = staffQuery({
       displayName: owner.displayName,
       contactEmail: owner.contactEmail ?? null,
       contactPhone: owner.contactPhone ?? null,
+      hasLogin: await ownerHasLogin(ctx, organizationId, owner._id),
     };
   },
 });
@@ -226,5 +288,191 @@ export const grantMembership = staffMutation({
       ownerId: args.ownerId,
     });
     return null;
+  },
+});
+
+export const getForStaffOrg = internalQuery({
+  args: {
+    organizationId: v.id("organizations"),
+    ownerId: v.id("owners"),
+  },
+  returns: v.union(
+    v.object({
+      _id: v.id("owners"),
+      hasLogin: v.boolean(),
+    }),
+    v.null()
+  ),
+  handler: async (ctx, args) => {
+    const owner = await ctx.db.get(args.ownerId);
+    if (owner === null || owner.organizationId !== args.organizationId) {
+      return null;
+    }
+
+    return {
+      _id: owner._id,
+      hasLogin: await ownerHasLogin(ctx, args.organizationId, owner._id),
+    };
+  },
+});
+
+export const getBuildingInOrg = internalQuery({
+  args: {
+    organizationId: v.id("organizations"),
+    buildingId: v.id("buildings"),
+  },
+  returns: v.union(v.id("buildings"), v.null()),
+  handler: async (ctx, args) => {
+    const building = await ctx.db.get(args.buildingId);
+    if (building === null || building.organizationId !== args.organizationId) {
+      return null;
+    }
+
+    return building._id;
+  },
+});
+
+export const attachLogin = internalMutation({
+  args: {
+    organizationId: v.id("organizations"),
+    userId: v.id("users"),
+    ownerId: v.optional(v.id("owners")),
+    displayName: v.string(),
+    contactEmail: v.string(),
+    contactPhone: v.optional(v.string()),
+    buildingId: v.optional(v.id("buildings")),
+  },
+  returns: v.id("owners"),
+  handler: async (ctx, args) => {
+    const displayName = requireText(args.displayName, "Full name");
+    const contactEmail = requireEmail(args.contactEmail);
+    const contactPhone = optionalText(args.contactPhone);
+
+    let ownerId = args.ownerId;
+    if (ownerId !== undefined) {
+      const owner = await ctx.db.get(ownerId);
+      if (owner === null || owner.organizationId !== args.organizationId) {
+        raise(ERROR_CODES.NOT_PERMITTED);
+      }
+      if (await ownerHasLogin(ctx, args.organizationId, ownerId)) {
+        raise(ERROR_CODES.INVALID, LOGIN_ALREADY_GRANTED);
+      }
+      await ctx.db.patch(ownerId, {
+        displayName,
+        contactEmail,
+        ...(contactPhone !== undefined ? { contactPhone } : {}),
+      });
+    } else {
+      ownerId = await insertOwnerForOrg(ctx, args.organizationId, {
+        displayName,
+        contactEmail,
+        contactPhone,
+      });
+    }
+
+    const existingProfile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .unique();
+    if (existingProfile !== null) {
+      raise(ERROR_CODES.INVALID, EMAIL_TAKEN);
+    }
+
+    const profileId = await ctx.db.insert("profiles", {
+      userId: args.userId,
+      displayName,
+      ...(contactPhone !== undefined ? { phone: contactPhone } : {}),
+    });
+
+    await ctx.db.insert("memberships", {
+      organizationId: args.organizationId,
+      profileId,
+      role: "owner",
+      ownerId,
+    });
+
+    if (args.buildingId !== undefined) {
+      const building = await ctx.db.get(args.buildingId);
+      if (
+        building === null ||
+        building.organizationId !== args.organizationId
+      ) {
+        raise(ERROR_CODES.NOT_PERMITTED);
+      }
+      await ctx.db.patch(args.buildingId, { ownerId });
+    }
+
+    return ownerId;
+  },
+});
+
+export const grantLogin = staffAction({
+  args: {
+    ownerId: v.optional(v.id("owners")),
+    displayName: v.string(),
+    contactEmail: v.string(),
+    contactPhone: v.optional(v.string()),
+    password: v.string(),
+    buildingId: v.optional(v.id("buildings")),
+  },
+  returns: v.id("owners"),
+  handler: async (ctx, args): Promise<Id<"owners">> => {
+    const viewer: {
+      userId: Id<"users">;
+      profileId: Id<"profiles">;
+      organizationId: Id<"organizations">;
+    } = await ctx.runQuery(internal.lib.viewer.requireStaffByUserId, {
+      userId: ctx.staffUserId,
+    });
+    const displayName = requireText(args.displayName, "Full name");
+    const contactEmail = requireEmail(args.contactEmail);
+    const password = requirePassword(args.password);
+    const contactPhone = optionalText(args.contactPhone);
+
+    const existingUser = await ctx.runQuery(internal.seed.findUserByEmail, {
+      email: contactEmail,
+    });
+    if (existingUser !== null) {
+      raise(ERROR_CODES.INVALID, EMAIL_TAKEN);
+    }
+
+    if (args.ownerId !== undefined) {
+      const owner = await ctx.runQuery(internal.owners.getForStaffOrg, {
+        organizationId: viewer.organizationId,
+        ownerId: args.ownerId,
+      });
+      if (owner === null) {
+        raise(ERROR_CODES.NOT_PERMITTED);
+      }
+      if (owner.hasLogin) {
+        raise(ERROR_CODES.INVALID, LOGIN_ALREADY_GRANTED);
+      }
+    }
+
+    if (args.buildingId !== undefined) {
+      const building = await ctx.runQuery(internal.owners.getBuildingInOrg, {
+        organizationId: viewer.organizationId,
+        buildingId: args.buildingId,
+      });
+      if (building === null) {
+        raise(ERROR_CODES.NOT_PERMITTED);
+      }
+    }
+
+    const created = await createAccount(ctx as never, {
+      provider: "password",
+      account: { id: contactEmail, secret: password },
+      profile: { email: contactEmail, name: displayName },
+    });
+
+    return await ctx.runMutation(internal.owners.attachLogin, {
+      organizationId: viewer.organizationId,
+      userId: created.user._id,
+      ownerId: args.ownerId,
+      displayName,
+      contactEmail,
+      contactPhone,
+      buildingId: args.buildingId,
+    });
   },
 });

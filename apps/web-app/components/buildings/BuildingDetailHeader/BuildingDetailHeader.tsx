@@ -71,25 +71,20 @@ const BuildingDetailHeader: React.FC<BuildingDetailHeaderProps> = ({
             >
               Add owner
             </Anchor>
-          ) : null}
-        </Group>
-      </Group>
-      <Text className="text-base text-grey">
-        {ownerName !== null && ownerId !== null ? (
-          <>
-            {address} · Owner:{" "}
+          ) : ownerId !== null ? (
             <Anchor
               component={Link}
               href={`/owners/${ownerId}/edit`}
               underline="never"
-              className="text-grey hover:text-darkGrey"
+              className="text-[15px] font-semibold text-grey hover:text-darkGrey"
             >
-              {ownerName}
+              Edit owner
             </Anchor>
-          </>
-        ) : (
-          address
-        )}
+          ) : null}
+        </Group>
+      </Group>
+      <Text className="text-base text-grey">
+        {ownerName !== null ? `${address} · Owner: ${ownerName}` : address}
       </Text>
     </Box>
   );

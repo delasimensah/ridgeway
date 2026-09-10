@@ -2,9 +2,9 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { Button, Group, TextInput } from "@mantine/core";
+import { Button, Group, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import {
   type AddOwnerFormValues,
   addOwnerSchema,
+  getConvexErrorInfo,
   NEW_OWNER_CHOICE,
 } from "@/utils";
 
@@ -27,16 +28,20 @@ const INPUT_CLASSNAMES = {
 const PRIMARY_BUTTON =
   "h-auto rounded-[8px] bg-primary px-8 py-3 text-[15px] font-semibold text-white hover:bg-primaryHover";
 
+const SAVE_ERROR = "Could not save this owner. Check the fields and try again.";
+
 interface AddOwnerFormProps {
   ownerId?: Id<"owners">;
   buildingId?: Id<"buildings">;
   initialValues?: AddOwnerFormValues;
+  hasLogin?: boolean;
 }
 
 const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
   ownerId,
   buildingId,
   initialValues,
+  hasLogin = false,
 }) => {
   const router = useRouter();
   const isAssigningToBuilding =
@@ -48,6 +53,7 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
   const createOwner = useMutation(api.owners.create);
   const updateOwner = useMutation(api.owners.update);
   const assignOwner = useMutation(api.buildings.assignOwner);
+  const grantLogin = useAction(api.owners.grantLogin);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const cancelHref =
@@ -58,22 +64,29 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
       displayName: initialValues?.displayName ?? "",
       contactEmail: initialValues?.contactEmail ?? "",
       contactPhone: initialValues?.contactPhone ?? "",
+      password: initialValues?.password ?? "",
       ownerChoice: isAssigningToBuilding ? "" : NEW_OWNER_CHOICE,
     },
     validate: (values) => {
       if (isAssigningToBuilding && values.ownerChoice.length === 0) {
         return { ownerChoice: "Pick an owner or add a new one" };
       }
-      if (
+      const chosen = owners?.find((owner) => owner._id === values.ownerChoice);
+      const needsOwnerFields =
         ownerId !== undefined ||
         values.ownerChoice === NEW_OWNER_CHOICE ||
-        !isAssigningToBuilding
-      ) {
+        !isAssigningToBuilding ||
+        (chosen !== undefined && chosen.hasLogin !== true);
+      if (needsOwnerFields) {
         return zod4Resolver(addOwnerSchema)(values);
       }
       return {};
     },
   });
+
+  const selectedOwner =
+    owners?.find((owner) => owner._id === form.values.ownerChoice) ?? null;
+  const formHasLogin = hasLogin || selectedOwner?.hasLogin === true;
 
   const handleSubmit = async (
     values: AddOwnerFormValues & { ownerChoice: string }
@@ -81,7 +94,16 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
     setError(null);
     setIsSubmitting(true);
     try {
-      if (ownerId !== undefined) {
+      const existingOwnerId =
+        ownerId ??
+        (isAssigningToBuilding &&
+        values.ownerChoice !== NEW_OWNER_CHOICE &&
+        values.ownerChoice.length > 0
+          ? (values.ownerChoice as Id<"owners">)
+          : undefined);
+      const shouldGrantLogin = !formHasLogin && values.password.length > 0;
+
+      if (ownerId !== undefined && !shouldGrantLogin) {
         await updateOwner({
           ownerId,
           displayName: values.displayName,
@@ -90,11 +112,23 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
         });
       } else if (
         isAssigningToBuilding &&
-        values.ownerChoice !== NEW_OWNER_CHOICE
+        values.ownerChoice !== NEW_OWNER_CHOICE &&
+        !shouldGrantLogin
       ) {
         await assignOwner({
           buildingId,
           ownerId: values.ownerChoice as Id<"owners">,
+        });
+      } else if (shouldGrantLogin) {
+        await grantLogin({
+          ...(existingOwnerId !== undefined
+            ? { ownerId: existingOwnerId }
+            : {}),
+          displayName: values.displayName,
+          contactEmail: values.contactEmail,
+          contactPhone: values.contactPhone,
+          password: values.password,
+          ...(buildingId !== undefined ? { buildingId } : {}),
         });
       } else {
         await createOwner({
@@ -105,8 +139,13 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
         });
       }
       router.replace(cancelHref);
-    } catch {
-      setError("Could not save this owner. Check the fields and try again.");
+    } catch (caught) {
+      const info = getConvexErrorInfo(caught);
+      if (info.code === "NOT_PERMITTED" || info.message === "NOT_PERMITTED") {
+        setError(SAVE_ERROR);
+      } else {
+        setError(info.message.length > 0 ? info.message : SAVE_ERROR);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -127,6 +166,7 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
         label="Email"
         type="email"
         placeholder="kwesi@example.com"
+        withAsterisk={form.values.password.length > 0}
         classNames={INPUT_CLASSNAMES}
         {...form.getInputProps("contactEmail")}
       />
@@ -138,8 +178,22 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
         classNames={INPUT_CLASSNAMES}
         {...form.getInputProps("contactPhone")}
       />
+      {formHasLogin ? null : (
+        <PasswordInput
+          id="password"
+          label="Password"
+          placeholder="Temporary password"
+          description="Optional. Set one to give this person a website login. You cannot change it later from here."
+          classNames={INPUT_CLASSNAMES}
+          {...form.getInputProps("password")}
+        />
+      )}
     </>
   );
+
+  const loginNote = formHasLogin
+    ? "This person can already sign in. They will see only buildings linked to them."
+    : "This person will see only buildings linked to them.";
 
   return (
     <form className="space-y-6" onSubmit={form.onSubmit(handleSubmit)}>
@@ -149,6 +203,14 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
           ownerChoice={form.values.ownerChoice}
           onOwnerChoice={(value) => {
             form.setFieldValue("ownerChoice", value);
+            const selected = owners?.find((owner) => owner._id === value);
+            if (selected === undefined) {
+              return;
+            }
+            form.setFieldValue("displayName", selected.displayName);
+            form.setFieldValue("contactEmail", selected.contactEmail ?? "");
+            form.setFieldValue("contactPhone", selected.contactPhone ?? "");
+            form.setFieldValue("password", "");
           }}
           ownerChoiceError={form.errors.ownerChoice}
         >
@@ -158,7 +220,7 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
         <>
           {ownerFields}
           <Text className="rounded-[8px] border border-border bg-sidebar p-4 text-sm leading-relaxed text-grey">
-            This person will see only buildings linked to them.
+            {loginNote}
           </Text>
         </>
       )}

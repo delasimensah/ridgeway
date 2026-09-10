@@ -10,6 +10,9 @@ import Text from "../../ui/Text/Text";
 export interface BuildingOwnerOption {
   _id: string;
   displayName: string;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  hasLogin?: boolean;
 }
 
 interface BuildingOwnerFieldsProps {
@@ -34,6 +37,11 @@ const BuildingOwnerFields: React.FC<BuildingOwnerFieldsProps> = ({
   children,
 }) => {
   const isNewOwner = ownerChoice === NEW_OWNER_CHOICE;
+  const selected = owners.find((owner) => owner._id === ownerChoice);
+  const selectedNeedsLogin =
+    selected !== undefined && selected.hasLogin !== true;
+  const showOwnerFields = isNewOwner || selectedNeedsLogin;
+  const alreadyHasLogin = selected?.hasLogin === true;
 
   return (
     <Stack gap="md">
@@ -64,9 +72,11 @@ const BuildingOwnerFields: React.FC<BuildingOwnerFieldsProps> = ({
           onOwnerChoice(value ?? "");
         }}
       />
-      {isNewOwner ? <Stack gap="md">{children}</Stack> : null}
+      {showOwnerFields ? <Stack gap="md">{children}</Stack> : null}
       <Text className="rounded-[8px] border border-border bg-sidebar p-4 text-sm leading-relaxed text-grey">
-        This person will see only buildings linked to them.
+        {alreadyHasLogin
+          ? "This person can already sign in. They will see only buildings linked to them."
+          : "This person will see only buildings linked to them."}
       </Text>
     </Stack>
   );
