@@ -9,6 +9,7 @@ Read **`STATUS.md`** at the repo root before planning or implementing. It is the
 ## Compliance (do this before coding)
 
 - **`.cursor/rules/wait-for-approval-before-git.mdc`** — Always applied. Do the work, then stop. Do not commit, push, or open a pull request until you are asked.
+- **`.cursor/rules/explain-the-work.mdc`** — Always applied. After a task they asked you to do, explain what changed in everyday words, then the files and why, then the test commands.
 - **`.cursor/rules/mandatory-project-docs.mdc`** — Always applied. For your task type, **read the listed `docs/...` files** (and app docs) with the Read tool before implementing.
 - **Lint (barrel imports):** Top-level barrels — `@/constants`, `@/hooks`, `@/utils`, `@/assets`, `@/services`, `shared`. Inside `components/`, relative imports for components. Run lint after edits.
 

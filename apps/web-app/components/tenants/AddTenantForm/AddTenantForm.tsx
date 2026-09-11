@@ -92,6 +92,7 @@ const FIELD_BY_MESSAGE: Record<string, keyof AddTenantFormValues> = {
   "That email already belongs to someone who can sign in": "email",
   "This person already has a current lease": "email",
   "This tenant already has a login": "password",
+  "This tenant does not have a login yet": "password",
   "Password must be at least 8 characters long": "password",
 };
 
@@ -127,6 +128,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
   const createForExisting = useMutation(api.leases.createForExistingTenant);
   const updateTenant = useMutation(api.leases.updateTenant);
   const grantLogin = useAction(api.leases.grantLogin);
+  const setPassword = useAction(api.leases.setPassword);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const buildingHref = `/buildings/${buildingId}`;
@@ -158,6 +160,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
         !hasLogin &&
         !isExistingTenantChoice(values.tenantChoice) &&
         values.password.length > 0;
+      const shouldSetPassword = hasLogin && values.password.length > 0;
 
       if (shouldGrantLogin) {
         await grantLogin({
@@ -180,6 +183,12 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
           startedOn: values.startedOn,
           endedOn: values.endedOn,
         });
+        if (shouldSetPassword) {
+          await setPassword({
+            leaseId,
+            password: values.password,
+          });
+        }
       } else if (isExistingTenantChoice(values.tenantChoice)) {
         await createForExisting({
           unitId: values.unitId as Id<"units">,
@@ -307,16 +316,18 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
               {...form.getInputProps("email")}
             />
           </SimpleGrid>
-          {hasLogin ? null : (
-            <PasswordInput
-              id="password"
-              label="Password"
-              placeholder="Temporary password"
-              description="Optional. Set one to give this person a website login. You cannot change it later from here."
-              classNames={INPUT_CLASSNAMES}
-              {...form.getInputProps("password")}
-            />
-          )}
+          <PasswordInput
+            id="password"
+            label="Password"
+            placeholder={hasLogin ? "New password" : "Temporary password"}
+            description={
+              hasLogin
+                ? "Optional. Leave blank to keep the current password."
+                : "Optional. Set one to give this person a website login."
+            }
+            classNames={INPUT_CLASSNAMES}
+            {...form.getInputProps("password")}
+          />
           <Text className="rounded-[8px] border border-border bg-sidebar p-4 text-sm leading-relaxed text-grey">
             {hasLogin
               ? "This person can already sign in. They can file a repair on their current unit."

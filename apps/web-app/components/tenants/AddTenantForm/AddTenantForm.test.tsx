@@ -8,6 +8,7 @@ const mockReplace = jest.fn();
 const mockPush = jest.fn();
 const mockMutate = jest.fn();
 const mockGrantLogin = jest.fn();
+const mockSetPassword = jest.fn();
 let mockAvailableTenants: { _id: string; displayName: string }[] = [];
 
 jest.mock("next/navigation", () => ({
@@ -17,11 +18,20 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
-jest.mock("convex/react", () => ({
-  useMutation: () => mockMutate,
-  useAction: () => mockGrantLogin,
-  useQuery: () => mockAvailableTenants,
-}));
+jest.mock("convex/react", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- jest.mock factory
+  const { getFunctionName } = require("convex/server") as {
+    getFunctionName: (ref: unknown) => string;
+  };
+  return {
+    useMutation: () => mockMutate,
+    useAction: (ref: unknown) =>
+      getFunctionName(ref) === "leases:setPassword"
+        ? mockSetPassword
+        : mockGrantLogin,
+    useQuery: () => mockAvailableTenants,
+  };
+});
 
 const units = [{ _id: "unit-1", label: "G03" }];
 
@@ -31,6 +41,7 @@ describe("AddTenantForm", () => {
     mockPush.mockReset();
     mockMutate.mockReset();
     mockGrantLogin.mockReset();
+    mockSetPassword.mockReset();
     mockAvailableTenants = [];
   });
 
@@ -92,6 +103,7 @@ describe("AddTenantForm", () => {
         units={units}
         leaseId={"lease-id" as never}
         lockUnit
+        hasLogin
         initialValues={{
           unitId: "unit-1",
           displayName: "Akosua Darko",
@@ -121,6 +133,8 @@ describe("AddTenantForm", () => {
         endedOn: "2027-12-31",
       });
     });
+    expect(mockGrantLogin).not.toHaveBeenCalled();
+    expect(mockSetPassword).not.toHaveBeenCalled();
   });
 
   it("shows an error when save fails", async () => {
@@ -265,7 +279,10 @@ describe("AddTenantForm", () => {
     expect(mockReplace).toHaveBeenCalledWith("/buildings/building-id");
   });
 
-  it("hides the password field when the tenant can already sign in", () => {
+  it("lets staff type a new password when the tenant can already sign in", async () => {
+    const user = setupUser();
+    mockMutate.mockResolvedValue(null);
+    mockSetPassword.mockResolvedValue(null);
     render(
       <AddTenantForm
         buildingId={"building-id" as never}
@@ -285,11 +302,36 @@ describe("AddTenantForm", () => {
       />
     );
 
-    expect(screen.queryByLabelText(/^password$/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Optional. Leave blank to keep the current password.")
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         "This person can already sign in. They can file a repair on their current unit."
       )
     ).toBeInTheDocument();
+
+    await fillField(
+      user,
+      screen.getByLabelText(/^password$/i),
+      "RidgewayTenant27"
+    );
+    await user.click(screen.getByRole("button", { name: "Save tenant" }));
+
+    await waitFor(() => {
+      expect(mockSetPassword).toHaveBeenCalledWith({
+        leaseId: "lease-id",
+        password: "RidgewayTenant27",
+      });
+    });
+    expect(mockMutate).toHaveBeenCalledWith({
+      leaseId: "lease-id",
+      displayName: "Akosua Darko",
+      email: "akosua@example.com",
+      phone: "024 111 2222",
+      startedOn: "2024-01-15",
+      endedOn: "2027-12-31",
+    });
+    expect(mockGrantLogin).not.toHaveBeenCalled();
   });
 });

@@ -54,6 +54,7 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
   const updateOwner = useMutation(api.owners.update);
   const assignOwner = useMutation(api.buildings.assignOwner);
   const grantLogin = useAction(api.owners.grantLogin);
+  const setPassword = useAction(api.owners.setPassword);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const cancelHref =
@@ -89,6 +90,8 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
   const selectedOwner =
     owners?.find((owner) => owner._id === form.values.ownerChoice) ?? null;
   const formHasLogin = hasLogin || selectedOwner?.hasLogin === true;
+  const hidePassword =
+    isAssigningToBuilding && selectedOwner?.hasLogin === true;
 
   const handleSubmit = async (
     values: AddOwnerFormValues & { ownerChoice: string }
@@ -104,6 +107,8 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
           ? (values.ownerChoice as Id<"owners">)
           : undefined);
       const shouldGrantLogin = !formHasLogin && values.password.length > 0;
+      const shouldSetPassword =
+        formHasLogin && ownerId !== undefined && values.password.length > 0;
 
       if (ownerId !== undefined && !shouldGrantLogin) {
         await updateOwner({
@@ -112,6 +117,12 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
           contactEmail: values.contactEmail,
           contactPhone: values.contactPhone,
         });
+        if (shouldSetPassword) {
+          await setPassword({
+            ownerId,
+            password: values.password,
+          });
+        }
       } else if (
         isAssigningToBuilding &&
         values.ownerChoice !== NEW_OWNER_CHOICE &&
@@ -180,12 +191,16 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
         classNames={INPUT_CLASSNAMES}
         {...form.getInputProps("contactPhone")}
       />
-      {formHasLogin ? null : (
+      {hidePassword ? null : (
         <PasswordInput
           id="password"
           label="Password"
-          placeholder="Temporary password"
-          description="Optional. Set one to give this person a website login. You cannot change it later from here."
+          placeholder={formHasLogin ? "New password" : "Temporary password"}
+          description={
+            formHasLogin
+              ? "Optional. Leave blank to keep the current password."
+              : "Optional. Set one to give this person a website login."
+          }
           classNames={INPUT_CLASSNAMES}
           {...form.getInputProps("password")}
         />

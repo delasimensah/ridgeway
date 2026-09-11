@@ -13,6 +13,7 @@ import type * as buildings from "../buildings.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as leases from "../leases.js";
+import type * as lib_accountPassword from "../lib/accountPassword.js";
 import type * as lib_errors from "../lib/errors.js";
 import type * as lib_functions from "../lib/functions.js";
 import type * as lib_viewer from "../lib/viewer.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   http: typeof http;
   leases: typeof leases;
+  "lib/accountPassword": typeof lib_accountPassword;
   "lib/errors": typeof lib_errors;
   "lib/functions": typeof lib_functions;
   "lib/viewer": typeof lib_viewer;
