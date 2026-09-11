@@ -9,6 +9,11 @@ import {
   type MutationCtx,
   type QueryCtx,
 } from "./_generated/server";
+import {
+  passwordAccountId,
+  requirePassword,
+  setAccountPassword,
+} from "./lib/accountPassword";
 import { ERROR_CODES, raise } from "./lib/errors";
 import { staffAction, staffMutation, staffQuery } from "./lib/functions";
 import {
@@ -19,10 +24,9 @@ import {
   type Viewer,
 } from "./lib/viewer";
 
-const MIN_PASSWORD_LENGTH = 8;
 const EMAIL_TAKEN = "That email already belongs to someone who can sign in";
 const LOGIN_ALREADY_GRANTED = "This tenant already has a login";
-const PASSWORD_TOO_SHORT = "Password must be at least 8 characters long";
+const LOGIN_NOT_GRANTED = "This tenant does not have a login yet";
 const EMAIL_BELONGS_TO_SOMEONE_ELSE =
   "That email already belongs to someone else";
 
@@ -48,13 +52,6 @@ function requireEmail(value: string): string {
     raise(ERROR_CODES.INVALID, "Enter a valid email");
   }
   return trimmed;
-}
-
-function requirePassword(value: string): string {
-  if (value.length < MIN_PASSWORD_LENGTH) {
-    raise(ERROR_CODES.INVALID, PASSWORD_TOO_SHORT);
-  }
-  return value;
 }
 
 async function userHasPasswordLogin(
@@ -552,6 +549,7 @@ export const getForStaffOrg = internalQuery({
       profileId: v.id("profiles"),
       userId: v.id("users"),
       hasLogin: v.boolean(),
+      loginEmail: v.union(v.string(), v.null()),
     }),
     v.null()
   ),
@@ -576,12 +574,14 @@ export const getForStaffOrg = internalQuery({
       return null;
     }
 
+    const loginEmail = await passwordAccountId(ctx, profile.userId);
     return {
       _id: lease._id,
       unitId: lease.unitId,
       profileId: profile._id,
       userId: profile.userId,
-      hasLogin: await userHasPasswordLogin(ctx, profile.userId),
+      hasLogin: loginEmail !== null,
+      loginEmail,
     };
   },
 });
@@ -886,5 +886,35 @@ export const grantLogin = staffAction({
       startedOn,
       endedOn,
     });
+  },
+});
+
+export const setPassword = staffAction({
+  args: {
+    leaseId: v.id("leases"),
+    password: v.string(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args): Promise<null> => {
+    const viewer: {
+      userId: Id<"users">;
+      profileId: Id<"profiles">;
+      organizationId: Id<"organizations">;
+    } = await ctx.runQuery(internal.lib.viewer.requireStaffByUserId, {
+      userId: ctx.staffUserId,
+    });
+    const password = requirePassword(args.password);
+    const lease = await ctx.runQuery(internal.leases.getForStaffOrg, {
+      organizationId: viewer.organizationId,
+      leaseId: args.leaseId,
+    });
+    if (lease === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+    if (lease.loginEmail === null) {
+      raise(ERROR_CODES.INVALID, LOGIN_NOT_GRANTED);
+    }
+    await setAccountPassword(ctx, lease.loginEmail, password);
+    return null;
   },
 });

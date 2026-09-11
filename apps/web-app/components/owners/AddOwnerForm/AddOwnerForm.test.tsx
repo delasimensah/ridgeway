@@ -9,6 +9,7 @@ const mockReplace = jest.fn();
 const mockPush = jest.fn();
 const mockMutate = jest.fn();
 const mockGrantLogin = jest.fn();
+const mockSetPassword = jest.fn();
 let mockOwners: {
   _id: string;
   displayName: string;
@@ -23,11 +24,20 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
-jest.mock("convex/react", () => ({
-  useMutation: () => mockMutate,
-  useAction: () => mockGrantLogin,
-  useQuery: () => mockOwners,
-}));
+jest.mock("convex/react", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- jest.mock factory
+  const { getFunctionName } = require("convex/server") as {
+    getFunctionName: (ref: unknown) => string;
+  };
+  return {
+    useMutation: () => mockMutate,
+    useAction: (ref: unknown) =>
+      getFunctionName(ref) === "owners:setPassword"
+        ? mockSetPassword
+        : mockGrantLogin,
+    useQuery: () => mockOwners,
+  };
+});
 
 describe("AddOwnerForm", () => {
   beforeEach(() => {
@@ -35,6 +45,7 @@ describe("AddOwnerForm", () => {
     mockPush.mockReset();
     mockMutate.mockReset();
     mockGrantLogin.mockReset();
+    mockSetPassword.mockReset();
     mockOwners = [];
   });
 
@@ -77,6 +88,7 @@ describe("AddOwnerForm", () => {
       });
     });
     expect(mockGrantLogin).not.toHaveBeenCalled();
+    expect(mockSetPassword).not.toHaveBeenCalled();
     expect(mockReplace).toHaveBeenCalledWith("/buildings");
   });
 
@@ -113,7 +125,10 @@ describe("AddOwnerForm", () => {
     expect(mockReplace).toHaveBeenCalledWith("/buildings");
   });
 
-  it("hides the password field when the owner can already sign in", () => {
+  it("lets staff type a new password when the owner can already sign in", async () => {
+    const user = setupUser();
+    mockMutate.mockResolvedValue(null);
+    mockSetPassword.mockResolvedValue(null);
     render(
       <AddOwnerForm
         ownerId={"owner-id" as never}
@@ -127,12 +142,35 @@ describe("AddOwnerForm", () => {
       />
     );
 
-    expect(screen.queryByLabelText(/^password$/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Optional. Leave blank to keep the current password.")
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         "This person can already sign in. They will see only buildings linked to them."
       )
     ).toBeInTheDocument();
+
+    await fillField(
+      user,
+      screen.getByLabelText(/^password$/i),
+      "RidgewayOwnerA27"
+    );
+    await user.click(screen.getByRole("button", { name: "Save owner" }));
+
+    await waitFor(() => {
+      expect(mockSetPassword).toHaveBeenCalledWith({
+        ownerId: "owner-id",
+        password: "RidgewayOwnerA27",
+      });
+    });
+    expect(mockMutate).toHaveBeenCalledWith({
+      ownerId: "owner-id",
+      displayName: "Kwesi Mensah",
+      contactEmail: "kwesi@example.com",
+      contactPhone: "024 555 0000",
+    });
+    expect(mockGrantLogin).not.toHaveBeenCalled();
   });
 
   it("attaches a new owner to a building when a building is named", async () => {
@@ -244,6 +282,7 @@ describe("AddOwnerForm", () => {
     render(
       <AddOwnerForm
         ownerId={"owner-id" as never}
+        hasLogin
         initialValues={{
           displayName: "Kwesi Mensah",
           contactEmail: "kwesi@example.com",
@@ -268,6 +307,8 @@ describe("AddOwnerForm", () => {
         contactPhone: "024 555 0000",
       });
     });
+    expect(mockGrantLogin).not.toHaveBeenCalled();
+    expect(mockSetPassword).not.toHaveBeenCalled();
   });
 
   it("grants a login from edit when the owner has none", async () => {

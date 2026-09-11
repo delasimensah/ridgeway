@@ -35,6 +35,9 @@ describe("SignInForm", () => {
     expect(
       screen.getByRole("button", { name: /sign in/i })
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /forgot/i })
+    ).not.toBeInTheDocument();
   });
 
   it("shows a clear error for a wrong password and does not leave the page", async () => {

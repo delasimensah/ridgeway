@@ -125,7 +125,7 @@ TICKET-123 Brief description of what the PR accomplishes
 
 ### **Step 3: Merge**
 
-1. Wait for PR Validation, PR Quality Checks, and Testing to pass
+1. Local `yarn lint`, `yarn format:check`, `yarn type-check`, and `yarn test:ci` already passed before the PR was opened
 2. Merge your PR
 3. Merge Protection deletes the feature branch after a successful merge
 

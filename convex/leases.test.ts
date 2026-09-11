@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import { api } from "./_generated/api";
-import { asUser, errorCode, insertPerson, makeBackend } from "./test.setup";
+import {
+  asUser,
+  errorCode,
+  insertPerson,
+  makeBackend,
+  passwordAccountSecret,
+} from "./test.setup";
 
 async function staffWithUnit() {
   const t = makeBackend();
@@ -421,5 +427,27 @@ describe("leases", () => {
     } catch (error) {
       expect(errorCode(error)).toBe("UNAUTHENTICATED");
     }
+  });
+
+  it("sets a new password on a tenant who already has a login", async () => {
+    const { t, userId, unitId } = await staffWithUnit();
+    const leaseId = await asUser(t, userId).action(api.leases.grantLogin, {
+      unitId,
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      startedOn: "2024-01-15",
+      password: "RidgewayTenant26",
+    });
+    const before = await passwordAccountSecret(t, "akosua.darko@ridgeway.gh");
+
+    await asUser(t, userId).action(api.leases.setPassword, {
+      leaseId,
+      password: "RidgewayTenant27",
+    });
+
+    const after = await passwordAccountSecret(t, "akosua.darko@ridgeway.gh");
+    expect(before).not.toBeNull();
+    expect(after).not.toBeNull();
+    expect(after).not.toBe(before);
   });
 });

@@ -80,3 +80,18 @@ export async function insertPerson(
 export function asUser(t: ReturnType<typeof makeBackend>, userId: Id<"users">) {
   return t.withIdentity({ subject: userId });
 }
+
+export async function passwordAccountSecret(
+  t: ReturnType<typeof makeBackend>,
+  email: string
+) {
+  return await t.run(async (ctx) => {
+    const account = await ctx.db
+      .query("authAccounts")
+      .withIndex("providerAndAccountId", (q) =>
+        q.eq("provider", "password").eq("providerAccountId", email)
+      )
+      .unique();
+    return account?.secret ?? null;
+  });
+}

@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import { api } from "./_generated/api";
-import { asUser, errorCode, insertPerson, makeBackend } from "./test.setup";
+import {
+  asUser,
+  errorCode,
+  insertPerson,
+  makeBackend,
+  passwordAccountSecret,
+} from "./test.setup";
 
 describe("owners", () => {
   it("lets signed-in staff create an owner and attach them to a building", async () => {
@@ -518,6 +524,98 @@ describe("owners", () => {
       throw new Error("expected grantLogin to refuse");
     } catch (error) {
       expect(errorCode(error)).toBe("UNAUTHENTICATED");
+    }
+  });
+
+  it("sets a new password on an owner who already has a login", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const ownerId = await asUser(t, staff.userId).action(
+      api.owners.grantLogin,
+      {
+        displayName: "Kwesi Mensah",
+        contactEmail: "kwesi.mensah@ridgeway.gh",
+        password: "RidgewayOwnerA26",
+      }
+    );
+    const before = await passwordAccountSecret(t, "kwesi.mensah@ridgeway.gh");
+
+    await asUser(t, staff.userId).action(api.owners.setPassword, {
+      ownerId,
+      password: "RidgewayOwnerA27",
+    });
+
+    const after = await passwordAccountSecret(t, "kwesi.mensah@ridgeway.gh");
+    expect(before).not.toBeNull();
+    expect(after).not.toBeNull();
+    expect(after).not.toBe(before);
+  });
+
+  it("leaves the owner password alone when the new password is empty", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const ownerId = await asUser(t, staff.userId).action(
+      api.owners.grantLogin,
+      {
+        displayName: "Kwesi Mensah",
+        contactEmail: "kwesi.mensah@ridgeway.gh",
+        password: "RidgewayOwnerA26",
+      }
+    );
+    const before = await passwordAccountSecret(t, "kwesi.mensah@ridgeway.gh");
+
+    try {
+      await asUser(t, staff.userId).action(api.owners.setPassword, {
+        ownerId,
+        password: "",
+      });
+      throw new Error("expected setPassword to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("INVALID");
+    }
+
+    expect(await passwordAccountSecret(t, "kwesi.mensah@ridgeway.gh")).toBe(
+      before
+    );
+  });
+
+  it("refuses setPassword when the caller is a field worker", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const ownerId = await asUser(t, staff.userId).action(
+      api.owners.grantLogin,
+      {
+        displayName: "Kwesi Mensah",
+        contactEmail: "kwesi.mensah@ridgeway.gh",
+        password: "RidgewayOwnerA26",
+      }
+    );
+    const { userId } = await insertPerson(t, {
+      email: "yaw.darko@ridgeway.gh",
+      displayName: "Yaw Darko",
+      role: "field",
+    });
+
+    try {
+      await asUser(t, userId).action(api.owners.setPassword, {
+        ownerId,
+        password: "RidgewayOwnerA27",
+      });
+      throw new Error("expected setPassword to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
     }
   });
 });

@@ -26,10 +26,11 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-27](https://linear.app/dm-studios/issue/RIDGE-27/staff-can-give-an-owner-a-login) is **Done**.
 - [RIDGE-6](https://linear.app/dm-studios/issue/RIDGE-6/tenant-can-file-a-repair-with-a-photo-and-see-status-received) is **Done**.
 - [RIDGE-29](https://linear.app/dm-studios/issue/RIDGE-29/staff-can-give-a-tenant-a-login) is **Done**.
+- [RIDGE-30](https://linear.app/dm-studios/issue/RIDGE-30/staff-can-set-a-new-password-on-an-existing-owner-or-tenant-login) is **Done**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
-- Next slice is [RIDGE-30](https://linear.app/dm-studios/issue/RIDGE-30/staff-can-set-a-new-password-on-an-existing-owner-or-tenant-login) (staff set a new password on an existing owner or tenant login).
-- Then [RIDGE-32](https://linear.app/dm-studios/issue/RIDGE-32/staff-can-see-every-tenant-with-or-without-a-current-lease) (tenant list), [RIDGE-33](https://linear.app/dm-studios/issue/RIDGE-33/staff-can-see-every-owner-without-opening-a-building) (owner list), [RIDGE-31](https://linear.app/dm-studios/issue/RIDGE-31/staff-can-add-another-office-person) (add office staff), [RIDGE-34](https://linear.app/dm-studios/issue/RIDGE-34/staff-can-add-a-field-worker-and-see-them-on-a-list) (staff add a field worker), then [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) (field job status).
-- RIDGE-8 through RIDGE-15, RIDGE-30 through RIDGE-34, and the epics are **Todo**.
+- Next slice is [RIDGE-32](https://linear.app/dm-studios/issue/RIDGE-32/staff-can-see-every-tenant-with-or-without-a-current-lease) (tenant list).
+- Then [RIDGE-33](https://linear.app/dm-studios/issue/RIDGE-33/staff-can-see-every-owner-without-opening-a-building) (owner list), [RIDGE-31](https://linear.app/dm-studios/issue/RIDGE-31/staff-can-add-another-office-person) (add office staff), [RIDGE-34](https://linear.app/dm-studios/issue/RIDGE-34/staff-can-add-a-field-worker-and-see-them-on-a-list) (staff add a field worker), then [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) (field job status).
+- RIDGE-8 through RIDGE-15, RIDGE-31 through RIDGE-34, and the epics are **Todo**.
 - RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** until RIDGE-1 through RIDGE-13 are done.
 
 When a slice is started, move that issue to In Progress immediately. Do not use Backlog for queued first-version work. Linear stays In Progress until merge to `main`. In the feature PR, write this Status now block as that post-merge board.

@@ -44,13 +44,13 @@ There is no forgot-password email. Staff set a new password on an owner or tenan
 
 If the last remaining staff cannot sign in, do not edit `authAccounts` in the Convex dashboard. The stored secret is hashed; typing a plaintext password there will not work. Re-running `seed:run` also leaves an existing password alone.
 
-When RIDGE-30 has landed, from the `ridgeway` repo root, after Convex has pushed:
+From the `ridgeway` repo root, after Convex has pushed:
 
 ```bash
 npx convex run auth:setPassword '{"email":"ama.boateng@ridgeway.gh","password":"…"}'
 ```
 
-Only someone with Convex access can run this. Do not put the new password in Git, `STATUS.md`, `ACCESS-LIST.md`, or a chat. Until that action exists, this recovery path is not runnable.
+Only someone with Convex access can run this. Do not put the new password in Git, `STATUS.md`, `ACCESS-LIST.md`, or a chat. The website cannot call this action.
 
 ## Production
 
