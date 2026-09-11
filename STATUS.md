@@ -72,7 +72,8 @@ Start [RIDGE-32](https://linear.app/dm-studios/issue/RIDGE-32/staff-can-see-ever
 - RIDGE-5 PR (merged): https://github.com/delasimensah/ridgeway/pull/6
 - RIDGE-27 PR (merged): https://github.com/delasimensah/ridgeway/pull/8
 - RIDGE-6 PR (merged): https://github.com/delasimensah/ridgeway/pull/9
-- RIDGE-29 PR: https://github.com/delasimensah/ridgeway/pull/10
+- RIDGE-29 PR (merged): https://github.com/delasimensah/ridgeway/pull/10
+- RIDGE-30 PR: https://github.com/delasimensah/ridgeway/pull/11
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
