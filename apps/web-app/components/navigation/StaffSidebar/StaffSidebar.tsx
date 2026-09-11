@@ -8,7 +8,7 @@ import { cn } from "shared";
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
-export type StaffNavId = "home" | "buildings" | "repairs";
+export type StaffNavId = "home" | "buildings" | "tenants" | "repairs";
 
 interface StaffSidebarProps {
   displayName: string;
@@ -21,6 +21,7 @@ interface StaffSidebarProps {
 const NAV_ITEMS: { id: StaffNavId; href: string; label: string }[] = [
   { id: "home", href: "/", label: "Home" },
   { id: "buildings", href: "/buildings", label: "Buildings" },
+  { id: "tenants", href: "/tenants", label: "Tenants" },
   { id: "repairs", href: "/repairs", label: "Repairs" },
 ];
 

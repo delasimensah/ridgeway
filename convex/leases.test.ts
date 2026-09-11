@@ -450,4 +450,79 @@ describe("leases", () => {
     expect(after).not.toBeNull();
     expect(after).not.toBe(before);
   });
+
+  it("lists every tenant, including people with no current lease", async () => {
+    const { t, userId, buildingId, unitId, otherUnitId } =
+      await staffWithUnit();
+    const currentLeaseId = await asUser(t, userId).mutation(
+      api.leases.createWithTenant,
+      {
+        unitId,
+        displayName: "Akosua Darko",
+        email: "akosua@example.com",
+        startedOn: "2024-01-15",
+      }
+    );
+    const endedLeaseId = await asUser(t, userId).mutation(
+      api.leases.createWithTenant,
+      {
+        unitId: otherUnitId,
+        displayName: "Sofia Herrera",
+        email: "sofia.herrera@example.com",
+        startedOn: "2024-01-15",
+        endedOn: "2024-12-31",
+      }
+    );
+
+    const currentStored = await t.run(async (ctx) =>
+      ctx.db.get(currentLeaseId)
+    );
+    const endedStored = await t.run(async (ctx) => ctx.db.get(endedLeaseId));
+    const list = await asUser(t, userId).query(api.leases.listForStaff, {});
+
+    expect(list).toEqual([
+      {
+        _id: currentStored?.tenantProfileId,
+        leaseId: currentLeaseId,
+        buildingId,
+        displayName: "Akosua Darko",
+        email: "akosua@example.com",
+        hasLogin: false,
+        currentBuildingName: "Ridge Court",
+        currentUnitLabel: "B12",
+      },
+      {
+        _id: endedStored?.tenantProfileId,
+        leaseId: endedLeaseId,
+        buildingId,
+        displayName: "Sofia Herrera",
+        email: "sofia.herrera@example.com",
+        hasLogin: false,
+        currentBuildingName: null,
+        currentUnitLabel: null,
+      },
+    ]);
+  });
+
+  it("refuses the tenant list when the caller is not staff", async () => {
+    const { t, userId, unitId } = await staffWithUnit();
+    await asUser(t, userId).mutation(api.leases.createWithTenant, {
+      unitId,
+      displayName: "Akosua Darko",
+      email: "akosua@example.com",
+      startedOn: "2024-01-15",
+    });
+    const field = await insertPerson(t, {
+      email: "yaw.darko@ridgeway.gh",
+      displayName: "Yaw Darko",
+      role: "field",
+    });
+
+    try {
+      await asUser(t, field.userId).query(api.leases.listForStaff, {});
+      throw new Error("expected listForStaff to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
 });
