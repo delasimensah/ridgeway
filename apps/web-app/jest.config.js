@@ -14,6 +14,7 @@ const customJestConfig = {
     "^shared/(.*)$": "<rootDir>/../../packages/shared/src/$1",
     "^shared$": "<rootDir>/../../packages/shared/src",
   },
+  coverageReporters: ["text", "lcovonly"],
   collectCoverageFrom: [
     "**/*.{ts,tsx}",
     "!**/*.d.ts",
