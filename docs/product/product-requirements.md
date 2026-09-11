@@ -31,7 +31,7 @@ Give Ridgeway Property Group one system where staff run the office, each owner s
 ## 3. Core flows (first version)
 
 1. Staff sign in and open a home screen that shows buildings, units, tenants, open repairs, and rent marked paid, late, or partial.
-2. Staff add a building, a unit, an owner, or a tenant by typing it in. After save, they can correct those typed fields. When a tenant moves out, staff set an end date on that lease.
+2. Staff add a building, a unit, an owner, a tenant, another office person, or a field worker by typing it in. After save, they can correct those typed fields. Staff set a new password on an owner, tenant, office, or field login they issued. When a tenant moves out, staff set an end date on that lease.
 3. An owner signs in and sees only their buildings. For those buildings they see occupancy, open repairs, and rent collected versus still outstanding.
 4. A tenant files a repair and can attach a photo. The ticket starts as received, then staff assign it, then it is scheduled, then it is marked done. Those steps happen in that order. After the lease end date, that person may still sign in, but they cannot see that unit, file a repair, or see rent.
 5. A tenant sees rent reminders and can mark a payment as reported. Staff still confirm the money. This is not a full accounts ledger.
@@ -49,13 +49,14 @@ Give Ridgeway Property Group one system where staff run the office, each owner s
 - Guest short-stay operations. That would be a different product.
 - Using the field app with no network
 - Sign in by receiving a code in WhatsApp
+- Self-service forgot-password or email reset. Staff set a new password on an account they issued.
 - Importing the old Excel as a one-click migration. Staff enter records by hand. The demo uses seed data.
 - A second management company in the product, self-serve signup for other firms, or billing so many firms can subscribe. Buildings, owners, and members still belong to an organization, so a second firm later is another row and a membership check, not a rewrite.
 
 **Screens the product needs** so design and tickets have a list:
 
-- Sign in, sign out, and forgot password.
-- Staff website: a home command center, lists and detail pages for buildings, units, tenants, repairs, and rent, forms to add or correct a building, unit, owner, or tenant, a way to end a lease, and later a draft monthly owner summary.
+- Sign in and sign out. Staff set a new password on an existing login. There is no self-service forgot-password.
+- Staff website: a home command center, lists and detail pages for buildings, units, tenants, owners, repairs, and rent, forms to add or correct a building, unit, owner, tenant, office person, or field worker, a way to end a lease, and later a draft monthly owner summary. Tenants and owners have their own lists (current lease or none for tenants), not only nested under a building.
 - Owner website: a home for their buildings only, a snapshot of each building, a list of open issues, and rent collected versus outstanding.
 - Tenant website and light phone app: a home, a form to file a repair, a timeline for that repair, a rent reminder, and later house-rules chat. After a lease ends, those screens show that the person has no permission for that unit. They do not show the old home as if they still lived there.
 - Field phone app: today’s jobs, job detail, a status update, and a completion photo.

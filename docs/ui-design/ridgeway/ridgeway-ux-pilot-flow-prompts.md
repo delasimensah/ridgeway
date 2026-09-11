@@ -38,11 +38,11 @@ Ridgeway Property Group — Accra property office on the web. Staff run all buil
 
 ### Screen: Sign in (web)
 
-Centered white card on a white page `#FFFFFF`. Wordmark “Ridgeway” Bold, then “Sign in”. Stacked fields: Email address, Password (Forgot? link inside the password row). Primary full-width button `#1A3636` white text “Sign in”. Helper line: “Office, owners, and tenants use this site.” No Google, Apple, or other social buttons. No sidebar. Layout like Ghost’s quiet email-and-password form.
+Centered white card on a white page `#FFFFFF`. Wordmark “Ridgeway” Bold, then “Sign in”. Stacked fields: Email address, Password. Primary full-width button `#1A3636` white text “Sign in”. Helper line: “Office, owners, and tenants use this site.” No Google, Apple, or other social buttons. No Forgot? link in the first version. No sidebar. Layout like Ghost’s quiet email-and-password form.
 
 ### Screen: Forgot password (web)
 
-Same chrome as Sign in. Title “Reset password”. One field: Email address. Primary “Send reset link”. Text link “Back to sign in”. No sidebar. No social.
+Not a first-version build target. Staff set a new password on the owner or tenant form. HTML export kept for the archive only.
 
 ### Screen: Sign out (web)
 
@@ -213,11 +213,11 @@ Same as tenant lease ended: “You don’t have permission to see this page.” 
 
 ### Screen: Sign in (phone)
 
-Full screen. Wordmark Ridgeway. Email, password, Forgot?, Sign in `#1A3636`. No social. No tab bar.
+Full screen. Wordmark Ridgeway. Email, password, Sign in `#1A3636`. No Forgot? in the first version. No social. No tab bar.
 
 ### Screen: Forgot password (phone)
 
-Email field, Send reset link, Back to sign in. No tab bar.
+Not a first-version build target. Same as web: leftover export only.
 
 ---
 

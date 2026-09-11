@@ -29,6 +29,8 @@ One file per area of the product, named after the thing it deals with, plus a sm
 - `convex/lib/functions.ts` holds the wrapped ways of declaring a public function, which are what make the identity check impossible to omit. Every public function in the codebase is declared with one of these.
 - `convex/lib/errors.ts` holds the single way we refuse a request.
 - `convex/profiles.ts`, `convex/owners.ts`, `convex/buildings.ts`, `convex/units.ts`, `convex/leases.ts`, `convex/workOrders.ts`, `convex/rent.ts`, `convex/files.ts` hold the queries and mutations for each area.
+- `convex/staff.ts` holds staff home today. Office-staff list, create, and password actions are added on RIDGE-31.
+- `convex/field.ts` holds field-worker list, create, and password actions on RIDGE-34.
 - `convex/seed.ts` holds the internal mutation that creates the demonstration world.
 - `convex/ai.ts` holds the actions for the three optional language-model features, and is not written until those features are started.
 
@@ -257,13 +259,28 @@ Where a function is described as staff-only, that means it is declared with `sta
 
 - `profiles.getCurrent` is a query that returns the viewer's own profile along with the roles and current tenancies resolved for them, so the website and the phone can decide which screens to show. Every signed-in person may call it. This is the one function whose whole purpose is to describe the caller.
 - `profiles.ensureForCurrentUser` is a mutation that creates the profile row for a login that does not have one yet. It writes only the row belonging to the calling login.
+- There is no self-service forgot-password and no Password-provider email reset. Staff set a new password on an account they issued.
+- `auth.setPassword` is an internal action. It takes an email and a new password and calls Convex Auth `modifyAccountCredentials`. It is not in the generated public API. Someone with Convex access runs it with `npx convex run` when the last remaining staff cannot sign in. Do not edit `authAccounts` in the Convex dashboard; the stored secret is hashed. How to run it: `docs/convex-auth-env.md`.
+
+### Office staff
+
+- `staff.listForStaff` is a staff-only query listing office people in the caller's organization.
+- `staff.create` is a staff-only action. Staff type a name, email, and temporary password. It calls Convex Auth `createAccount`, then writes the profile and a staff membership (no `ownerId`). It refuses when that email already belongs to a login.
+- `staff.setPassword` is a staff-only action. Staff type a new password on an office person who already has a login. It calls Convex Auth `modifyAccountCredentials`. An empty password on the form does not call it.
+
+### Field workers
+
+- `field.listForStaff` is a staff-only query listing field memberships in the caller's organization.
+- `field.create` is a staff-only action. Staff type a name, email, and temporary password. It calls Convex Auth `createAccount`, then writes the profile and a field membership. It refuses when that email already belongs to a login.
+- `field.setPassword` is a staff-only action. Same `modifyAccountCredentials` pattern as `owners.setPassword`.
 
 ### Owners, buildings, and units
 
-- `owners.listForStaff` is a staff-only query listing the owners in the caller's organization.
+- `owners.listForStaff` is a staff-only query listing the owners in the caller's organization. The staff Owners page uses it. Each row includes whether that owner has a login and how many buildings they have.
 - `owners.get` is a staff-only query for the add-owner form in edit. It includes whether that owner already has a login.
 - `owners.create` and `owners.update` are staff-only mutations. They save contact details. They do not create a website login.
-- `owners.grantLogin` is a staff-only action. Staff type an email and a temporary password, for a new owner or for an owner who still has no login. Add owner, edit owner, and add building all call it when a password is set. It calls Convex Auth `createAccount`, then writes the owner row, the profile, and the owner membership. First grant only: it refuses when that email already belongs to a login (staff, field, another owner, or a tenant) and it refuses when the owner already has a login. It does not reset a password.
+- `owners.grantLogin` is a staff-only action. Staff type an email and a temporary password, for a new owner or for an owner who still has no login. Add owner, edit owner, and add building all call it when a password is set on a person who does not yet have a login. It calls Convex Auth `createAccount`, then writes the owner row, the profile, and the owner membership. First grant only: it refuses when that email already belongs to a login (staff, field, another owner, or a tenant) and it refuses when the owner already has a login.
+- `owners.setPassword` is a staff-only action. Staff type a new password on an owner who already has a login. It calls Convex Auth `modifyAccountCredentials`. An empty password on the form does not call it.
 - `buildings.listForViewer` is a query available to any signed-in person, and it returns a different set depending on who they are: staff get the buildings in their organization, an owner gets the buildings whose `ownerId` matches their own membership, and a tenant gets only the building above their current lease. The scope always comes from the viewer and never from an argument. There is one function rather than three because the alternative is three functions with three chances to get the scoping wrong, and one function makes the comparison between the three cases visible in one screen of code. Each row includes `unitCount` and `openRepairCount` (tickets that are not done).
 - `buildings.get` is a query guarded by `requireBuildingAccess`.
 - `buildings.create` and `buildings.update` are staff-only mutations. Creating a building requires the named owner to be in the caller's organization.
@@ -273,10 +290,12 @@ Where a function is described as staff-only, that means it is declared with `sta
 
 ### Leases and tenants
 
+- `leases.listForStaff` is a staff-only query listing every tenant profile in the caller's organization. Each row includes the current lease (building and unit) when there is one, and none when the only leases have ended. New tenants are still created with a lease; this list does not invent a person who never rented.
 - `leases.listByBuilding` is a query for staff and for that building's owner. The owner sees occupancy, so this is where an owner's view of who is in a unit comes from.
 - `leases.createWithTenant` is a staff-only mutation that creates the tenant's profile if needed and the lease in one transaction, so a half-created tenancy cannot exist.
 - `leases.updateTenant` is a staff-only mutation that corrects typed tenant and lease fields. It does not create a website login.
-- `leases.grantLogin` is a staff-only action. Staff type an email and a temporary password, for a new tenant or for a tenant who still has no login. Add tenant and edit tenant call it when a password is set. It calls Convex Auth `createAccount`, then attaches that Auth user to the tenant profile the lease already points at (or creates the profile and lease for a new tenant). First grant only: it refuses when that email already belongs to a login (staff, field, an owner, or another tenant) and it refuses when the tenant already has a login. It does not reset a password. `leases.get` includes whether that tenant already has a login.
+- `leases.grantLogin` is a staff-only action. Staff type an email and a temporary password, for a new tenant or for a tenant who still has no login. Add tenant and edit tenant call it when a password is set on a person who does not yet have a login. It calls Convex Auth `createAccount`, then attaches that Auth user to the tenant profile the lease already points at (or creates the profile and lease for a new tenant). First grant only: it refuses when that email already belongs to a login (staff, field, an owner, or another tenant) and it refuses when the tenant already has a login. `leases.get` includes whether that tenant already has a login.
+- `leases.setPassword` is a staff-only action. Staff type a new password on a tenant who already has a login. It calls Convex Auth `modifyAccountCredentials`. An empty password on the form does not call it.
 - `leases.end` is a staff-only mutation that sets `endedOn`. It writes one field and nothing else, because everything downstream of a tenancy ending is derived rather than stored. This single small mutation is what the ended-lease requirement rests on, and it is worth noticing how little it has to do.
 
 ### Work orders

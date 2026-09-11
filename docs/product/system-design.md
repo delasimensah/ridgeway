@@ -40,6 +40,8 @@ The backend is **Convex**. It holds the database, the functions that read and wr
 
 **Sign-in is Convex Auth with an email and password.** The repository already has this wired in `convex/auth.ts` using the Password provider, and the requirements document asks for email and password sign-in. Convex Auth is currently a beta library, which is the one real risk in this choice, and section 4 explains how we keep that risk from spreading into the product tables. See the [Convex Auth documentation](https://labs.convex.dev/auth) for the current state of the library.
 
+**Staff issue logins and set passwords.** Owners, tenants, and office people use an account Ridgeway created for them. Staff type the first password when they grant the login, and they type a new password on that person later. There is no self-service forgot-password and no email reset. A last remaining staff lockout is recovered with an internal Convex action run from the CLI, not with an admin role in the app. Do not edit the hashed secret in the Convex dashboard. See [convex-auth-env.md](../convex-auth-env.md).
+
 ---
 
 ## 3. How a request actually flows
@@ -231,8 +233,8 @@ The one genuinely unusual thing about this stack, compared to that generic pictu
 
 Each item is a large outcome rather than a task, and each one ends with something a person can sign into and use. Detailed tickets come after the screens are designed.
 
-1. **Sign in and identity.** A person can sign in and out, we can resolve who they are, and staff and field roles exist. Seed the organization and the first memberships.
-2. **The portfolio staff maintain.** Staff can create an owner, a building, a unit, a tenant, and a lease, and can end a lease. Plain screens are fine at this stage.
+1. **Sign in and identity.** A person can sign in and out, we can resolve who they are, and staff and field roles exist. Seed the organization and the first memberships. Staff issue owner, tenant, and office logins and can set a new password on those accounts.
+2. **The portfolio staff maintain.** Staff can create an owner, a building, a unit, a tenant, another office person, a field worker, and a lease, and can end a lease. Staff can list every tenant (current lease or none) and every owner without opening a building. Plain screens are fine at this stage.
 3. **The owner wall.** The owner website exists and shows only that owner's buildings, with the tests from section 11 written as part of this step rather than after it.
 4. **Repairs end to end.** A tenant files a repair with a photo, staff assign and schedule it, a caretaker finishes it with a photo, and every step leaves history. This includes the field worker screens on the phone.
 5. **Rent.** Staff confirm what was paid, tenants see reminders and can report a payment, and owners see collected against outstanding.

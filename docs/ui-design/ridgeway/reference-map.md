@@ -23,7 +23,7 @@ These are layout and pattern references. Do not copy brand, color, extra feature
 
 **Forgot password**
 
-- No dedicated reference. Reuse the sign-in form chrome with a short email field and a send-reset action.
+- Not in the first version. Staff set a new password on edit owner / edit tenant ([RIDGE-30](https://linear.app/dm-studios/issue/RIDGE-30/staff-can-set-a-new-password-on-an-existing-owner-or-tenant-login)). HTML export `forgot-password.html` is leftover from an earlier design and is not a build target.
 
 ---
 
@@ -38,10 +38,14 @@ These are layout and pattern references. Do not copy brand, color, extra feature
 
 - [Jobber list](https://mobbin.com/screens/a96589e2-e854-4524-b3b9-58d4000f2562) — rows plus an add action.
 
-**Building detail, unit list, tenant list**
+**Building detail, unit list**
 
 - Same [Jobber list](https://mobbin.com/screens/a96589e2-e854-4524-b3b9-58d4000f2562) for nested lists.
-- No dedicated unit or tenant detail reference. Reuse list density plus the ticket screens for a single-record page.
+- No dedicated unit detail reference. Reuse list density plus the ticket screens for a single-record page.
+
+**Tenant list and owner list (staff People)**
+
+- Same [Jobber list](https://mobbin.com/screens/a96589e2-e854-4524-b3b9-58d4000f2562) — rows plus an add action. Tenants show current unit or none. Owners show building count. Not only nested under a building.
 
 **Repair list and repair detail**
 
@@ -155,8 +159,8 @@ Field workers do not see owner money screens.
 
 ## Gaps (no extra Mobbin yet)
 
-- Forgot-password screen (reuse sign-in chrome).
-- Dedicated tenant home.
+- Add office staff (reuse add-owner form chrome).
+- Add field worker (same chrome).
 - Dedicated unit and tenant detail.
 - Loading and fail states.
 

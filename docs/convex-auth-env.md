@@ -38,6 +38,20 @@ This project’s Vercel preview uses the same Convex **dev** URL as local (`NEXT
 
 `SITE_URL` on this dev Convex is the local site. Email and password do not redirect through `SITE_URL`. Google sign-in (later) will. Do not point this shared `SITE_URL` at a Vercel preview URL that changes on every pull request.
 
+## Last remaining staff lockout
+
+There is no forgot-password email. Staff set a new password on an owner or tenant from those forms ([RIDGE-30](https://linear.app/dm-studios/issue/RIDGE-30/staff-can-set-a-new-password-on-an-existing-owner-or-tenant-login)). Another office person can set a password after [RIDGE-31](https://linear.app/dm-studios/issue/RIDGE-31/staff-can-add-another-office-person).
+
+If the last remaining staff cannot sign in, do not edit `authAccounts` in the Convex dashboard. The stored secret is hashed; typing a plaintext password there will not work. Re-running `seed:run` also leaves an existing password alone.
+
+When RIDGE-30 has landed, from the `ridgeway` repo root, after Convex has pushed:
+
+```bash
+npx convex run auth:setPassword '{"email":"ama.boateng@ridgeway.gh","password":"…"}'
+```
+
+Only someone with Convex access can run this. Do not put the new password in Git, `STATUS.md`, `ACCESS-LIST.md`, or a chat. Until that action exists, this recovery path is not runnable.
+
 ## Production
 
 Production Convex is a **different** deployment. When it exists, set `JWT_PRIVATE_KEY`, `JWKS`, and `SITE_URL` there too. `SITE_URL` on production is the stable production website URL, not localhost.
