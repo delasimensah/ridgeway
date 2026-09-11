@@ -27,6 +27,8 @@ export { default as BuildingListTable } from "./buildings/BuildingListTable/Buil
 
 export { default as AddOwnerForm } from "./owners/AddOwnerForm/AddOwnerForm";
 export { default as AddTenantForm } from "./tenants/AddTenantForm/AddTenantForm";
+export { default as TenantListRow } from "./tenants/TenantListRow/TenantListRow";
+export { default as TenantListTable } from "./tenants/TenantListTable/TenantListTable";
 
 export { default as OwnerBuildingCard } from "./owner/OwnerBuildingCard/OwnerBuildingCard";
 export { default as OwnerBuildingListEmpty } from "./owner/OwnerBuildingListEmpty/OwnerBuildingListEmpty";
@@ -54,5 +56,6 @@ export { default as StaffBuildingsPage } from "./pages/StaffBuildingsPage/StaffB
 export { default as StaffHomePage } from "./pages/StaffHomePage/StaffHomePage";
 export { default as StaffRepairDetailPage } from "./pages/StaffRepairDetailPage/StaffRepairDetailPage";
 export { default as StaffRepairsPage } from "./pages/StaffRepairsPage/StaffRepairsPage";
+export { default as StaffTenantsPage } from "./pages/StaffTenantsPage/StaffTenantsPage";
 export { default as TenantHomePage } from "./pages/TenantHomePage/TenantHomePage";
 export { default as TenantRepairTimelinePage } from "./pages/TenantRepairTimelinePage/TenantRepairTimelinePage";

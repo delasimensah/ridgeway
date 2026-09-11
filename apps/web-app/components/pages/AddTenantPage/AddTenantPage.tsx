@@ -22,6 +22,7 @@ interface AddTenantPageProps {
   lockUnit?: boolean;
   initialValues?: AddTenantFormValues;
   hasLogin?: boolean;
+  returnHref?: string;
 }
 
 const AddTenantPage: React.FC<AddTenantPageProps> = ({
@@ -33,27 +34,35 @@ const AddTenantPage: React.FC<AddTenantPageProps> = ({
   lockUnit,
   initialValues,
   hasLogin,
+  returnHref,
 }) => {
+  const fromTenantsList = returnHref === "/tenants";
+  const backHref = fromTenantsList ? "/tenants" : `/buildings/${buildingId}`;
+  const backLabel = fromTenantsList ? "Tenants" : buildingName;
+  const placeLabel = fromTenantsList
+    ? [buildingName, unitLabel].filter(Boolean).join(" · ")
+    : unitLabel;
+
   return (
     <Box className="max-w-[800px]">
       <Box className="mb-8 sm:mb-10">
         <Group gap={8} className="mb-2 text-[14px] font-medium">
           <Anchor
             component={Link}
-            href={`/buildings/${buildingId}`}
+            href={backHref}
             underline="never"
             className="text-grey hover:text-darkGrey"
           >
-            {buildingName}
+            {backLabel}
           </Anchor>
-          {unitLabel ? (
+          {placeLabel ? (
             <Text component="span" className="text-grey">
               /
             </Text>
           ) : null}
-          {unitLabel ? (
+          {placeLabel ? (
             <Text component="span" className="text-grey">
-              {unitLabel}
+              {placeLabel}
             </Text>
           ) : null}
         </Group>
@@ -61,7 +70,7 @@ const AddTenantPage: React.FC<AddTenantPageProps> = ({
           variant="page"
           className="mb-0 text-[24px] font-bold text-darkGrey sm:text-[28px] md:text-[32px]"
         >
-          Add tenant
+          {leaseId === undefined ? "Add tenant" : "Edit tenant"}
         </Heading>
       </Box>
       <Box className="rounded-[8px] border border-border bg-white p-4 shadow-sm sm:p-6 md:p-8">
@@ -72,6 +81,7 @@ const AddTenantPage: React.FC<AddTenantPageProps> = ({
           lockUnit={lockUnit}
           initialValues={initialValues}
           hasLogin={hasLogin}
+          returnHref={returnHref ?? `/buildings/${buildingId}`}
         />
       </Box>
     </Box>

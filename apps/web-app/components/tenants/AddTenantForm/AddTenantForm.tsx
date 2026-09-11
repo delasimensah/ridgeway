@@ -108,6 +108,7 @@ interface AddTenantFormProps {
   lockUnit?: boolean;
   initialValues?: AddTenantFormValues;
   hasLogin?: boolean;
+  returnHref?: string;
 }
 
 const AddTenantForm: React.FC<AddTenantFormProps> = ({
@@ -117,6 +118,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
   lockUnit = false,
   initialValues,
   hasLogin = false,
+  returnHref,
 }) => {
   const router = useRouter();
   const isEditing = leaseId !== undefined;
@@ -131,7 +133,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
   const setPassword = useAction(api.leases.setPassword);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const buildingHref = `/buildings/${buildingId}`;
+  const doneHref = returnHref ?? `/buildings/${buildingId}`;
   const selectedUnit = units.find(
     (unit) => unit._id === (initialValues?.unitId ?? "")
   );
@@ -206,7 +208,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
           endedOn: values.endedOn,
         });
       }
-      router.replace(buildingHref);
+      router.replace(doneHref);
     } catch (caught) {
       const info = getConvexErrorInfo(caught);
       const field = FIELD_BY_MESSAGE[info.message];
@@ -385,7 +387,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
         <Button
           type="button"
           variant="subtle"
-          onClick={() => router.push(buildingHref)}
+          onClick={() => router.push(doneHref)}
           className="h-auto w-full px-6 py-3 text-[15px] font-semibold text-grey hover:text-darkGrey sm:w-auto"
         >
           Cancel

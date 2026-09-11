@@ -379,9 +379,79 @@ export async function insertLeaseForExistingTenant(
   });
 }
 
+async function tenantLeasesInStaffOrg(
+  ctx: { db: QueryCtx["db"] },
+  organizationId: Id<"organizations">
+) {
+  const buildings = await ctx.db
+    .query("buildings")
+    .withIndex("by_organizationId", (q) =>
+      q.eq("organizationId", organizationId)
+    )
+    .collect();
+  const byProfile = new Map<
+    Id<"profiles">,
+    { profile: Doc<"profiles">; leases: Doc<"leases">[] }
+  >();
+
+  for (const building of buildings) {
+    const units = await ctx.db
+      .query("units")
+      .withIndex("by_buildingId", (q) => q.eq("buildingId", building._id))
+      .collect();
+    for (const unit of units) {
+      const leases = await ctx.db
+        .query("leases")
+        .withIndex("by_unitId", (q) => q.eq("unitId", unit._id))
+        .collect();
+      for (const lease of leases) {
+        const existing = byProfile.get(lease.tenantProfileId);
+        if (existing !== undefined) {
+          existing.leases.push(lease);
+          continue;
+        }
+        const profile = await ctx.db.get(lease.tenantProfileId);
+        if (profile === null) {
+          continue;
+        }
+        byProfile.set(profile._id, { profile, leases: [lease] });
+      }
+    }
+  }
+
+  return byProfile;
+}
+
+function leaseForEdit(
+  leases: Doc<"leases">[],
+  today: string
+): Doc<"leases"> | null {
+  const current = leases.find((lease) => isLeaseCurrent(lease, today));
+  if (current !== undefined) {
+    return current;
+  }
+  if (leases.length === 0) {
+    return null;
+  }
+  return leases.reduce((latest, lease) =>
+    lease.startedOn > latest.startedOn ? lease : latest
+  );
+}
+
 const availableTenant = v.object({
   _id: v.id("profiles"),
   displayName: v.string(),
+});
+
+const tenantListItem = v.object({
+  _id: v.id("profiles"),
+  leaseId: v.id("leases"),
+  buildingId: v.id("buildings"),
+  displayName: v.string(),
+  email: v.string(),
+  hasLogin: v.boolean(),
+  currentBuildingName: v.union(v.string(), v.null()),
+  currentUnitLabel: v.union(v.string(), v.null()),
 });
 
 export const listAvailableForStaff = staffQuery({
@@ -393,50 +463,89 @@ export const listAvailableForStaff = staffQuery({
       raise(ERROR_CODES.NOT_PERMITTED);
     }
 
-    const buildings = await ctx.db
-      .query("buildings")
-      .withIndex("by_organizationId", (q) =>
-        q.eq("organizationId", organizationId)
-      )
-      .collect();
     const today = utcToday();
-    const names = new Map<Id<"profiles">, string>();
-
-    for (const building of buildings) {
-      const units = await ctx.db
-        .query("units")
-        .withIndex("by_buildingId", (q) => q.eq("buildingId", building._id))
-        .collect();
-      for (const unit of units) {
-        const leases = await ctx.db
-          .query("leases")
-          .withIndex("by_unitId", (q) => q.eq("unitId", unit._id))
-          .collect();
-        for (const lease of leases) {
-          const profile = await ctx.db.get(lease.tenantProfileId);
-          if (profile !== null) {
-            names.set(profile._id, profile.displayName);
-          }
-        }
-      }
-    }
-
     const available: { _id: Id<"profiles">; displayName: string }[] = [];
-    for (const [profileId, displayName] of names) {
+    for (const [profileId, { profile, leases }] of await tenantLeasesInStaffOrg(
+      ctx,
+      organizationId
+    )) {
       if (await profileHasMembership(ctx, profileId)) {
         continue;
       }
-      const current = await currentLeaseForProfile(ctx, profileId, today);
-      if (current !== null) {
+      if (leases.some((lease) => isLeaseCurrent(lease, today))) {
         continue;
       }
-      available.push({ _id: profileId, displayName });
+      available.push({ _id: profileId, displayName: profile.displayName });
     }
 
     available.sort((left, right) =>
       left.displayName.localeCompare(right.displayName)
     );
     return available;
+  },
+});
+
+export const listForStaff = staffQuery({
+  args: {},
+  returns: v.array(tenantListItem),
+  handler: async (ctx) => {
+    const organizationId = ctx.viewer.organizationId;
+    if (organizationId === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const today = utcToday();
+    const rows: {
+      _id: Id<"profiles">;
+      leaseId: Id<"leases">;
+      buildingId: Id<"buildings">;
+      displayName: string;
+      email: string;
+      hasLogin: boolean;
+      currentBuildingName: string | null;
+      currentUnitLabel: string | null;
+    }[] = [];
+
+    for (const [profileId, { profile, leases }] of await tenantLeasesInStaffOrg(
+      ctx,
+      organizationId
+    )) {
+      const editLease = leaseForEdit(leases, today);
+      if (editLease === null) {
+        continue;
+      }
+
+      const unit = await ctx.db.get(editLease.unitId);
+      if (unit === null) {
+        continue;
+      }
+      const building = await ctx.db.get(unit.buildingId);
+      if (building === null) {
+        continue;
+      }
+
+      const user = await ctx.db.get(profile.userId);
+      if (user === null || user.email === undefined) {
+        continue;
+      }
+
+      const isCurrent = isLeaseCurrent(editLease, today);
+      rows.push({
+        _id: profileId,
+        leaseId: editLease._id,
+        buildingId: building._id,
+        displayName: profile.displayName,
+        email: user.email,
+        hasLogin: await userHasPasswordLogin(ctx, profile.userId),
+        currentBuildingName: isCurrent ? building.name : null,
+        currentUnitLabel: isCurrent ? unit.label : null,
+      });
+    }
+
+    rows.sort((left, right) =>
+      left.displayName.localeCompare(right.displayName)
+    );
+    return rows;
   },
 });
 

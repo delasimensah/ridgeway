@@ -21,6 +21,9 @@ function navFromPath(pathname: string): StaffNavId {
   if (pathname.startsWith("/buildings")) {
     return "buildings";
   }
+  if (pathname.startsWith("/tenants")) {
+    return "tenants";
+  }
   if (pathname.startsWith("/repairs")) {
     return "repairs";
   }

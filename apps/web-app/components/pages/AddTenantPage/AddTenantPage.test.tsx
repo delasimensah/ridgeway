@@ -65,5 +65,47 @@ describe("AddTenantPage", () => {
     );
     expect(screen.getByLabelText(/email/i)).toHaveValue("akosua@example.com");
     expect(screen.getByText("B12")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Edit tenant" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ridge Court" })).toHaveAttribute(
+      "href",
+      "/buildings/building-id"
+    );
+  });
+
+  it("stays in Tenants when opened from the tenant list", () => {
+    render(
+      <AddTenantPage
+        buildingId={"building-id" as never}
+        buildingName="Ridge Court"
+        units={[{ _id: "unit-1", label: "B12" }]}
+        unitLabel="B12"
+        leaseId={"lease-id" as never}
+        lockUnit
+        returnHref="/tenants"
+        initialValues={{
+          unitId: "unit-1",
+          displayName: "Akosua Darko",
+          phone: "",
+          email: "akosua@example.com",
+          startedOn: "2024-01-15",
+          endedOn: "",
+          password: "",
+        }}
+      />
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Edit tenant" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Tenants" })).toHaveAttribute(
+      "href",
+      "/tenants"
+    );
+    expect(screen.getByText("Ridge Court · B12")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Ridge Court" })
+    ).not.toBeInTheDocument();
   });
 });
