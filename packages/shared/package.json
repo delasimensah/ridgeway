@@ -57,6 +57,9 @@
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.ts"
     ],
-    "coverageReporters": ["text", "lcovonly"]
+    "coverageReporters": [
+      "text",
+      "lcovonly"
+    ]
   }
 }

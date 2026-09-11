@@ -115,7 +115,10 @@
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?|jest-expo|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|native-base|react-native-svg|@shopify/flash-list|react-native-worklets|convex|@convex-dev/auth))"
     ],
     "collectCoverage": true,
-    "coverageReporters": ["text", "lcovonly"],
+    "coverageReporters": [
+      "text",
+      "lcovonly"
+    ],
     "collectCoverageFrom": [
       "**/*.{ts,tsx,js,jsx}",
       "!**/coverage/**",
