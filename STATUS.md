@@ -76,7 +76,8 @@ Start [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-mov
 - RIDGE-30 PR (merged): https://github.com/delasimensah/ridgeway/pull/11
 - RIDGE-32 PR (merged): https://github.com/delasimensah/ridgeway/pull/12
 - RIDGE-33 PR (merged): https://github.com/delasimensah/ridgeway/pull/13
-- RIDGE-31 PR: https://github.com/delasimensah/ridgeway/pull/14
+- RIDGE-31 PR (merged): https://github.com/delasimensah/ridgeway/pull/14
+- RIDGE-34 PR: https://github.com/delasimensah/ridgeway/pull/15
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
