@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as buildings from "../buildings.js";
+import type * as field from "../field.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as leases from "../leases.js";
@@ -33,6 +34,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   buildings: typeof buildings;
+  field: typeof field;
   files: typeof files;
   http: typeof http;
   leases: typeof leases;
