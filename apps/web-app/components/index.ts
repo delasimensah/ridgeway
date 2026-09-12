@@ -33,6 +33,9 @@ export { default as OwnerListTable } from "./owners/OwnerListTable/OwnerListTabl
 export { default as AddTenantForm } from "./tenants/AddTenantForm/AddTenantForm";
 export { default as TenantListRow } from "./tenants/TenantListRow/TenantListRow";
 export { default as TenantListTable } from "./tenants/TenantListTable/TenantListTable";
+export { default as AddOfficePersonForm } from "./office/AddOfficePersonForm/AddOfficePersonForm";
+export { default as OfficeListRow } from "./office/OfficeListRow/OfficeListRow";
+export { default as OfficeListTable } from "./office/OfficeListTable/OfficeListTable";
 
 export { default as OwnerBuildingCard } from "./owner/OwnerBuildingCard/OwnerBuildingCard";
 export { default as OwnerBuildingListEmpty } from "./owner/OwnerBuildingListEmpty/OwnerBuildingListEmpty";
@@ -48,6 +51,7 @@ export { default as RepairListTable } from "./repairs/RepairListTable/RepairList
 export { default as RepairStatusBadge } from "./repairs/RepairStatusBadge/RepairStatusBadge";
 
 export { default as AddBuildingPage } from "./pages/AddBuildingPage/AddBuildingPage";
+export { default as AddOfficePersonPage } from "./pages/AddOfficePersonPage/AddOfficePersonPage";
 export { default as AddOwnerPage } from "./pages/AddOwnerPage/AddOwnerPage";
 export { default as AddTenantPage } from "./pages/AddTenantPage/AddTenantPage";
 export { default as AddUnitPage } from "./pages/AddUnitPage/AddUnitPage";
@@ -58,6 +62,7 @@ export { default as OwnerHomePage } from "./pages/OwnerHomePage/OwnerHomePage";
 export { default as SignInPage } from "./pages/SignInPage/SignInPage";
 export { default as StaffBuildingsPage } from "./pages/StaffBuildingsPage/StaffBuildingsPage";
 export { default as StaffHomePage } from "./pages/StaffHomePage/StaffHomePage";
+export { default as StaffOfficePage } from "./pages/StaffOfficePage/StaffOfficePage";
 export { default as StaffOwnerPage } from "./pages/StaffOwnerPage/StaffOwnerPage";
 export { default as StaffOwnersPage } from "./pages/StaffOwnersPage/StaffOwnersPage";
 export { default as StaffRepairDetailPage } from "./pages/StaffRepairDetailPage/StaffRepairDetailPage";

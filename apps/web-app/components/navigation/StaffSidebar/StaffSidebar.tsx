@@ -9,7 +9,7 @@ import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
 export type StaffNavId =
-  "home" | "buildings" | "owners" | "tenants" | "repairs";
+  "home" | "buildings" | "owners" | "tenants" | "office" | "repairs";
 
 interface StaffSidebarProps {
   displayName: string;
@@ -24,6 +24,7 @@ const NAV_ITEMS: { id: StaffNavId; href: string; label: string }[] = [
   { id: "buildings", href: "/buildings", label: "Buildings" },
   { id: "owners", href: "/owners", label: "Owners" },
   { id: "tenants", href: "/tenants", label: "Tenants" },
+  { id: "office", href: "/office", label: "Office" },
   { id: "repairs", href: "/repairs", label: "Repairs" },
 ];
 

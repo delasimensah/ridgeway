@@ -35,6 +35,11 @@ export {
   utcToday,
   type AddTenantFormValues,
 } from "./addTenantSchema";
+export {
+  officePersonSchema,
+  MIN_OFFICE_PASSWORD_LENGTH,
+  type OfficePersonFormValues,
+} from "./officePersonSchema";
 export { getConvexErrorInfo, getConvexErrorMessage } from "./convexError";
 export {
   fileRepairSchema,

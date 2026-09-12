@@ -264,8 +264,10 @@ Where a function is described as staff-only, that means it is declared with `sta
 
 ### Office staff
 
-- `staff.listForStaff` is a staff-only query listing office people in the caller's organization.
+- `staff.listForStaff` is a staff-only query listing office people in the caller's organization. Each row includes email and whether they can sign in.
+- `staff.get` is a staff-only query for the add-office-person form in edit.
 - `staff.create` is a staff-only action. Staff type a name, email, and temporary password. It calls Convex Auth `createAccount`, then writes the profile and a staff membership (no `ownerId`). It refuses when that email already belongs to a login.
+- `staff.update` is a staff-only mutation that corrects the typed name. It does not create a second login or change the password.
 - `staff.setPassword` is a staff-only action. Staff type a new password on an office person who already has a login. It calls Convex Auth `modifyAccountCredentials`. An empty password on the form does not call it.
 
 ### Field workers
