@@ -40,6 +40,11 @@ export {
   MIN_OFFICE_PASSWORD_LENGTH,
   type OfficePersonFormValues,
 } from "./officePersonSchema";
+export {
+  fieldWorkerSchema,
+  MIN_FIELD_PASSWORD_LENGTH,
+  type FieldWorkerFormValues,
+} from "./fieldWorkerSchema";
 export { getConvexErrorInfo, getConvexErrorMessage } from "./convexError";
 export {
   fileRepairSchema,

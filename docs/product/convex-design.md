@@ -30,7 +30,7 @@ One file per area of the product, named after the thing it deals with, plus a sm
 - `convex/lib/errors.ts` holds the single way we refuse a request.
 - `convex/profiles.ts`, `convex/owners.ts`, `convex/buildings.ts`, `convex/units.ts`, `convex/leases.ts`, `convex/workOrders.ts`, `convex/rent.ts`, `convex/files.ts` hold the queries and mutations for each area.
 - `convex/staff.ts` holds staff home today. Office-staff list, create, and password actions are added on RIDGE-31.
-- `convex/field.ts` holds field-worker list, create, and password actions on RIDGE-34.
+- `convex/field.ts` holds field-worker list, create, and password actions.
 - `convex/seed.ts` holds the internal mutation that creates the demonstration world.
 - `convex/ai.ts` holds the actions for the three optional language-model features, and is not written until those features are started.
 
@@ -272,9 +272,11 @@ Where a function is described as staff-only, that means it is declared with `sta
 
 ### Field workers
 
-- `field.listForStaff` is a staff-only query listing field memberships in the caller's organization.
+- `field.listForStaff` is a staff-only query listing field people in the caller's organization. Each row includes email and whether they can sign in.
+- `field.get` is a staff-only query for the add-field-worker form in edit.
 - `field.create` is a staff-only action. Staff type a name, email, and temporary password. It calls Convex Auth `createAccount`, then writes the profile and a field membership. It refuses when that email already belongs to a login.
-- `field.setPassword` is a staff-only action. Same `modifyAccountCredentials` pattern as `owners.setPassword`.
+- `field.update` is a staff-only mutation that corrects the typed name. It does not create a second login or change the password.
+- `field.setPassword` is a staff-only action. Staff type a new password on a field worker who already has a login. It calls Convex Auth `modifyAccountCredentials`. An empty password on the form does not call it.
 
 ### Owners, buildings, and units
 

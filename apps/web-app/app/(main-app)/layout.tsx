@@ -18,6 +18,7 @@ const StaffQuerySubscriptions = () => {
   useQuery(api.owners.listForStaff, {});
   useQuery(api.leases.listForStaff, {});
   useQuery(api.staff.listForStaff, {});
+  useQuery(api.field.listForStaff, {});
   useQuery(api.workOrders.listForStaff, {});
   return null;
 };
