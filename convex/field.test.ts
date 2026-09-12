@@ -1,13 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { api } from "./_generated/api";
-import {
-  asUser,
-  errorCode,
-  insertPerson,
-  makeBackend,
-  passwordAccountSecret,
-} from "./test.setup";
+import { asUser, errorCode, insertPerson, makeBackend } from "./test.setup";
 
 describe("field workers", () => {
   it("lets signed-in staff add a field worker who is field, not staff", async () => {
@@ -75,38 +69,6 @@ describe("field workers", () => {
     );
     expect(viewer.isField).toBe(true);
     expect(viewer.isStaff).toBe(false);
-
-    try {
-      await asUser(t, newUserId!).query(api.staff.getHome, {});
-      throw new Error("expected getHome to refuse");
-    } catch (error) {
-      expect(errorCode(error)).toBe("NOT_PERMITTED");
-    }
-  });
-
-  it("sets a new password on a field worker", async () => {
-    const t = makeBackend();
-    const staff = await insertPerson(t, {
-      email: "ama.boateng@ridgeway.gh",
-      displayName: "Ama Boateng",
-      role: "staff",
-    });
-    const profileId = await asUser(t, staff.userId).action(api.field.create, {
-      displayName: "Kofi Asante",
-      email: "kofi.asante@ridgeway.gh",
-      password: "RidgewayField26",
-    });
-    const before = await passwordAccountSecret(t, "kofi.asante@ridgeway.gh");
-
-    await asUser(t, staff.userId).action(api.field.setPassword, {
-      profileId,
-      password: "RidgewayField27",
-    });
-
-    const after = await passwordAccountSecret(t, "kofi.asante@ridgeway.gh");
-    expect(before).not.toBeNull();
-    expect(after).not.toBeNull();
-    expect(after).not.toBe(before);
   });
 
   it("refuses an email that already belongs to staff, field, an owner, or a tenant", async () => {

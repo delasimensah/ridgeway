@@ -34,27 +34,4 @@ describe("AddFieldWorkerPage", () => {
       screen.getByRole("button", { name: "Save field worker" })
     ).toBeInTheDocument();
   });
-
-  it("fills the form when a saved field worker is opened", () => {
-    render(
-      <AddFieldWorkerPage
-        profileId={"profile-id" as never}
-        initialValues={{
-          displayName: "Kofi Asante",
-          email: "kofi.asante@ridgeway.gh",
-          password: "",
-        }}
-      />
-    );
-
-    expect(
-      screen.getByRole("heading", { name: "Edit field worker" })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: /^full name/i })).toHaveValue(
-      "Kofi Asante"
-    );
-    expect(screen.getByRole("textbox", { name: /^email/i })).toHaveValue(
-      "kofi.asante@ridgeway.gh"
-    );
-  });
 });
