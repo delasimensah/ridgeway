@@ -58,7 +58,11 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const cancelHref =
-    buildingId !== undefined ? `/buildings/${buildingId}` : "/buildings";
+    buildingId !== undefined
+      ? `/buildings/${buildingId}`
+      : ownerId !== undefined
+        ? `/owners/${ownerId}`
+        : "/owners";
 
   const form = useForm<AddOwnerFormValues & { ownerChoice: string }>({
     initialValues: {

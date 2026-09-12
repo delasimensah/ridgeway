@@ -24,6 +24,10 @@ describe("AddOwnerPage", () => {
     expect(
       screen.getByRole("heading", { name: "Add owner" })
     ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Owners" })).toHaveAttribute(
+      "href",
+      "/owners"
+    );
     expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Save owner" })
@@ -46,6 +50,10 @@ describe("AddOwnerPage", () => {
     expect(
       screen.getByRole("heading", { name: "Edit owner" })
     ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Owners" })).toHaveAttribute(
+      "href",
+      "/owners/owner-id"
+    );
     expect(screen.getByLabelText(/full name/i)).toHaveValue("Kwesi Mensah");
     expect(screen.getByLabelText(/email/i)).toHaveValue("kwesi@example.com");
   });

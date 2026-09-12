@@ -15,7 +15,9 @@ import { StaffSessionProvider, useStaffSession } from "@/hooks";
 const StaffQuerySubscriptions = () => {
   useQuery(api.staff.getHome, {});
   useQuery(api.buildings.listForViewer, {});
+  useQuery(api.owners.listForStaff, {});
   useQuery(api.leases.listForStaff, {});
+  useQuery(api.workOrders.listForStaff, {});
   return null;
 };
 
