@@ -28,10 +28,11 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-29](https://linear.app/dm-studios/issue/RIDGE-29/staff-can-give-a-tenant-a-login) is **Done**.
 - [RIDGE-30](https://linear.app/dm-studios/issue/RIDGE-30/staff-can-set-a-new-password-on-an-existing-owner-or-tenant-login) is **Done**.
 - [RIDGE-32](https://linear.app/dm-studios/issue/RIDGE-32/staff-can-see-every-tenant-with-or-without-a-current-lease) is **Done**.
+- [RIDGE-33](https://linear.app/dm-studios/issue/RIDGE-33/staff-can-see-every-owner-without-opening-a-building) is **Done**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
-- Next slice is [RIDGE-33](https://linear.app/dm-studios/issue/RIDGE-33/staff-can-see-every-owner-without-opening-a-building) (owner list).
-- Then [RIDGE-31](https://linear.app/dm-studios/issue/RIDGE-31/staff-can-add-another-office-person) (add office staff), [RIDGE-34](https://linear.app/dm-studios/issue/RIDGE-34/staff-can-add-a-field-worker-and-see-them-on-a-list) (staff add a field worker), then [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) (field job status).
-- RIDGE-8 through RIDGE-15, RIDGE-31, RIDGE-33, RIDGE-34, and the epics are **Todo**.
+- Next slice is [RIDGE-31](https://linear.app/dm-studios/issue/RIDGE-31/staff-can-add-another-office-person) (add office staff).
+- Then [RIDGE-34](https://linear.app/dm-studios/issue/RIDGE-34/staff-can-add-a-field-worker-and-see-them-on-a-list) (staff add a field worker), then [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) (field job status).
+- RIDGE-8 through RIDGE-15, RIDGE-31, RIDGE-34, and the epics are **Todo**.
 - RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** until RIDGE-1 through RIDGE-13 are done.
 
 When a slice is started, move that issue to In Progress immediately. Do not use Backlog for queued first-version work. Linear stays In Progress until merge to `main`. In the feature PR, write this Status now block as that post-merge board.
@@ -367,17 +368,19 @@ Staff can open an owner list and see every owner in their organization without o
 - Not locked. Same table chrome as the tenant list / building list.
 - Staff sidebar: add **Owners**.
 - Columns that match data we already store: name, email, how many buildings, whether they can sign in.
-- Row opens the existing edit-owner form.
+- Row name (and the building count) opens that owner. Edit owner and the building list live there. Building names on that page open building detail.
 
 **What they do**
 
 - Staff open Owners and see Kwesi and Adwoa without opening Ridge Court or Labone.
-- Staff open a row to correct details or (after [RIDGE-30](https://linear.app/dm-studios/issue/RIDGE-30/staff-can-set-a-new-password-on-an-existing-owner-or-tenant-login)) set a password.
+- Staff open an owner and see every building linked to them. A building name opens building detail.
+- Staff open Edit owner to correct details or (after [RIDGE-30](https://linear.app/dm-studios/issue/RIDGE-30/staff-can-set-a-new-password-on-an-existing-owner-or-tenant-login)) set a password.
 
 **How it is built**
 
 - `owners.listForStaff` already exists. Extend the row with login and building count if those are missing, then ship the screen.
-- Wire real values. Do not hardcode `"—"` when a login or building count already exists.
+- `owners.get` returns the buildings linked to that owner for the staff owner page.
+- Wire real values. Do not hardcode `"—"` when a login or building already exists.
 
 **Acceptance (yes or no)**
 

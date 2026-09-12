@@ -42,6 +42,7 @@ describe("owners", () => {
         contactEmail: "kwesi@example.com",
         contactPhone: "024 555 0000",
         hasLogin: false,
+        buildingCount: 1,
       },
     ]);
     expect(building?.ownerId).toBe(ownerId);
@@ -89,6 +90,7 @@ describe("owners", () => {
       contactEmail: "kwesi.mensah@example.com",
       contactPhone: "024 555 1111",
       hasLogin: false,
+      buildings: [],
     });
   });
 
@@ -121,6 +123,96 @@ describe("owners", () => {
     });
     expect(building?.ownerId).toBe(ownerId);
     expect(building?.ownerName).toBe("Kwesi Mensah");
+  });
+
+  it("lists every owner with login and building count", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const buildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+    const kwesiId = await asUser(t, staff.userId).action(
+      api.owners.grantLogin,
+      {
+        displayName: "Kwesi Mensah",
+        contactEmail: "kwesi.mensah@ridgeway.gh",
+        contactPhone: "024 555 0000",
+        password: "RidgewayOwnerA26",
+        buildingId,
+      }
+    );
+    const adwoaId = await asUser(t, staff.userId).mutation(api.owners.create, {
+      displayName: "Adwoa Owusu",
+      contactEmail: "adwoa@example.com",
+    });
+
+    const list = await asUser(t, staff.userId).query(
+      api.owners.listForStaff,
+      {}
+    );
+
+    expect(list).toEqual([
+      {
+        _id: kwesiId,
+        displayName: "Kwesi Mensah",
+        contactEmail: "kwesi.mensah@ridgeway.gh",
+        contactPhone: "024 555 0000",
+        hasLogin: true,
+        buildingCount: 1,
+      },
+      {
+        _id: adwoaId,
+        displayName: "Adwoa Owusu",
+        contactEmail: "adwoa@example.com",
+        contactPhone: null,
+        hasLogin: false,
+        buildingCount: 0,
+      },
+    ]);
+
+    const kwesi = await asUser(t, staff.userId).query(api.owners.get, {
+      ownerId: kwesiId,
+    });
+    expect(kwesi?.buildings).toEqual([
+      {
+        _id: buildingId,
+        name: "Ridge Court",
+        address: "14 Ridge Road, Cantonments, Accra",
+      },
+    ]);
+  });
+
+  it("refuses the owner list when the caller is not staff", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    await asUser(t, staff.userId).mutation(api.owners.create, {
+      displayName: "Kwesi Mensah",
+    });
+    const field = await insertPerson(t, {
+      email: "yaw.darko@ridgeway.gh",
+      displayName: "Yaw Darko",
+      role: "field",
+    });
+
+    try {
+      await asUser(t, field.userId).query(api.owners.listForStaff, {});
+      throw new Error("expected listForStaff to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
   });
 
   it("refuses create when the caller is a field worker", async () => {

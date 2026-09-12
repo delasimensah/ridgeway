@@ -16,7 +16,7 @@ const EditOwnerRoute = () => {
 
   useEffect(() => {
     if (owner === null) {
-      router.replace("/buildings");
+      router.replace("/owners");
     }
   }, [owner, router]);
 

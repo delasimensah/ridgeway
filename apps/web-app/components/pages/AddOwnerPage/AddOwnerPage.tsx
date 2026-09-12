@@ -1,7 +1,8 @@
 "use client";
 
 import type { Id } from "@convex/_generated/dataModel";
-import { Box } from "@mantine/core";
+import { Anchor, Box, Group } from "@mantine/core";
+import Link from "next/link";
 import React from "react";
 
 import type { AddOwnerFormValues } from "@/utils";
@@ -22,14 +23,34 @@ const AddOwnerPage: React.FC<AddOwnerPageProps> = ({
   initialValues,
   hasLogin,
 }) => {
+  const fromOwnersList = buildingId === undefined;
+
   return (
     <Box className="max-w-[800px]">
-      <Heading
-        variant="page"
-        className="mb-6 text-[24px] font-bold text-darkGrey sm:mb-10 sm:text-[28px] md:text-[32px]"
-      >
-        {ownerId === undefined ? "Add owner" : "Edit owner"}
-      </Heading>
+      <Box className={fromOwnersList ? "mb-8 sm:mb-10" : undefined}>
+        {fromOwnersList ? (
+          <Group gap={8} className="mb-2 text-[14px] font-medium">
+            <Anchor
+              component={Link}
+              href={ownerId === undefined ? "/owners" : `/owners/${ownerId}`}
+              underline="never"
+              className="text-grey hover:text-darkGrey"
+            >
+              Owners
+            </Anchor>
+          </Group>
+        ) : null}
+        <Heading
+          variant="page"
+          className={
+            fromOwnersList
+              ? "mb-0 text-[24px] font-bold text-darkGrey sm:text-[28px] md:text-[32px]"
+              : "mb-6 text-[24px] font-bold text-darkGrey sm:mb-10 sm:text-[28px] md:text-[32px]"
+          }
+        >
+          {ownerId === undefined ? "Add owner" : "Edit owner"}
+        </Heading>
+      </Box>
       <Box className="rounded-[8px] border border-border bg-white p-4 shadow-sm sm:p-6 md:p-8">
         <AddOwnerForm
           key={ownerId ?? "new"}

@@ -107,12 +107,19 @@ export async function insertOwnerForOrg(
   });
 }
 
+const ownerBuildingSummary = v.object({
+  _id: v.id("buildings"),
+  name: v.string(),
+  address: v.string(),
+});
+
 const ownerListItem = v.object({
   _id: v.id("owners"),
   displayName: v.string(),
   contactEmail: v.union(v.string(), v.null()),
   contactPhone: v.union(v.string(), v.null()),
   hasLogin: v.boolean(),
+  buildingCount: v.number(),
 });
 
 const ownerFormFields = v.object({
@@ -121,6 +128,7 @@ const ownerFormFields = v.object({
   contactEmail: v.union(v.string(), v.null()),
   contactPhone: v.union(v.string(), v.null()),
   hasLogin: v.boolean(),
+  buildings: v.array(ownerBuildingSummary),
 });
 
 export const listForStaff = staffQuery({
@@ -140,6 +148,22 @@ export const listForStaff = staffQuery({
       .collect();
 
     const logins = await ownerIdsWithLogin(ctx, organizationId);
+    const buildings = await ctx.db
+      .query("buildings")
+      .withIndex("by_organizationId", (q) =>
+        q.eq("organizationId", organizationId)
+      )
+      .collect();
+    const buildingCounts = new Map<Id<"owners">, number>();
+    for (const building of buildings) {
+      if (building.ownerId === undefined) {
+        continue;
+      }
+      buildingCounts.set(
+        building.ownerId,
+        (buildingCounts.get(building.ownerId) ?? 0) + 1
+      );
+    }
 
     return rows.map((row) => ({
       _id: row._id,
@@ -147,6 +171,7 @@ export const listForStaff = staffQuery({
       contactEmail: row.contactEmail ?? null,
       contactPhone: row.contactPhone ?? null,
       hasLogin: logins.has(row._id),
+      buildingCount: buildingCounts.get(row._id) ?? 0,
     }));
   },
 });
@@ -167,12 +192,25 @@ export const get = staffQuery({
       return null;
     }
 
+    const ownedBuildings = await ctx.db
+      .query("buildings")
+      .withIndex("by_ownerId", (q) => q.eq("ownerId", owner._id))
+      .collect();
+    const buildings = ownedBuildings
+      .map((building) => ({
+        _id: building._id,
+        name: building.name,
+        address: building.address,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
     return {
       _id: owner._id,
       displayName: owner.displayName,
       contactEmail: owner.contactEmail ?? null,
       contactPhone: owner.contactPhone ?? null,
       hasLogin: await ownerHasLogin(ctx, organizationId, owner._id),
+      buildings,
     };
   },
 });

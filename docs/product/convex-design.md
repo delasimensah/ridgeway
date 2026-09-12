@@ -277,7 +277,7 @@ Where a function is described as staff-only, that means it is declared with `sta
 ### Owners, buildings, and units
 
 - `owners.listForStaff` is a staff-only query listing the owners in the caller's organization. The staff Owners page uses it. Each row includes whether that owner has a login and how many buildings they have.
-- `owners.get` is a staff-only query for the add-owner form in edit. It includes whether that owner already has a login.
+- `owners.get` is a staff-only query for the staff owner page and the add-owner form in edit. It includes whether that owner already has a login and the buildings linked to them.
 - `owners.create` and `owners.update` are staff-only mutations. They save contact details. They do not create a website login.
 - `owners.grantLogin` is a staff-only action. Staff type an email and a temporary password, for a new owner or for an owner who still has no login. Add owner, edit owner, and add building all call it when a password is set on a person who does not yet have a login. It calls Convex Auth `createAccount`, then writes the owner row, the profile, and the owner membership. First grant only: it refuses when that email already belongs to a login (staff, field, another owner, or a tenant) and it refuses when the owner already has a login.
 - `owners.setPassword` is a staff-only action. Staff type a new password on an owner who already has a login. It calls Convex Auth `modifyAccountCredentials`. An empty password on the form does not call it.
