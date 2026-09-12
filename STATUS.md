@@ -75,6 +75,7 @@ Start [RIDGE-31](https://linear.app/dm-studios/issue/RIDGE-31/staff-can-add-anot
 - RIDGE-29 PR (merged): https://github.com/delasimensah/ridgeway/pull/10
 - RIDGE-30 PR (merged): https://github.com/delasimensah/ridgeway/pull/11
 - RIDGE-32 PR (merged): https://github.com/delasimensah/ridgeway/pull/12
+- RIDGE-33 PR: https://github.com/delasimensah/ridgeway/pull/13
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
