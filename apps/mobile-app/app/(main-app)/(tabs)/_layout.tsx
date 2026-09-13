@@ -2,8 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
 import { COLORS } from "@/constants";
+import { useAppInsets } from "@/hooks";
+
+const TAB_BAR_CONTENT_HEIGHT = 56;
 
 const TabsLayout = () => {
+  const insets = useAppInsets();
+
   return (
     <Tabs
       initialRouteName="jobs"
@@ -14,6 +19,9 @@ const TabsLayout = () => {
         tabBarStyle: {
           backgroundColor: COLORS.white,
           borderTopColor: COLORS.border,
+          height: TAB_BAR_CONTENT_HEIGHT + insets.bottom,
+          paddingBottom: insets.bottom,
+          paddingTop: 6,
         },
         tabBarLabelStyle: {
           fontSize: 11,

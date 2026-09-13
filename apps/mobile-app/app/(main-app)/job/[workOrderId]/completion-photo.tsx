@@ -6,7 +6,12 @@ import { type Href, router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
 import { CompletionPhotoScreen } from "@/components";
-import { getConvexErrorMessage, uploadCompletionPhoto } from "@/utils";
+import {
+  COMPLETION_IMAGE_PICKER_OPTIONS,
+  getConvexErrorMessage,
+  readCompletionPhotoAsset,
+  uploadCompletionPhoto,
+} from "@/utils";
 
 const CompletionPhotoRoute = () => {
   const { workOrderId } = useLocalSearchParams<{ workOrderId: string }>();
@@ -22,18 +27,22 @@ const CompletionPhotoRoute = () => {
   const handlePickPhoto = async () => {
     const camera = await ImagePicker.requestCameraPermissionsAsync();
     const result = camera.granted
-      ? await ImagePicker.launchCameraAsync({
-          mediaTypes: ["images"],
-          quality: 0.8,
-        })
-      : await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ["images"],
-          quality: 0.8,
-        });
-    if (!result.canceled) {
-      setUri(result.assets[0].uri);
-      setMimeType(result.assets[0].mimeType ?? "image/jpeg");
+      ? await ImagePicker.launchCameraAsync(COMPLETION_IMAGE_PICKER_OPTIONS)
+      : await ImagePicker.launchImageLibraryAsync(
+          COMPLETION_IMAGE_PICKER_OPTIONS
+        );
+    if (result.canceled) {
+      return;
+    }
+    try {
+      const photo = readCompletionPhotoAsset(result.assets[0]);
+      setUri(photo.uri);
+      setMimeType(photo.mimeType);
       setError(null);
+    } catch (caught) {
+      setUri(null);
+      setMimeType(null);
+      setError(getConvexErrorMessage(caught, "Choose a photo, not a video"));
     }
   };
 

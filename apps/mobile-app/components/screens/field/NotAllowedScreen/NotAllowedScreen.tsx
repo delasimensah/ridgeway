@@ -1,5 +1,6 @@
 import React from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { useAppInsets } from "@/hooks";
 
 import Button from "../../../ui/Button/Button";
 import { VStack } from "../../../ui/Stack/Stack";
@@ -14,7 +15,7 @@ const NotAllowedScreen: React.FC<NotAllowedScreenProps> = ({
   isSigningOut,
   onSignOut,
 }) => {
-  const insets = useSafeAreaInsets();
+  const insets = useAppInsets();
 
   return (
     <VStack

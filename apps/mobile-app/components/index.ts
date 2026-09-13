@@ -3,6 +3,7 @@ export { default as ScrollableStack } from "./ui/ScrollableStack/ScrollableStack
 export { default as SkeletonCard } from "./ui/SkeletonCard/SkeletonCard";
 export { default as Text } from "./ui/Text/Text";
 export { default as TextField } from "./ui/TextField/TextField";
+export { default as KeyboardFormView } from "./ui/KeyboardFormView/KeyboardFormView";
 export { default as FlashListContainer } from "./ui/FlashListContainer/FlashListContainer";
 export { default as Separator } from "./ui/Separator/Separator";
 

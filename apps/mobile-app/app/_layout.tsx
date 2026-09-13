@@ -22,7 +22,7 @@ import {
   SuccessToast,
 } from "@/components";
 import { FONT_LOADING_MAP } from "@/constants";
-import { useFieldSession } from "@/hooks";
+import { useApplyAvailableUpdate, useFieldSession } from "@/hooks";
 import { defaultStackScreenOptions, screenPresets } from "@/utils";
 
 cssInterop(Image, { className: "style" });
@@ -40,14 +40,15 @@ SplashScreen.preventAutoHideAsync();
 const RootNavigator = () => {
   const { isSessionLoading, isAuthenticated, isViewerReady, isField } =
     useFieldSession();
+  const isCheckingUpdate = useApplyAvailableUpdate();
 
   useEffect(() => {
-    if (!isSessionLoading) {
+    if (!isSessionLoading && !isCheckingUpdate) {
       void SplashScreen.hideAsync();
     }
-  }, [isSessionLoading]);
+  }, [isSessionLoading, isCheckingUpdate]);
 
-  if (isSessionLoading) {
+  if (isSessionLoading || isCheckingUpdate) {
     return null;
   }
 

@@ -1,10 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { WorkOrderStatus } from "shared";
 
 import { COLORS } from "@/constants";
+import { useAppInsets } from "@/hooks";
 
 import JobStatusOption from "../../../jobs/JobStatusOption/JobStatusOption";
 import Button from "../../../ui/Button/Button";
@@ -31,7 +31,7 @@ const UpdateStatusScreen: React.FC<UpdateStatusScreenProps> = ({
   onSave,
   onClose,
 }) => {
-  const insets = useSafeAreaInsets();
+  const insets = useAppInsets();
 
   return (
     <VStack spacing="none" className="flex-1 bg-white">

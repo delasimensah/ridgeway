@@ -45,6 +45,7 @@
     "expo": "~57.0.19",
     "expo-constants": "~57.0.17",
     "expo-dev-client": "~57.0.18",
+    "expo-file-system": "~57.0.6",
     "expo-font": "~57.0.3",
     "expo-image": "~57.0.4",
     "expo-image-picker": "~57.0.17",
@@ -114,7 +115,7 @@
       "^@gorhom/bottom-sheet$": "<rootDir>/../../node_modules/@gorhom/bottom-sheet/mock"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?|jest-expo|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|native-base|react-native-svg|@shopify/flash-list|react-native-worklets|convex|@convex-dev/auth|expo-image-picker))"
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?|jest-expo|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|native-base|react-native-svg|@shopify/flash-list|react-native-worklets|convex|@convex-dev/auth|expo-image-picker|is-network-error))"
     ],
     "collectCoverage": true,
     "coverageReporters": [
