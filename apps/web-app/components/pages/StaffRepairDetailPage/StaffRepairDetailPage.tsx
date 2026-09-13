@@ -11,7 +11,11 @@ import {
   repairEventTitle,
 } from "@/utils";
 
+import AssignRepairForm, {
+  type FieldWorkerOption,
+} from "../../repairs/AssignRepairForm/AssignRepairForm";
 import RepairStatusBadge from "../../repairs/RepairStatusBadge/RepairStatusBadge";
+import ScheduleRepairForm from "../../repairs/ScheduleRepairForm/ScheduleRepairForm";
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
@@ -23,6 +27,7 @@ interface TimelineEvent {
 }
 
 interface StaffRepairDetailPageProps {
+  workOrderId: string;
   title: string;
   description: string;
   status: WorkOrderStatus;
@@ -31,12 +36,19 @@ interface StaffRepairDetailPageProps {
   buildingName: string;
   buildingId: string;
   tenantName: string;
+  assigneeName: string | null;
+  scheduledFor: string | null;
   reportedAt: number;
+  canAssign: boolean;
+  canSchedule: boolean;
+  fieldWorkers: FieldWorkerOption[];
   photoUrls: string[];
+  completionPhotoUrls: string[];
   events: TimelineEvent[];
 }
 
 const StaffRepairDetailPage: React.FC<StaffRepairDetailPageProps> = ({
+  workOrderId,
   title,
   description,
   status,
@@ -45,8 +57,14 @@ const StaffRepairDetailPage: React.FC<StaffRepairDetailPageProps> = ({
   buildingName,
   buildingId,
   tenantName,
+  assigneeName,
+  scheduledFor,
   reportedAt,
+  canAssign,
+  canSchedule,
+  fieldWorkers,
   photoUrls,
+  completionPhotoUrls,
   events,
 }) => {
   return (
@@ -65,7 +83,7 @@ const StaffRepairDetailPage: React.FC<StaffRepairDetailPageProps> = ({
         </Text>
         <Text className="text-sm text-grey">{title}</Text>
       </Box>
-      <Box className="mb-10 flex items-start justify-between gap-4">
+      <Box className="mb-6 flex items-start justify-between gap-4">
         <Heading
           variant="page"
           className="mb-0 text-[24px] font-bold text-darkGrey sm:text-[32px]"
@@ -74,6 +92,19 @@ const StaffRepairDetailPage: React.FC<StaffRepairDetailPageProps> = ({
         </Heading>
         <RepairStatusBadge status={status} />
       </Box>
+      {canAssign || canSchedule ? (
+        <Box className="mb-10">
+          {canAssign ? (
+            <AssignRepairForm
+              workOrderId={workOrderId as never}
+              fieldWorkers={fieldWorkers}
+            />
+          ) : null}
+          {canSchedule ? (
+            <ScheduleRepairForm workOrderId={workOrderId as never} />
+          ) : null}
+        </Box>
+      ) : null}
       <Box className="mb-12 rounded-[8px] border border-border bg-white p-6 shadow-sm sm:p-8">
         <Box className="grid gap-8 sm:grid-cols-2">
           <Box>
@@ -96,6 +127,22 @@ const StaffRepairDetailPage: React.FC<StaffRepairDetailPageProps> = ({
               Reported {formatRepairDate(reportedAt)}
             </Text>
           </Box>
+          {assigneeName !== null ? (
+            <Box>
+              <Text className="mb-2 text-[13px] font-bold uppercase tracking-wider text-grey">
+                Assigned to
+              </Text>
+              <Text className="text-base font-semibold">{assigneeName}</Text>
+            </Box>
+          ) : null}
+          {scheduledFor !== null ? (
+            <Box>
+              <Text className="mb-2 text-[13px] font-bold uppercase tracking-wider text-grey">
+                Scheduled
+              </Text>
+              <Text className="text-base font-semibold">{scheduledFor}</Text>
+            </Box>
+          ) : null}
         </Box>
         <Box className="mt-6 border-t border-border pt-6">
           <Text className="mb-2 text-[13px] font-bold uppercase tracking-wider text-grey">
@@ -115,6 +162,24 @@ const StaffRepairDetailPage: React.FC<StaffRepairDetailPageProps> = ({
                   component="img"
                   src={url}
                   alt="Repair photo"
+                  className="h-24 w-24 rounded border border-border object-cover"
+                />
+              ))}
+            </Box>
+          </Box>
+        ) : null}
+        {completionPhotoUrls.length > 0 ? (
+          <Box className="mt-6">
+            <Text className="mb-2 text-[13px] font-bold uppercase tracking-wider text-grey">
+              Completion photo
+            </Text>
+            <Box className="flex flex-wrap gap-3">
+              {completionPhotoUrls.map((url) => (
+                <Box
+                  key={url}
+                  component="img"
+                  src={url}
+                  alt="Completion photo"
                   className="h-24 w-24 rounded border border-border object-cover"
                 />
               ))}

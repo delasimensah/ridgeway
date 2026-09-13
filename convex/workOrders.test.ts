@@ -269,4 +269,122 @@ describe("workOrders", () => {
     expect(otherList).toEqual([]);
     expect(otherUnitId).toEqual(expect.any(String));
   });
+
+  it("lets staff assign, the field worker schedule and complete, and keeps history", async () => {
+    const t = makeBackend();
+    const { staff, tenantUserId, unitId } = await seedCurrentTenant(t);
+    const field = await insertPerson(t, {
+      email: "yaw.darko@ridgeway.gh",
+      displayName: "Yaw Darko",
+      role: "field",
+    });
+    const workOrderId = await asUser(t, tenantUserId).mutation(
+      api.workOrders.createByTenant,
+      {
+        unitId,
+        description: "Kitchen tap leak",
+        category: "plumbing",
+        urgency: "normal",
+      }
+    );
+
+    await asUser(t, staff.userId).mutation(api.workOrders.assign, {
+      workOrderId,
+      assigneeProfileId: field.profileId,
+    });
+
+    const assignedTicket = await asUser(t, field.userId).query(
+      api.workOrders.get,
+      { workOrderId }
+    );
+    expect(assignedTicket?.status).toBe("assigned");
+    expect(assignedTicket?.canSchedule).toBe(true);
+    expect(assignedTicket?.canComplete).toBe(false);
+    expect(assignedTicket?.allowedNextStatuses).toEqual(["scheduled"]);
+
+    const fieldList = await asUser(t, field.userId).query(
+      api.workOrders.listForCurrentField,
+      {}
+    );
+    expect(fieldList).toEqual([
+      expect.objectContaining({
+        _id: workOrderId,
+        status: "assigned",
+        unitLabel: "B12",
+        buildingName: "Ridge Court",
+        address: "14 Ridge Road, Cantonments, Accra",
+      }),
+    ]);
+
+    await asUser(t, field.userId).mutation(api.workOrders.schedule, {
+      workOrderId,
+    });
+    const storageId = await t.run(async (ctx) => {
+      return await ctx.storage.store(new Blob(["done-photo"]));
+    });
+    await asUser(t, field.userId).mutation(api.files.attachToWorkOrder, {
+      workOrderId,
+      storageId,
+      kind: "completion",
+    });
+    await asUser(t, field.userId).mutation(api.workOrders.complete, {
+      workOrderId,
+      note: "Tap washer replaced",
+    });
+
+    const forTenant = await asUser(t, tenantUserId).query(api.workOrders.get, {
+      workOrderId,
+    });
+    const forStaff = await asUser(t, staff.userId).query(api.workOrders.get, {
+      workOrderId,
+    });
+    expect(forTenant?.status).toBe("done");
+    expect(forStaff?.status).toBe("done");
+    expect(forStaff?.assigneeName).toBe("Yaw Darko");
+    expect(forStaff?.completionPhotoUrls.length).toBe(1);
+    expect(forTenant?.events.map((event) => event.toStatus)).toEqual([
+      "done",
+      "scheduled",
+      "assigned",
+      "received",
+    ]);
+
+    const doneList = await asUser(t, staff.userId).query(
+      api.workOrders.listForStaff,
+      { includeDone: true }
+    );
+    expect(doneList.map((row) => row._id)).toEqual([workOrderId]);
+  });
+
+  it("refuses jumping to done before the ticket is scheduled", async () => {
+    const t = makeBackend();
+    const { staff, tenantUserId, unitId } = await seedCurrentTenant(t);
+    const field = await insertPerson(t, {
+      email: "yaw.darko@ridgeway.gh",
+      displayName: "Yaw Darko",
+      role: "field",
+    });
+    const workOrderId = await asUser(t, tenantUserId).mutation(
+      api.workOrders.createByTenant,
+      {
+        unitId,
+        description: "Kitchen tap leak",
+        category: "plumbing",
+        urgency: "normal",
+      }
+    );
+    await asUser(t, staff.userId).mutation(api.workOrders.assign, {
+      workOrderId,
+      assigneeProfileId: field.profileId,
+    });
+
+    try {
+      await asUser(t, field.userId).mutation(api.workOrders.complete, {
+        workOrderId,
+      });
+      throw new Error("expected complete to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("INVALID");
+    }
+  });
 });

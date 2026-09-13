@@ -69,6 +69,11 @@ module.exports = {
         darkGrey: COLORS.darkGrey,
         border: COLORS.border,
         shimmerLight: COLORS.shimmerLight,
+        primary: COLORS.primary,
+        primaryHover: COLORS.primaryHover,
+        accent: COLORS.accent,
+        sidebar: COLORS.sidebar,
+        overdue: COLORS.overdue,
       },
       fontFamily: {
         "app-light": [FONTS.light],

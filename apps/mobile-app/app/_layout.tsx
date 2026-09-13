@@ -15,13 +15,14 @@ import Toast from "react-native-toast-message";
 
 import {
   ActiveToast,
+  AppProviders,
   BottomSheetsManager,
   ErrorToast,
-  LoadingScreen,
   NeutralToast,
   SuccessToast,
 } from "@/components";
 import { FONT_LOADING_MAP } from "@/constants";
+import { useFieldSession } from "@/hooks";
 import { defaultStackScreenOptions, screenPresets } from "@/utils";
 
 cssInterop(Image, { className: "style" });
@@ -30,7 +31,49 @@ cssInterop(LinearGradient, { className: "style" });
 
 export { ErrorBoundary } from "expo-router";
 
+export const unstable_settings = {
+  initialRouteName: "(auth)",
+};
+
 SplashScreen.preventAutoHideAsync();
+
+const RootNavigator = () => {
+  const { isSessionLoading, isAuthenticated, isViewerReady, isField } =
+    useFieldSession();
+
+  useEffect(() => {
+    if (!isSessionLoading) {
+      void SplashScreen.hideAsync();
+    }
+  }, [isSessionLoading]);
+
+  if (isSessionLoading) {
+    return null;
+  }
+
+  const canEnterApp = isAuthenticated && (isField || !isViewerReady);
+
+  return (
+    <Stack
+      screenOptions={{
+        ...defaultStackScreenOptions,
+        ...screenPresets.noHeader,
+        animation: "none",
+      }}
+    >
+      <Stack.Screen name="index" />
+      <Stack.Protected guard={canEnterApp}>
+        <Stack.Screen name="(main-app)" />
+      </Stack.Protected>
+      <Stack.Protected guard={isAuthenticated && isViewerReady && !isField}>
+        <Stack.Screen name="not-allowed" />
+      </Stack.Protected>
+      <Stack.Protected guard={!isAuthenticated}>
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
+    </Stack>
+  );
+};
 
 const RootLayout = () => {
   const [loaded, error] = useFonts({
@@ -41,40 +84,27 @@ const RootLayout = () => {
     if (error) throw error;
   }, [error]);
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
   if (!loaded) {
-    return <LoadingScreen />;
+    return null;
   }
 
   return (
     <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
-        <BottomSheetModalProvider>
-          <Stack
-            screenOptions={{
-              ...defaultStackScreenOptions,
-              ...screenPresets.noHeader,
-            }}
-          >
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(main-app)" />
-          </Stack>
-          <BottomSheetsManager />
-          <Toast
-            config={{
-              active: (props) => <ActiveToast {...props} />,
-              neutral: (props) => <NeutralToast {...props} />,
-              success: (props) => <SuccessToast {...props} />,
-              error: (props) => <ErrorToast {...props} />,
-            }}
-          />
-        </BottomSheetModalProvider>
+        <AppProviders>
+          <BottomSheetModalProvider>
+            <RootNavigator />
+            <BottomSheetsManager />
+            <Toast
+              config={{
+                active: (props) => <ActiveToast {...props} />,
+                neutral: (props) => <NeutralToast {...props} />,
+                success: (props) => <SuccessToast {...props} />,
+                error: (props) => <ErrorToast {...props} />,
+              }}
+            />
+          </BottomSheetModalProvider>
+        </AppProviders>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

@@ -1,16 +1,32 @@
 import { v } from "convex/values";
 
 import type { Doc, Id } from "./_generated/dataModel";
-import type { QueryCtx } from "./_generated/server";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { ERROR_CODES, raise } from "./lib/errors";
-import { authedMutation, authedQuery, staffQuery } from "./lib/functions";
+import {
+  authedMutation,
+  authedQuery,
+  staffMutation,
+  staffQuery,
+} from "./lib/functions";
 import {
   currentLeaseForProfile,
+  isCalendarDate,
   requireBuildingAccess,
   requireWorkOrderAccess,
   utcToday,
   type Viewer,
 } from "./lib/viewer";
+
+type WorkOrderStatus = "received" | "assigned" | "scheduled" | "done";
+
+const ALLOWED_TRANSITIONS: Record<WorkOrderStatus, readonly WorkOrderStatus[]> =
+  {
+    received: ["assigned"],
+    assigned: ["scheduled"],
+    scheduled: ["done"],
+    done: [],
+  };
 
 const workOrderStatus = v.union(
   v.literal("received"),
@@ -37,6 +53,7 @@ const workOrderListItem = v.object({
   status: workOrderStatus,
   unitLabel: v.string(),
   buildingName: v.string(),
+  address: v.string(),
   reportedAt: v.number(),
 });
 
@@ -84,8 +101,50 @@ async function toListItem(
     status: ticket.status,
     unitLabel: unit?.label ?? "",
     buildingName: building?.name ?? "",
+    address: building?.address ?? "",
     reportedAt: ticket._creationTime,
   };
+}
+
+function assertAllowedMove(from: WorkOrderStatus, to: WorkOrderStatus) {
+  if (!ALLOWED_TRANSITIONS[from].includes(to)) {
+    raise(ERROR_CODES.INVALID, "That status change is not allowed");
+  }
+}
+
+function canMoveTicket(viewer: Viewer, ticket: Doc<"workOrders">): boolean {
+  if (viewer.isStaff && viewer.organizationId === ticket.organizationId) {
+    return true;
+  }
+  return ticket.assigneeProfileId === viewer.profile._id;
+}
+
+async function applyMove(
+  ctx: { db: MutationCtx["db"] },
+  viewer: Viewer,
+  ticket: Doc<"workOrders">,
+  toStatus: WorkOrderStatus,
+  patch: {
+    assigneeProfileId?: Id<"profiles">;
+    scheduledFor?: string;
+  },
+  note?: string
+) {
+  assertAllowedMove(ticket.status, toStatus);
+  const trimmedNote = note?.trim();
+  await ctx.db.patch(ticket._id, {
+    status: toStatus,
+    ...patch,
+  });
+  await ctx.db.insert("workOrderEvents", {
+    workOrderId: ticket._id,
+    actorProfileId: viewer.profile._id,
+    fromStatus: ticket.status,
+    toStatus,
+    ...(trimmedNote !== undefined && trimmedNote.length > 0
+      ? { note: trimmedNote }
+      : {}),
+  });
 }
 
 export const listForStaff = staffQuery({
@@ -173,11 +232,19 @@ export const get = authedQuery({
       urgency: workOrderUrgency,
       unitLabel: v.string(),
       buildingName: v.string(),
+      address: v.string(),
       buildingId: v.id("buildings"),
       tenantName: v.string(),
+      assigneeName: v.union(v.string(), v.null()),
+      scheduledFor: v.union(v.string(), v.null()),
       reportedAt: v.number(),
       canEditDescription: v.boolean(),
+      canAssign: v.boolean(),
+      canSchedule: v.boolean(),
+      canComplete: v.boolean(),
+      allowedNextStatuses: v.array(workOrderStatus),
       photoUrls: v.array(v.string()),
+      completionPhotoUrls: v.array(v.string()),
       events: v.array(
         v.object({
           _id: v.id("workOrderEvents"),
@@ -208,15 +275,23 @@ export const get = authedQuery({
       .withIndex("by_workOrderId", (q) => q.eq("workOrderId", ticket._id))
       .collect();
     const photoUrls: string[] = [];
+    const completionPhotoUrls: string[] = [];
     for (const file of photos) {
-      if (file.kind !== "repair") {
+      const url = await ctx.storage.getUrl(file.storageId);
+      if (url === null) {
         continue;
       }
-      const url = await ctx.storage.getUrl(file.storageId);
-      if (url !== null) {
+      if (file.kind === "repair") {
         photoUrls.push(url);
+      } else {
+        completionPhotoUrls.push(url);
       }
     }
+    const assignee =
+      ticket.assigneeProfileId === undefined
+        ? null
+        : await ctx.db.get(ticket.assigneeProfileId);
+    const canMove = canMoveTicket(ctx.viewer, ticket);
 
     const eventRows = await Promise.all(
       events.map(async (event) => {
@@ -240,13 +315,23 @@ export const get = authedQuery({
       urgency: ticket.urgency,
       unitLabel: unit?.label ?? "",
       buildingName: building?.name ?? "",
+      address: building?.address ?? "",
       buildingId: ticket.buildingId,
       tenantName: tenant?.displayName ?? "",
+      assigneeName: assignee?.displayName ?? null,
+      scheduledFor: ticket.scheduledFor ?? null,
       reportedAt: ticket._creationTime,
       canEditDescription:
         ticket.status === "received" &&
         ticket.createdByProfileId === ctx.viewer.profile._id,
+      canAssign: ctx.viewer.isStaff && ticket.status === "received",
+      canSchedule: canMove && ticket.status === "assigned",
+      canComplete: canMove && ticket.status === "scheduled",
+      allowedNextStatuses: canMove
+        ? [...ALLOWED_TRANSITIONS[ticket.status]]
+        : [],
       photoUrls,
+      completionPhotoUrls,
       events: eventRows,
     };
   },
@@ -317,6 +402,111 @@ export const updateDescription = authedMutation({
       description,
       title: titleFromDescription(description),
     });
+    return null;
+  },
+});
+
+export const listForCurrentField = authedQuery({
+  args: {},
+  returns: v.array(workOrderListItem),
+  handler: async (ctx) => {
+    if (!ctx.viewer.isField) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const rows = await ctx.db
+      .query("workOrders")
+      .withIndex("by_assigneeProfileId_and_status", (q) =>
+        q.eq("assigneeProfileId", ctx.viewer.profile._id)
+      )
+      .collect();
+    const open = rows.filter((row) => row.status !== "done");
+    open.sort((a, b) => b._creationTime - a._creationTime);
+    return await Promise.all(open.map((row) => toListItem(ctx, row)));
+  },
+});
+
+export const assign = staffMutation({
+  args: {
+    workOrderId: v.id("workOrders"),
+    assigneeProfileId: v.id("profiles"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const ticket = await requireWorkOrderAccess(
+      ctx,
+      ctx.viewer,
+      args.workOrderId,
+      "write"
+    );
+    const memberships = await ctx.db
+      .query("memberships")
+      .withIndex("by_profileId", (q) =>
+        q.eq("profileId", args.assigneeProfileId)
+      )
+      .collect();
+    const fieldMembership = memberships.find(
+      (row) =>
+        row.role === "field" && row.organizationId === ticket.organizationId
+    );
+    if (fieldMembership === undefined) {
+      raise(ERROR_CODES.INVALID, "Pick a field worker in this organization");
+    }
+
+    await applyMove(ctx, ctx.viewer, ticket, "assigned", {
+      assigneeProfileId: args.assigneeProfileId,
+    });
+    return null;
+  },
+});
+
+export const schedule = authedMutation({
+  args: {
+    workOrderId: v.id("workOrders"),
+    scheduledFor: v.optional(v.string()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const ticket = await requireWorkOrderAccess(
+      ctx,
+      ctx.viewer,
+      args.workOrderId,
+      "write"
+    );
+    if (!canMoveTicket(ctx.viewer, ticket)) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+    const scheduledFor =
+      args.scheduledFor !== undefined && args.scheduledFor.trim().length > 0
+        ? args.scheduledFor.trim()
+        : utcToday();
+    if (!isCalendarDate(scheduledFor)) {
+      raise(ERROR_CODES.INVALID, "Enter a valid date");
+    }
+
+    await applyMove(ctx, ctx.viewer, ticket, "scheduled", { scheduledFor });
+    return null;
+  },
+});
+
+export const complete = authedMutation({
+  args: {
+    workOrderId: v.id("workOrders"),
+    note: v.optional(v.string()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const ticket = await requireWorkOrderAccess(
+      ctx,
+      ctx.viewer,
+      args.workOrderId,
+      "write"
+    );
+    if (!canMoveTicket(ctx.viewer, ticket)) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    await applyMove(ctx, ctx.viewer, ticket, "done", {}, args.note);
     return null;
   },
 });

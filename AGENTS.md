@@ -1,6 +1,6 @@
 # Agent instructions for Ridgeway
 
-This is a **Turborepo** with a **Next.js** web app, an **Expo** mobile app, a **shared** package, and a **Convex** backend. Convex Auth and Convex queries are wired on the website. Do not import Convex in the mobile app until a ticket needs it.
+This is a **Turborepo** with a **Next.js** web app, an **Expo** mobile app, a **shared** package, and a **Convex** backend. Convex Auth and Convex queries are wired on the website and the field phone app.
 
 ## Where we left off
 

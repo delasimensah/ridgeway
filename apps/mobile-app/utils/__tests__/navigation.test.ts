@@ -6,12 +6,12 @@ describe("navigation utilities", () => {
   describe("defaultStackScreenOptions", () => {
     it("should have correct header style", () => {
       expect(defaultStackScreenOptions.headerStyle).toEqual({
-        backgroundColor: COLORS.black,
+        backgroundColor: COLORS.white,
       });
     });
 
     it("should have white header tint color", () => {
-      expect(defaultStackScreenOptions.headerTintColor).toBe("white");
+      expect(defaultStackScreenOptions.headerTintColor).toBe(COLORS.darkGrey);
     });
 
     it("should have correct header title style", () => {
@@ -22,7 +22,7 @@ describe("navigation utilities", () => {
 
     it("should have correct content background color", () => {
       expect(defaultStackScreenOptions.contentStyle).toEqual({
-        backgroundColor: COLORS.black,
+        backgroundColor: COLORS.white,
       });
     });
 
@@ -120,9 +120,9 @@ describe("navigation utilities", () => {
       };
 
       expect(customOptions.headerTitle).toBe("Custom Title");
-      expect(customOptions.headerTintColor).toBe("white");
+      expect(customOptions.headerTintColor).toBe(COLORS.darkGrey);
       expect(customOptions.headerStyle).toEqual({
-        backgroundColor: COLORS.black,
+        backgroundColor: COLORS.white,
       });
     });
 
@@ -143,7 +143,7 @@ describe("navigation utilities", () => {
       };
 
       expect(combinedOptions.presentation).toBe("modal");
-      expect(combinedOptions.headerTintColor).toBe("white");
+      expect(combinedOptions.headerTintColor).toBe(COLORS.darkGrey);
     });
   });
 
@@ -155,18 +155,18 @@ describe("navigation utilities", () => {
       };
 
       expect(modalOptions.presentation).toBe("modal");
-      expect(modalOptions.headerTintColor).toBe("white");
+      expect(modalOptions.headerTintColor).toBe(COLORS.darkGrey);
     });
 
     it("should preserve colors from constants", () => {
       expect(
         (defaultStackScreenOptions.contentStyle as { backgroundColor: string })
           ?.backgroundColor
-      ).toBe(COLORS.black);
+      ).toBe(COLORS.white);
       expect(
         (defaultStackScreenOptions.headerStyle as { backgroundColor: string })
           ?.backgroundColor
-      ).toBe(COLORS.black);
+      ).toBe(COLORS.white);
     });
   });
 });

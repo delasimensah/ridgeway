@@ -1,19 +1,19 @@
-import { StatusBar } from "expo-status-bar";
+import { type Href, Redirect } from "expo-router";
 
-import { Text, VStack } from "@/components";
+import { useFieldSession } from "@/hooks";
 
-const HomeScreen = () => {
-  return (
-    <VStack align="center" justify="center" className="flex-1 bg-black p-5">
-      <StatusBar style="light" />
-      <Text className="font-font-bold mb-4 text-center text-2xl text-white">
-        Ridgeway
-      </Text>
-      <Text className="text-center text-base text-grey">
-        Field jobs and tenant repairs. Sign in to see your work.
-      </Text>
-    </VStack>
-  );
+const IndexRoute = () => {
+  const { isAuthenticated, isViewerReady, isField } = useFieldSession();
+
+  if (!isAuthenticated) {
+    return <Redirect href={"/(auth)/sign-in" as Href} />;
+  }
+
+  if (isViewerReady && !isField) {
+    return <Redirect href={"/not-allowed" as Href} />;
+  }
+
+  return <Redirect href={"/(main-app)/(tabs)/jobs" as Href} />;
 };
 
-export default HomeScreen;
+export default IndexRoute;

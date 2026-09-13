@@ -68,6 +68,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-font",
     "expo-image",
     [
+      "expo-image-picker",
+      {
+        photosPermission:
+          "Ridgeway uses your photos so you can attach a completion picture to a job.",
+        cameraPermission:
+          "Ridgeway uses the camera so you can take a completion picture of a job.",
+        microphonePermission: false,
+      },
+    ],
+    [
       "expo-splash-screen",
       {
         ios: {

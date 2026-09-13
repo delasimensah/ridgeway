@@ -6,14 +6,14 @@ import { COLORS } from "@/constants";
  */
 export const defaultStackScreenOptions = {
   headerStyle: {
-    backgroundColor: COLORS.black,
+    backgroundColor: COLORS.white,
   },
-  headerTintColor: "white",
+  headerTintColor: COLORS.darkGrey,
   headerTitleStyle: {
     fontFamily: "Template-Regular",
   },
   contentStyle: {
-    backgroundColor: COLORS.black,
+    backgroundColor: COLORS.white,
   },
 };
 

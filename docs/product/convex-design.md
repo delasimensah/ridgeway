@@ -307,13 +307,13 @@ Where a function is described as staff-only, that means it is declared with `sta
 - `workOrders.listForBuilding` is a query, guarded by `requireBuildingAccess`, returning tickets for that building newest first. It defaults to everything that is not done and offers done as an explicit filter (`includeDone`).
 - `workOrders.listForStaff` is a staff-only query returning tickets in the caller's organization, newest first, with the same not-done default.
 - `workOrders.listForCurrentTenant` is a query returning the open tickets filed under the caller's current lease.
-- `workOrders.listForCurrentField` is a paginated query returning the tickets assigned to the caller.
-- `workOrders.get` is a query, guarded by `requireWorkOrderAccess` for reading, that returns the ticket, its history rows, and permission-checked URLs for its photos.
+- `workOrders.listForCurrentField` is a field-only query returning the open tickets assigned to the caller, newest first. It is a list, not a paginated query, because a caretaker's open jobs are a small set.
+- `workOrders.get` is a query, guarded by `requireWorkOrderAccess` for reading, that returns the ticket, its history rows, permission-checked URLs for repair and completion photos, and which moves the caller may make (`canAssign`, `canSchedule`, `canComplete`, `allowedNextStatuses`).
 - `workOrders.createByTenant` is a mutation available to a tenant with a current lease on the unit. It refuses when the lease that would cover the ticket is not current, which is the second half of the ended-lease requirement. It creates the ticket at `"received"`, copies the organization and building from the unit's building at that moment, and writes the first history row in the same transaction.
 - `workOrders.updateDescription` is a mutation available to the tenant who created the ticket, and only while status is still `"received"`.
 - `workOrders.createByStaff` is the staff equivalent, for a repair that comes in by phone.
-- `workOrders.assign` is a staff-only mutation that sets the assignee and moves the ticket to `"assigned"`.
-- `workOrders.schedule` is a staff-only mutation that sets `scheduledFor` and moves the ticket to `"scheduled"`.
+- `workOrders.assign` is a staff-only mutation that sets the assignee and moves the ticket to `"assigned"`. The assignee must have a field membership in that ticket's organization.
+- `workOrders.schedule` is a mutation available to staff or the assigned caretaker. It sets `scheduledFor` (or today when the date is omitted) and moves the ticket to `"scheduled"`.
 - `workOrders.complete` is a mutation available to the assigned caretaker or to staff, and it moves the ticket to `"done"`.
 - `workOrders.updateClassification` is a staff-only mutation for correcting the category and urgency, including correcting whatever the optional language-model suggestion proposed.
 
@@ -335,7 +335,7 @@ No rent function is callable by a field worker, and there is a test for that rat
 ### Files
 
 - `files.createUploadUrl` is a mutation that returns a short-lived upload address from `ctx.storage.generateUploadUrl()`. It first checks that the caller may attach a photo to the ticket they name, so an upload address is never handed to someone who could not use it legitimately.
-- `files.attachToWorkOrder` is a mutation, called after the upload finishes, that records the stored file against the ticket. It repeats the permission check rather than trusting that the earlier call made it, because the two calls are separate requests.
+- `files.attachToWorkOrder` is a mutation, called after the upload finishes, that records the stored file against the ticket. It repeats the permission check rather than trusting that the earlier call made it, because the two calls are separate requests. A `"repair"` photo is allowed while the ticket is `"received"`. A `"completion"` photo is allowed for staff or the assignee when the ticket is `"scheduled"` or `"done"`.
 
 Photo URLs are produced with `ctx.storage.getUrl(storageId)` and only ever inside a query that has already checked access to the ticket. The system design records the limitation that such a URL can be fetched by anyone holding it.
 

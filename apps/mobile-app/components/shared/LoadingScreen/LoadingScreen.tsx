@@ -16,8 +16,8 @@ import Text from "../../ui/Text/Text";
  */
 const LoadingScreen: React.FC = () => {
   return (
-    <VStack align="center" justify="center" className="flex-1 bg-black">
-      <Text className="text-lg text-white">Loading...</Text>
+    <VStack align="center" justify="center" className="flex-1 bg-white">
+      <Text className="text-lg text-darkGrey">Loading...</Text>
     </VStack>
   );
 };

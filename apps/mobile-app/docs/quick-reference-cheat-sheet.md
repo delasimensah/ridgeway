@@ -110,29 +110,18 @@ export { default as Text } from "./ui/Text/Text";
 ### **Common Navigation Patterns**
 
 ```tsx
-// ✅ Same route group - use short path
-router.push("/forgot-password"); // (auth) to (auth)
-router.push("/tab2"); // (main-app) to (main-app)
-
-// ✅ Different route groups - use full path
-router.push("/(main-app)/(tabs)/tab1"); // (auth) to (main-app)
-router.push("/(auth)/sign-in"); // (main-app) to (auth)
-
-// ✅ Common routes (replace tab names with your actual tabs)
-router.push("/(main-app)/(tabs)/tab1"); // Main tab
-router.push("/(main-app)/(tabs)/tab2"); // Second tab
-router.push("/(main-app)/(tabs)/tab3"); // Third tab
+router.push("/(main-app)/(tabs)/jobs");
+router.push("/(main-app)/(tabs)/account");
+router.push(`/(main-app)/job/${workOrderId}`);
+router.replace("/(auth)/sign-in");
 ```
 
 ### **Route Group Rules**
 
-- (auth) → (auth): `/screen` (e.g. `/forgot-password`)
-- (auth) → (main-app): `/(main-app)/...` (e.g. `/(main-app)/(tabs)/tab1`)
-- (onboarding) → (main-app): `/(main-app)/...` (e.g. `/(main-app)/(tabs)/tab1`)
-- (main-app) → (main-app): `/screen` (e.g. `/tab2`, `/tab3`)
-- (main-app) → (auth): `/(auth)/...` (e.g. `/(auth)/sign-in`)
-
-**Note:** Replace `tab1`, `tab2`, `tab3` with your actual tab names.
+- (auth) → sign-in: `/sign-in`
+- (auth) → jobs: `/(main-app)/(tabs)/jobs`
+- (main-app) → job: `/(main-app)/job/${workOrderId}`
+- (main-app) → (auth): `/(auth)/sign-in`
 
 ---
 
@@ -256,7 +245,7 @@ yarn build:production      # Production build (both platforms)
    - Verify component is exported from index.ts
 
 2. **Navigation Error: "Cannot resolve screen"**
-   - Use full path for different route groups: `/(main-app)/(tabs)/tab1`
+   - Use full path for different route groups: `/(main-app)/(tabs)/jobs`
    - Use short path for same route group: `/tab2`
 
 3. **Image Not Loading**

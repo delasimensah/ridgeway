@@ -207,6 +207,10 @@ export async function requireWorkOrderAccess(
     viewer.profile._id,
     utcToday()
   );
+  if (viewer.isField && ticket.assigneeProfileId === viewer.profile._id) {
+    return ticket;
+  }
+
   if (lease !== null && ticket.leaseId === lease._id) {
     return ticket;
   }
