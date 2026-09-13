@@ -1,4 +1,5 @@
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { render } from "@/test-utils";
 
@@ -39,7 +40,8 @@ describe("AddTenantPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("fills the form when a saved tenant is opened", () => {
+  it("fills the form when a saved tenant is opened", async () => {
+    const user = userEvent.setup();
     render(
       <AddTenantPage
         buildingId={"building-id" as never}
@@ -72,6 +74,12 @@ describe("AddTenantPage", () => {
       "href",
       "/buildings/building-id"
     );
+    await user.click(screen.getByRole("button", { name: "End lease" }));
+    expect(
+      await screen.findByRole("heading", {
+        name: "Are you sure you want to end this lease?",
+      })
+    ).toBeInTheDocument();
   });
 
   it("stays in Tenants when opened from the tenant list", () => {

@@ -97,6 +97,15 @@ export function utcToday(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+export function previousCalendarDate(isoDate: string): string {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day - 1));
+  const nextYear = String(date.getUTCFullYear());
+  const nextMonth = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const nextDay = String(date.getUTCDate()).padStart(2, "0");
+  return `${nextYear}-${nextMonth}-${nextDay}`;
+}
+
 export function isCalendarDate(value: string): boolean {
   const match = CALENDAR_DATE.exec(value);
   if (match === null) {
@@ -134,6 +143,19 @@ export async function currentLeaseForProfile(
     )
     .collect();
   return rows.find((row) => isLeaseCurrent(row, today)) ?? null;
+}
+
+export function latestEndedLease<T extends { endedOn?: string }>(
+  rows: T[],
+  today: string
+): T | null {
+  const ended = rows.filter((row) => !isLeaseCurrent(row, today));
+  if (ended.length === 0) {
+    return null;
+  }
+  return ended.reduce((latest, row) =>
+    (row.endedOn ?? "") > (latest.endedOn ?? "") ? row : latest
+  );
 }
 
 export async function requireBuildingAccess(

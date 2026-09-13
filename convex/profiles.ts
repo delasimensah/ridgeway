@@ -5,7 +5,7 @@ import type { Id } from "./_generated/dataModel";
 import { mutation } from "./_generated/server";
 import { ERROR_CODES, raise } from "./lib/errors";
 import { authedQuery } from "./lib/functions";
-import { currentLeaseForProfile, utcToday } from "./lib/viewer";
+import { isLeaseCurrent, latestEndedLease, utcToday } from "./lib/viewer";
 
 const currentLeaseValidator = v.object({
   leaseId: v.id("leases"),
@@ -14,6 +14,11 @@ const currentLeaseValidator = v.object({
   unitLabel: v.string(),
   buildingName: v.string(),
   address: v.string(),
+});
+
+const endedLeaseValidator = v.object({
+  unitLabel: v.string(),
+  buildingName: v.string(),
 });
 
 const currentViewerValidator = v.object({
@@ -25,17 +30,21 @@ const currentViewerValidator = v.object({
   isField: v.boolean(),
   ownerId: v.union(v.id("owners"), v.null()),
   currentLease: v.union(currentLeaseValidator, v.null()),
+  endedLease: v.union(endedLeaseValidator, v.null()),
 });
 
 export const getCurrent = authedQuery({
   args: {},
   returns: currentViewerValidator,
   handler: async (ctx) => {
-    const lease = await currentLeaseForProfile(
-      ctx,
-      ctx.viewer.profile._id,
-      utcToday()
-    );
+    const today = utcToday();
+    const rows = await ctx.db
+      .query("leases")
+      .withIndex("by_tenantProfileId", (q) =>
+        q.eq("tenantProfileId", ctx.viewer.profile._id)
+      )
+      .collect();
+    const lease = rows.find((row) => isLeaseCurrent(row, today)) ?? null;
     let currentLease: {
       leaseId: Id<"leases">;
       unitId: Id<"units">;
@@ -44,6 +53,7 @@ export const getCurrent = authedQuery({
       buildingName: string;
       address: string;
     } | null = null;
+    let endedLease: { unitLabel: string; buildingName: string } | null = null;
 
     if (lease !== null) {
       const unit = await ctx.db.get(lease.unitId);
@@ -58,6 +68,19 @@ export const getCurrent = authedQuery({
           address: building.address,
         };
       }
+    } else {
+      const ended = latestEndedLease(rows, today);
+      if (ended !== null) {
+        const unit = await ctx.db.get(ended.unitId);
+        const building =
+          unit === null ? null : await ctx.db.get(unit.buildingId);
+        if (unit !== null && building !== null) {
+          endedLease = {
+            unitLabel: unit.label,
+            buildingName: building.name,
+          };
+        }
+      }
     }
 
     return {
@@ -69,6 +92,7 @@ export const getCurrent = authedQuery({
       isField: ctx.viewer.isField,
       ownerId: ctx.viewer.ownerId,
       currentLease,
+      endedLease,
     };
   },
 });

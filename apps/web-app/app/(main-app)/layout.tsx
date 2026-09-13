@@ -9,6 +9,7 @@ import {
   OwnerAppShell,
   StaffAppShell,
   TenantAppShell,
+  TenantLeaseEndedPage,
 } from "@/components";
 import { StaffSessionProvider, useStaffSession } from "@/hooks";
 
@@ -58,6 +59,17 @@ const MainAppShell = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (session.isTenant) {
+    if (session.currentLease === null) {
+      return (
+        <TenantLeaseEndedPage
+          unitLabel={session.endedLease?.unitLabel ?? ""}
+          buildingName={session.endedLease?.buildingName ?? ""}
+          onSignOut={session.handleSignOut}
+          isSigningOut={session.isSigningOut}
+        />
+      );
+    }
+
     return (
       <TenantAppShell
         displayName={session.displayName}

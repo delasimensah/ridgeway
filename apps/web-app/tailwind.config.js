@@ -61,6 +61,8 @@ module.exports = {
         sidebar: COLORS.sidebar,
         shimmerLight: COLORS.shimmerLight,
         overdue: COLORS.overdue,
+        danger: COLORS.danger,
+        dangerHover: COLORS.dangerHover,
       },
       fontFamily: {
         appFont: ["var(--app-font)", "system-ui", "sans-serif"],

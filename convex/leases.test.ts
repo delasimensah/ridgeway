@@ -525,4 +525,101 @@ describe("leases", () => {
       expect(errorCode(error)).toBe("NOT_PERMITTED");
     }
   });
+
+  it("ends a lease so that tenant loses the unit and keeps their login", async () => {
+    const { t, userId, buildingId, unitId } = await staffWithUnit();
+    const leaseId = await asUser(t, userId).mutation(
+      api.leases.createWithTenant,
+      {
+        unitId,
+        displayName: "Akosua Darko",
+        email: "akosua.darko@ridgeway.gh",
+        startedOn: "2025-01-01",
+      }
+    );
+    const tenantUserId = await t.run(async (ctx) => {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("email", (q) => q.eq("email", "akosua.darko@ridgeway.gh"))
+        .unique();
+      if (user === null) {
+        throw new Error("tenant user missing");
+      }
+      return user._id;
+    });
+
+    const workOrderId = await asUser(t, tenantUserId).mutation(
+      api.workOrders.createByTenant,
+      {
+        unitId,
+        description: "Kitchen tap leak",
+        category: "plumbing",
+        urgency: "normal",
+      }
+    );
+    const building = await asUser(t, tenantUserId).query(api.buildings.get, {
+      buildingId,
+    });
+    expect(building?.name).toBe("Ridge Court");
+
+    try {
+      await asUser(t, tenantUserId).mutation(api.leases.end, { leaseId });
+      throw new Error("expected tenant end to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    await asUser(t, userId).mutation(api.leases.end, { leaseId });
+
+    const viewer = await asUser(t, tenantUserId).query(
+      api.profiles.getCurrent,
+      {}
+    );
+    expect(viewer.currentLease).toBeNull();
+    expect(viewer.endedLease).toEqual({
+      unitLabel: "B12",
+      buildingName: "Ridge Court",
+    });
+
+    const stillThere = await t.run(async (ctx) => {
+      const user = await ctx.db.get(tenantUserId);
+      const lease = await ctx.db.get(leaseId);
+      return { email: user?.email, endedOn: lease?.endedOn };
+    });
+    expect(stillThere.email).toBe("akosua.darko@ridgeway.gh");
+    expect(stillThere.endedOn).toBeDefined();
+
+    try {
+      await asUser(t, tenantUserId).query(api.buildings.get, { buildingId });
+      throw new Error("expected building get to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    try {
+      await asUser(t, tenantUserId).mutation(api.workOrders.createByTenant, {
+        unitId,
+        description: "Kitchen tap leak again",
+        category: "plumbing",
+        urgency: "normal",
+      });
+      throw new Error("expected createByTenant to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    try {
+      await asUser(t, tenantUserId).query(api.workOrders.get, { workOrderId });
+      throw new Error("expected work order get to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    const forStaff = await asUser(t, userId).query(api.workOrders.get, {
+      workOrderId,
+    });
+    expect(forStaff?._id).toBe(workOrderId);
+    const loaded = await asUser(t, userId).query(api.leases.get, { leaseId });
+    expect(loaded?.endedOn).toBe(stillThere.endedOn);
+  });
 });
