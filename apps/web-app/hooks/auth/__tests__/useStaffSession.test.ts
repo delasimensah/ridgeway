@@ -19,6 +19,7 @@ let mockViewer:
         buildingName: string;
         address: string;
       } | null;
+      endedLease: { unitLabel: string; buildingName: string } | null;
     }
   | undefined;
 
@@ -73,6 +74,7 @@ describe("useStaffSession", () => {
       displayName: "Ama Boateng",
       ownerId: null,
       currentLease: null,
+      endedLease: null,
     };
     const { result } = renderSession();
 
@@ -90,6 +92,7 @@ describe("useStaffSession", () => {
       displayName: "Kwesi Mensah",
       ownerId: "owner-1",
       currentLease: null,
+      endedLease: null,
     };
     const { result } = renderSession();
 
@@ -114,6 +117,7 @@ describe("useStaffSession", () => {
         buildingName: "Ridge Court",
         address: "14 Ridge Road, Cantonments, Accra",
       },
+      endedLease: null,
     };
     const { result } = renderSession();
 
@@ -122,5 +126,26 @@ describe("useStaffSession", () => {
     });
     expect(result.current.isStaff).toBe(false);
     expect(result.current.currentLease?.unitLabel).toBe("B12");
+  });
+
+  it("reports a tenant after their lease has ended", async () => {
+    mockAuth = { isAuthenticated: true, isLoading: false };
+    mockViewer = {
+      isStaff: false,
+      displayName: "Akosua Darko",
+      ownerId: null,
+      currentLease: null,
+      endedLease: {
+        unitLabel: "B12",
+        buildingName: "Ridge Court",
+      },
+    };
+    const { result } = renderSession();
+
+    await waitFor(() => {
+      expect(result.current.isTenant).toBe(true);
+    });
+    expect(result.current.currentLease).toBeNull();
+    expect(result.current.endedLease?.unitLabel).toBe("B12");
   });
 });

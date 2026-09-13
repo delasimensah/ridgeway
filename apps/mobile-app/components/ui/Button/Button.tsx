@@ -13,7 +13,7 @@ import { COLORS } from "@/constants";
 import Text from "../Text/Text";
 
 export type ButtonVariant =
-  "primary" | "secondary" | "outline" | "ghost" | "link";
+  "primary" | "secondary" | "outline" | "ghost" | "link" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends Omit<PressableProps, "onPress"> {
@@ -68,6 +68,10 @@ const variantStyles: Record<
   link: {
     container: "",
     text: "text-primary underline",
+  },
+  danger: {
+    container: "bg-danger",
+    text: "text-white",
   },
 };
 
@@ -140,7 +144,9 @@ const Button: React.FC<ButtonProps> = ({
         <ActivityIndicator
           size="small"
           color={
-            variant === "primary" || variant === "secondary"
+            variant === "primary" ||
+            variant === "secondary" ||
+            variant === "danger"
               ? COLORS.white
               : COLORS.black
           }

@@ -23,12 +23,18 @@ export type StaffSessionLease = {
   address: string;
 };
 
+export type StaffSessionEndedLease = {
+  unitLabel: string;
+  buildingName: string;
+};
+
 export type StaffSession = {
   isSessionLoading: boolean;
   isStaff: boolean;
   isOwner: boolean;
   isTenant: boolean;
   currentLease: StaffSessionLease | null;
+  endedLease: StaffSessionEndedLease | null;
   displayName: string;
   isSigningOut: boolean;
   handleSignOut: () => Promise<void>;
@@ -92,8 +98,10 @@ function useStaffSessionState(): StaffSession {
     isStaff: viewer?.isStaff === true,
     isOwner: viewer?.ownerId !== null && viewer?.ownerId !== undefined,
     isTenant:
-      viewer?.currentLease !== null && viewer?.currentLease !== undefined,
+      (viewer?.currentLease !== null && viewer?.currentLease !== undefined) ||
+      (viewer?.endedLease !== null && viewer?.endedLease !== undefined),
     currentLease: viewer?.currentLease ?? null,
+    endedLease: viewer?.endedLease ?? null,
     displayName: viewer?.displayName ?? "",
     isSigningOut,
     handleSignOut,

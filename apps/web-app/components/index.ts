@@ -31,6 +31,8 @@ export { default as OwnerBuildingListTable } from "./owners/OwnerBuildingListTab
 export { default as OwnerListRow } from "./owners/OwnerListRow/OwnerListRow";
 export { default as OwnerListTable } from "./owners/OwnerListTable/OwnerListTable";
 export { default as AddTenantForm } from "./tenants/AddTenantForm/AddTenantForm";
+export { default as EndLeaseConfirmModal } from "./tenants/EndLeaseConfirmModal/EndLeaseConfirmModal";
+export { default as TenantLeaseEndedNotice } from "./tenants/TenantLeaseEndedNotice/TenantLeaseEndedNotice";
 export { default as TenantListRow } from "./tenants/TenantListRow/TenantListRow";
 export { default as TenantListTable } from "./tenants/TenantListTable/TenantListTable";
 export { default as AddOfficePersonForm } from "./office/AddOfficePersonForm/AddOfficePersonForm";
@@ -76,4 +78,5 @@ export { default as StaffRepairDetailPage } from "./pages/StaffRepairDetailPage/
 export { default as StaffRepairsPage } from "./pages/StaffRepairsPage/StaffRepairsPage";
 export { default as StaffTenantsPage } from "./pages/StaffTenantsPage/StaffTenantsPage";
 export { default as TenantHomePage } from "./pages/TenantHomePage/TenantHomePage";
+export { default as TenantLeaseEndedPage } from "./pages/TenantLeaseEndedPage/TenantLeaseEndedPage";
 export { default as TenantRepairTimelinePage } from "./pages/TenantRepairTimelinePage/TenantRepairTimelinePage";

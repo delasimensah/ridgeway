@@ -17,4 +17,6 @@ export const COLORS = {
   sidebar: "#F7F5F0",
   shimmerLight: "#F7F5F0",
   overdue: "#7F2020",
+  danger: "#7F2020",
+  dangerHover: "#5A1717",
 } as const;

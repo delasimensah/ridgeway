@@ -74,6 +74,8 @@ module.exports = {
         accent: COLORS.accent,
         sidebar: COLORS.sidebar,
         overdue: COLORS.overdue,
+        danger: COLORS.danger,
+        dangerHover: COLORS.dangerHover,
       },
       fontFamily: {
         "app-light": [FONTS.light],

@@ -42,7 +42,7 @@ const TenantAppShell: React.FC<TenantAppShellProps> = ({
             variant="subtle"
             onClick={onSignOut}
             loading={isSigningOut}
-            className="h-auto px-0 text-sm font-medium text-grey hover:bg-transparent hover:text-darkGrey"
+            className="h-auto px-0 text-sm font-medium text-danger hover:bg-transparent hover:text-dangerHover"
           >
             Sign out
           </Button>

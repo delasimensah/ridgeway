@@ -19,6 +19,7 @@ import { staffAction, staffMutation, staffQuery } from "./lib/functions";
 import {
   isCalendarDate,
   isLeaseCurrent,
+  previousCalendarDate,
   requireBuildingAccess,
   utcToday,
   type Viewer,
@@ -626,6 +627,36 @@ export const updateTenant = staffMutation({
       startedOn,
       ...(endedOn !== undefined ? { endedOn } : {}),
     });
+    return null;
+  },
+});
+
+export const end = staffMutation({
+  args: {
+    leaseId: v.id("leases"),
+    endedOn: v.optional(v.string()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const lease = await ctx.db.get(args.leaseId);
+    if (lease === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    await requireUnitInStaffOrg(ctx, ctx.viewer, lease.unitId);
+
+    const today = utcToday();
+    if (!isLeaseCurrent(lease, today)) {
+      raise(ERROR_CODES.INVALID, "This lease has already ended");
+    }
+
+    const endedOn =
+      args.endedOn !== undefined
+        ? requireCalendarDate(args.endedOn, "Lease end")
+        : previousCalendarDate(today);
+    validateLeaseDates(lease.startedOn, endedOn);
+
+    await ctx.db.patch(args.leaseId, { endedOn });
     return null;
   },
 });

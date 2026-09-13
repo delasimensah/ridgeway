@@ -46,6 +46,7 @@ const AccountScreen: React.FC<AccountScreenProps> = ({
       </VStack>
       <Button
         text="Sign out"
+        variant="danger"
         fullWidth
         loading={isSigningOut}
         onPress={onSignOut}

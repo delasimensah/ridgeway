@@ -31,7 +31,7 @@ const NotAllowedPage: React.FC<NotAllowedPageProps> = ({
         <Button
           onClick={onSignOut}
           loading={isSigningOut}
-          className="h-auto w-full rounded-[8px] bg-primary px-6 py-3 text-base font-semibold text-white hover:bg-primaryHover sm:w-auto"
+          className="h-auto w-full rounded-[8px] bg-danger px-6 py-3 text-base font-semibold text-white hover:bg-dangerHover sm:w-auto"
         >
           Sign out
         </Button>

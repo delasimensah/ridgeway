@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { isCalendarDate, isLeaseCurrent } from "./viewer";
+import {
+  isCalendarDate,
+  isLeaseCurrent,
+  latestEndedLease,
+  previousCalendarDate,
+} from "./viewer";
 
 describe("isLeaseCurrent", () => {
   it("is current when there is no end date", () => {
@@ -14,6 +19,24 @@ describe("isLeaseCurrent", () => {
 
   it("is not current when the end date is before today", () => {
     expect(isLeaseCurrent({ endedOn: "2026-09-07" }, "2026-09-08")).toBe(false);
+  });
+});
+
+describe("previousCalendarDate", () => {
+  it("returns the UTC day before", () => {
+    expect(previousCalendarDate("2026-09-08")).toBe("2026-09-07");
+    expect(previousCalendarDate("2026-01-01")).toBe("2025-12-31");
+  });
+});
+
+describe("latestEndedLease", () => {
+  it("returns the lease with the latest end date", () => {
+    expect(
+      latestEndedLease(
+        [{ endedOn: "2025-01-01" }, { endedOn: "2026-06-01" }, {}],
+        "2026-09-08"
+      )
+    ).toEqual({ endedOn: "2026-06-01" });
   });
 });
 

@@ -68,7 +68,7 @@ const OwnerSidebar: React.FC<OwnerSidebarProps> = ({
           variant="subtle"
           onClick={onSignOut}
           loading={isSigningOut}
-          className="w-full justify-start px-4 text-sm font-medium text-grey hover:text-darkGrey"
+          className="w-full justify-start px-4 text-sm font-medium text-danger hover:text-dangerHover"
         >
           Sign out
         </Button>
