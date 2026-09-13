@@ -80,6 +80,7 @@ Start [RIDGE-8](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-le
 - RIDGE-34 PR (merged): https://github.com/delasimensah/ridgeway/pull/15
 - RIDGE-34 follow-up PR (merged): https://github.com/delasimensah/ridgeway/pull/16
 - RIDGE-7 PR (merged): https://github.com/delasimensah/ridgeway/pull/17
+- RIDGE-35 PR: https://github.com/delasimensah/ridgeway/pull/18
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
