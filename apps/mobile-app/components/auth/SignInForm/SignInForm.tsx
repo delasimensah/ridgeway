@@ -64,7 +64,7 @@ const SignInForm: React.FC = () => {
             label="Password"
             placeholder="••••••••"
             secureTextEntry
-            autoComplete="password"
+            autoComplete="current-password"
             value={field.value}
             onChangeText={field.onChange}
             error={fieldState.error?.message}

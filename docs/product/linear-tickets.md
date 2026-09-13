@@ -32,6 +32,7 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-31](https://linear.app/dm-studios/issue/RIDGE-31/staff-can-add-another-office-person) is **Done**.
 - [RIDGE-34](https://linear.app/dm-studios/issue/RIDGE-34/staff-can-add-a-field-worker-and-see-them-on-a-list) is **Done**.
 - [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) is **Done**.
+- [RIDGE-35](https://linear.app/dm-studios/issue/RIDGE-35/field-app-completion-photo-uploads-on-device-android-system-bar) is **Done**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
 - Next slice is [RIDGE-8](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-lease-that-tenant-cannot-see-the-unit) (end lease).
 - RIDGE-8 through RIDGE-15 and the epics are **Todo**.
@@ -71,7 +72,8 @@ Parent issues. Children sit under them.
 13. [RIDGE-31 Staff can add another office person](https://linear.app/dm-studios/issue/RIDGE-31/staff-can-add-another-office-person) — Auth. Name, email, temporary password. Later set a new password on that login. Design not locked. Full text in **RIDGE-31** below.
 14. [RIDGE-34 Staff can add a field worker and see them on a list](https://linear.app/dm-studios/issue/RIDGE-34/staff-can-add-a-field-worker-and-see-them-on-a-list) — Auth. Staff hire a caretaker (name, email, temporary password) and see them on a list. Seed is demo only. Design not locked. Full text in **RIDGE-34** below.
 15. [RIDGE-7 Field worker can move a job received → assigned → scheduled → done and attach a completion photo](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) — Work orders. Blocked by RIDGE-34. Design: `exports/mobile/field/job-detail.html`.
-16. [RIDGE-8 After staff end a lease, that tenant cannot see the unit](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-lease-that-tenant-cannot-see-the-unit) — Staff portfolio. Design: `exports/web/staff/end-lease.html`, `exports/web/tenant/lease-ended.html`.
+16. [RIDGE-35 Field app: completion photo uploads on device, Android system bar, keyboard, and password visibility](https://linear.app/dm-studios/issue/RIDGE-35/field-app-completion-photo-uploads-on-device-android-system-bar) — Work orders. Follow-up on RIDGE-7. Full text in **RIDGE-35** below.
+17. [RIDGE-8 After staff end a lease, that tenant cannot see the unit](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-lease-that-tenant-cannot-see-the-unit) — Staff portfolio. Design: `exports/web/staff/end-lease.html`, `exports/web/tenant/lease-ended.html`.
 
 ---
 
@@ -441,15 +443,38 @@ Signed-in staff add field workers (name, email, temporary password) and see ever
 
 ---
 
+## RIDGE-35. Field app: completion photo uploads on device, Android system bar, keyboard, and password visibility
+
+**Epic:** Work orders ([RIDGE-22](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders))
+**Apps:** mobile
+**Branch:** `feature/RIDGE-35`
+
+Follow-up on [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and). Preview on a real phone: completion photo save, Android system navigation bar, keyboard covering fields, password show/hide.
+
+**What they do**
+
+- A field worker can take or pick a completion photo on a preview install and save it. The job moves to done.
+- Android with a system navigation bar (Galaxy A16 3-button / gesture pill) keeps tabs and primary buttons above that bar.
+- On sign-in and any other typed field, the keyboard does not cover the field being edited.
+- Password has a show/hide control, same idea as the website password field.
+- Preview JS updates download and reload on launch, so the next `yarn update:preview` does not need a second force-quit.
+
+**Out of scope**
+
+- Tenant phone screens ([RIDGE-9](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported)).
+- End lease ([RIDGE-8](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-lease-that-tenant-cannot-see-the-unit)).
+
+---
+
 ## Next slices
 
-17. [RIDGE-9 Tenant sees a rent reminder and can mark a payment as reported](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported) — Rent. Design: `exports/web/tenant/rent.html`, `exports/web/staff/rent-list.html`.
-18. [RIDGE-10 Staff command center](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) — Design: `exports/web/staff/home.html`.
-19. [RIDGE-11 Owner home](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus) — Design: `exports/web/owner/home.html`.
-20. [RIDGE-12 Seed Accra world](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) — Ten buildings, three owners, no user named "test user".
-21. [RIDGE-13 Empty, loading, error, and no-permission states](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) — Design: `exports/web/staff/empty-list.html`, `loading.html`, `failed-to-load.html`, `not-allowed.html`.
-22. [RIDGE-14 TestFlight submit](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) — Launch project.
-23. [RIDGE-15 Play internal or closed test](https://linear.app/dm-studios/issue/RIDGE-15/play-internal-or-closed-test-upload-of-the-tenant-and-field-app) — Launch project.
+18. [RIDGE-9 Tenant sees a rent reminder and can mark a payment as reported](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported) — Rent. Design: `exports/web/tenant/rent.html`, `exports/web/staff/rent-list.html`.
+19. [RIDGE-10 Staff command center](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) — Design: `exports/web/staff/home.html`.
+20. [RIDGE-11 Owner home](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus) — Design: `exports/web/owner/home.html`.
+21. [RIDGE-12 Seed Accra world](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) — Ten buildings, three owners, no user named "test user".
+22. [RIDGE-13 Empty, loading, error, and no-permission states](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) — Design: `exports/web/staff/empty-list.html`, `loading.html`, `failed-to-load.html`, `not-allowed.html`.
+23. [RIDGE-14 TestFlight submit](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) — Launch project.
+24. [RIDGE-15 Play internal or closed test](https://linear.app/dm-studios/issue/RIDGE-15/play-internal-or-closed-test-upload-of-the-tenant-and-field-app) — Launch project.
 
 ---
 

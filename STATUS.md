@@ -10,7 +10,7 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-7 done** (field worker job status). Next is [RIDGE-8](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-lease-that-tenant-cannot-see-the-unit) (end lease). [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Canceled.
+- **Current phase:** Build slices — **RIDGE-35 done** (field app photo upload, Android system bar, keyboard, password visibility). Next is [RIDGE-8](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-lease-that-tenant-cannot-see-the-unit) (end lease). [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Canceled.
 - **Last updated:** 13 Sep 2026
 - **Blocked / open:** none
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, RIDGE-29, RIDGE-30, RIDGE-32, RIDGE-33, RIDGE-31, RIDGE-34, and RIDGE-7 Done; next is RIDGE-8 (end lease); RIDGE-28 Canceled; then RIDGE-9–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, RIDGE-29, RIDGE-30, RIDGE-32, RIDGE-33, RIDGE-31, RIDGE-34, RIDGE-7, and RIDGE-35 Done; next is RIDGE-8 (end lease); RIDGE-28 Canceled; then RIDGE-9–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -79,7 +79,7 @@ Start [RIDGE-8](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-le
 - RIDGE-31 PR (merged): https://github.com/delasimensah/ridgeway/pull/14
 - RIDGE-34 PR (merged): https://github.com/delasimensah/ridgeway/pull/15
 - RIDGE-34 follow-up PR (merged): https://github.com/delasimensah/ridgeway/pull/16
-- RIDGE-7 PR: https://github.com/delasimensah/ridgeway/pull/17
+- RIDGE-7 PR (merged): https://github.com/delasimensah/ridgeway/pull/17
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`

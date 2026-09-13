@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Pressable, TextInput } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { KeyboardAvoidingView, Pressable, TextInput } from "react-native";
 
 import { COLORS } from "@/constants";
+import { useAppInsets } from "@/hooks";
 
 import CompletionPhotoPicker from "../../../jobs/CompletionPhotoPicker/CompletionPhotoPicker";
 import Button from "../../../ui/Button/Button";
@@ -32,7 +32,7 @@ const CompletionPhotoScreen: React.FC<CompletionPhotoScreenProps> = ({
   onSave,
   onBack,
 }) => {
-  const insets = useSafeAreaInsets();
+  const insets = useAppInsets();
 
   return (
     <VStack spacing="none" className="flex-1 bg-white">
@@ -56,26 +56,34 @@ const CompletionPhotoScreen: React.FC<CompletionPhotoScreenProps> = ({
         </Text>
         <VStack spacing="none" className="h-10 w-10" />
       </HStack>
-      <ScrollableStack padding="md">
-        <VStack spacing="lg">
-          <CompletionPhotoPicker uri={uri} onPress={onPickPhoto} />
-          <VStack spacing="sm">
-            <Text className="font-app-bold text-sm uppercase tracking-wider text-grey">
-              Caption (optional)
-            </Text>
-            <TextInput
-              accessibilityLabel="Caption (optional)"
-              value={caption}
-              onChangeText={onChangeCaption}
-              placeholder="Describe the work done..."
-              placeholderTextColor={COLORS.grey}
-              multiline
-              className="min-h-[96px] rounded-md border border-border bg-white p-3 text-base text-darkGrey"
-            />
+      <KeyboardAvoidingView className="flex-1" behavior="padding">
+        <ScrollableStack
+          padding="md"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
+          <VStack spacing="lg">
+            <CompletionPhotoPicker uri={uri} onPress={onPickPhoto} />
+            <VStack spacing="sm">
+              <Text className="font-app-bold text-sm uppercase tracking-wider text-grey">
+                Caption (optional)
+              </Text>
+              <TextInput
+                accessibilityLabel="Caption (optional)"
+                value={caption}
+                onChangeText={onChangeCaption}
+                placeholder="Describe the work done..."
+                placeholderTextColor={COLORS.grey}
+                multiline
+                className="min-h-[96px] rounded-md border border-border bg-white p-3 text-base text-darkGrey"
+              />
+            </VStack>
+            {error ? (
+              <Text className="text-sm text-overdue">{error}</Text>
+            ) : null}
           </VStack>
-          {error ? <Text className="text-sm text-overdue">{error}</Text> : null}
-        </VStack>
-      </ScrollableStack>
+        </ScrollableStack>
+      </KeyboardAvoidingView>
       <VStack
         padding="md"
         className="border-t border-border bg-white"

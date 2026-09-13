@@ -1,10 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { WorkOrderStatus } from "shared";
 
 import { COLORS } from "@/constants";
+import { useAppInsets } from "@/hooks";
 
 import JobStatusChip from "../../../jobs/JobStatusChip/JobStatusChip";
 import Button from "../../../ui/Button/Button";
@@ -39,7 +39,7 @@ const JobDetailScreen: React.FC<JobDetailScreenProps> = ({
   onBack,
   onUpdateStatus,
 }) => {
-  const insets = useSafeAreaInsets();
+  const insets = useAppInsets();
   const [street, ...rest] = address.split(",").map((part) => part.trim());
 
   return (

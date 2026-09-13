@@ -55,6 +55,23 @@ jest.mock("expo-image-picker", () => ({
   requestCameraPermissionsAsync: jest.fn(async () => ({ granted: false })),
   launchCameraAsync: jest.fn(),
   launchImageLibraryAsync: jest.fn(),
+  UIImagePickerPreferredAssetRepresentationMode: {
+    Automatic: "automatic",
+    Compatible: "compatible",
+    Current: "current",
+  },
+}));
+
+jest.mock("expo-file-system/legacy", () => ({
+  FileSystemUploadType: { BINARY_CONTENT: 0, MULTIPART: 1 },
+  uploadAsync: jest.fn(),
+}));
+
+jest.mock("expo-updates", () => ({
+  isEnabled: false,
+  checkForUpdateAsync: jest.fn(),
+  fetchUpdateAsync: jest.fn(),
+  reloadAsync: jest.fn(),
 }));
 
 jest.mock("expo-secure-store", () => ({
