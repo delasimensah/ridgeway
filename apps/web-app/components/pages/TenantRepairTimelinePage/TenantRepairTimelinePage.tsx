@@ -37,6 +37,7 @@ interface TenantRepairTimelinePageProps {
   reportedAt: number;
   canEditDescription: boolean;
   photoUrls: string[];
+  completionPhotoUrls: string[];
   events: TimelineEvent[];
 }
 
@@ -57,6 +58,7 @@ const TenantRepairTimelinePage: React.FC<TenantRepairTimelinePageProps> = ({
   reportedAt,
   canEditDescription,
   photoUrls,
+  completionPhotoUrls,
   events,
 }) => {
   const updateDescription = useMutation(api.workOrders.updateDescription);
@@ -168,6 +170,24 @@ const TenantRepairTimelinePage: React.FC<TenantRepairTimelinePageProps> = ({
                   component="img"
                   src={url}
                   alt="Repair photo"
+                  className="h-24 w-24 rounded border border-border object-cover"
+                />
+              ))}
+            </Box>
+          </Box>
+        ) : null}
+        {completionPhotoUrls.length > 0 ? (
+          <Box className="mt-6">
+            <Text className="mb-2 text-[12px] font-bold uppercase tracking-wider text-grey">
+              Completion photo
+            </Text>
+            <Box className="flex flex-wrap gap-3">
+              {completionPhotoUrls.map((url) => (
+                <Box
+                  key={url}
+                  component="img"
+                  src={url}
+                  alt="Completion photo"
                   className="h-24 w-24 rounded border border-border object-cover"
                 />
               ))}

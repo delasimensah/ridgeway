@@ -48,7 +48,9 @@ export { default as UnitListEmpty } from "./units/UnitListEmpty/UnitListEmpty";
 export { default as UnitListRow } from "./units/UnitListRow/UnitListRow";
 export { default as UnitListTable } from "./units/UnitListTable/UnitListTable";
 
+export { default as AssignRepairForm } from "./repairs/AssignRepairForm/AssignRepairForm";
 export { default as FileRepairForm } from "./repairs/FileRepairForm/FileRepairForm";
+export { default as ScheduleRepairForm } from "./repairs/ScheduleRepairForm/ScheduleRepairForm";
 export { default as OpenRepairCard } from "./repairs/OpenRepairCard/OpenRepairCard";
 export { default as RepairListTable } from "./repairs/RepairListTable/RepairListTable";
 export { default as RepairStatusBadge } from "./repairs/RepairStatusBadge/RepairStatusBadge";

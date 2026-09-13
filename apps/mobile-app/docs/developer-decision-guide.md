@@ -7,20 +7,17 @@
 ### **Adding a New Screen**
 
 ```
-1. Determine screen type (auth, onboarding, tab stack, modal, etc.)
-2. Create screen file in appropriate location:
-   app/(auth)/screen-name.tsx           # Auth screens
-   app/(onboarding)/screen-name.tsx     # Onboarding screens
-   app/(main-app)/(tabs)/[tab]/screen-name.tsx  # Tab stack screens
+1. Determine screen type (auth, tab, job stack, modal).
+2. Create the screen under `components/screens/` and a thin route:
+   app/(auth)/screen-name.tsx
+   app/(main-app)/(tabs)/[tab]/index.tsx
+   app/(main-app)/job/[workOrderId]/screen-name.tsx
 
-3. Register in corresponding _layout.tsx:
-   <Stack.Screen
-     name="screen-name"
-     options={{ title: "Screen Title" }}
-   />
+3. Register in the matching `_layout.tsx`.
 
-4. Navigate to screen:
-   router.push("/screen-name");
+4. Navigate:
+   router.push("/(main-app)/(tabs)/jobs");
+   router.push(`/(main-app)/job/${workOrderId}`);
 
 For detailed instructions, see the Adding Screens Guide:
 > 📋 [Adding Screens Guide](./adding-screens-guide.md)

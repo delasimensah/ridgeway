@@ -1,1 +1,1 @@
-// Add more types as needed
+export type { JobListItem } from "./jobs";

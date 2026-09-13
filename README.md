@@ -2,7 +2,7 @@
 
 Operations software for Ridgeway Property Group: staff command center, owner portal, tenant repairs and rent status, and a field phone app.
 
-This is a Turborepo with a Next.js website, an Expo phone app, a shared TypeScript package, and a Convex backend. Convex Auth and Convex queries are wired on the website. Do not import Convex in the mobile app until a ticket needs it.
+This is a Turborepo with a Next.js website, an Expo phone app, a shared TypeScript package, and a Convex backend. Convex Auth and Convex queries are wired on the website and the field phone app.
 
 ## Stack
 

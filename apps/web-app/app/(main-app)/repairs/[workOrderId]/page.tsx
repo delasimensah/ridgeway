@@ -23,6 +23,10 @@ const RepairDetailRoute = () => {
     api.workOrders.get,
     session.isStaff || session.isTenant ? { workOrderId } : "skip"
   );
+  const fieldWorkers = useQuery(
+    api.field.listForStaff,
+    session.isStaff ? {} : "skip"
+  );
 
   useEffect(() => {
     if (ticket === null) {
@@ -30,13 +34,19 @@ const RepairDetailRoute = () => {
     }
   }, [router, session.isStaff, ticket]);
 
-  if (session.isSessionLoading || ticket === undefined || ticket === null) {
+  if (
+    session.isSessionLoading ||
+    ticket === undefined ||
+    ticket === null ||
+    (session.isStaff && fieldWorkers === undefined)
+  ) {
     return <LoadingScreen fillViewport={false} />;
   }
 
   if (session.isStaff) {
     return (
       <StaffRepairDetailPage
+        workOrderId={ticket._id}
         title={ticket.title}
         description={ticket.description}
         status={ticket.status}
@@ -45,8 +55,14 @@ const RepairDetailRoute = () => {
         buildingName={ticket.buildingName}
         buildingId={ticket.buildingId}
         tenantName={ticket.tenantName}
+        assigneeName={ticket.assigneeName}
+        scheduledFor={ticket.scheduledFor}
         reportedAt={ticket.reportedAt}
+        canAssign={ticket.canAssign}
+        canSchedule={ticket.canSchedule}
+        fieldWorkers={fieldWorkers ?? []}
         photoUrls={ticket.photoUrls}
+        completionPhotoUrls={ticket.completionPhotoUrls}
         events={ticket.events}
       />
     );
@@ -65,6 +81,7 @@ const RepairDetailRoute = () => {
         reportedAt={ticket.reportedAt}
         canEditDescription={ticket.canEditDescription}
         photoUrls={ticket.photoUrls}
+        completionPhotoUrls={ticket.completionPhotoUrls}
         events={ticket.events}
       />
     );

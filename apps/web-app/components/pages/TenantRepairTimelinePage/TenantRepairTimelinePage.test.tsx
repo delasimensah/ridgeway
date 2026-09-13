@@ -20,6 +20,7 @@ const ticket = {
   buildingName: "Ridge Court",
   reportedAt: Date.UTC(2026, 7, 22),
   photoUrls: [] as string[],
+  completionPhotoUrls: [] as string[],
   events: [
     {
       _id: "ev-1",

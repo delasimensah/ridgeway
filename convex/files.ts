@@ -33,7 +33,16 @@ export const attachToWorkOrder = authedMutation({
       raise(ERROR_CODES.INVALID, "This repair is past received");
     }
     if (args.kind === "completion") {
-      raise(ERROR_CODES.NOT_PERMITTED);
+      const isAssignee = ticket.assigneeProfileId === ctx.viewer.profile._id;
+      if (!ctx.viewer.isStaff && !isAssignee) {
+        raise(ERROR_CODES.NOT_PERMITTED);
+      }
+      if (ticket.status !== "scheduled" && ticket.status !== "done") {
+        raise(
+          ERROR_CODES.INVALID,
+          "Add the completion photo when the job is scheduled or done"
+        );
+      }
     }
 
     return await ctx.db.insert("files", {
