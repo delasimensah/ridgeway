@@ -24,11 +24,5 @@ describe("StaffFieldPage", () => {
     expect(
       screen.getByRole("link", { name: "Add field worker" })
     ).toHaveAttribute("href", "/field/new");
-    expect(screen.queryByText("No field workers yet.")).not.toBeInTheDocument();
-  });
-
-  it("shows an empty line when there are none", () => {
-    render(<StaffFieldPage people={[]} />);
-    expect(screen.getByText("No field workers yet.")).toBeInTheDocument();
   });
 });

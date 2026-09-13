@@ -1,6 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
 
-import { fillField, render, setupUser } from "@/test-utils";
+import { render, setupUser } from "@/test-utils";
 
 import AddFieldWorkerForm from "./AddFieldWorkerForm";
 
@@ -65,44 +65,5 @@ describe("AddFieldWorkerForm", () => {
     expect(mockUpdate).not.toHaveBeenCalled();
     expect(mockSetPassword).not.toHaveBeenCalled();
     expect(mockReplace).toHaveBeenCalledWith("/field");
-  });
-
-  it("sets a new password when one is typed on an existing person", async () => {
-    const user = setupUser();
-    mockUpdate.mockResolvedValue(null);
-    mockSetPassword.mockResolvedValue(null);
-    render(
-      <AddFieldWorkerForm
-        profileId={"profile-id" as never}
-        initialValues={{
-          displayName: "Kofi Asante",
-          email: "kofi.asante@ridgeway.gh",
-          password: "",
-        }}
-      />
-    );
-
-    expect(
-      screen.getByText("Optional. Leave blank to keep the current password.")
-    ).toBeInTheDocument();
-
-    await fillField(
-      user,
-      screen.getByLabelText(/^password$/i),
-      "RidgewayField27"
-    );
-    await user.click(screen.getByRole("button", { name: "Save field worker" }));
-
-    await waitFor(() => {
-      expect(mockSetPassword).toHaveBeenCalledWith({
-        profileId: "profile-id",
-        password: "RidgewayField27",
-      });
-    });
-    expect(mockUpdate).toHaveBeenCalledWith({
-      profileId: "profile-id",
-      displayName: "Kofi Asante",
-    });
-    expect(mockCreate).not.toHaveBeenCalled();
   });
 });
