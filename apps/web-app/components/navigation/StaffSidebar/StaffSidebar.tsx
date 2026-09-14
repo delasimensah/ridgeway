@@ -1,15 +1,34 @@
 "use client";
 
 import { Anchor, Box, Button } from "@mantine/core";
+import {
+  type Icon,
+  IconBuilding,
+  IconCashBanknote,
+  IconHelmet,
+  IconHome,
+  IconIdBadge2,
+  IconTool,
+  IconUser,
+  IconUsers,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import React from "react";
 import { cn } from "shared";
 
 import Heading from "../../ui/Heading/Heading";
+import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 import Text from "../../ui/Text/Text";
 
 export type StaffNavId =
-  "home" | "buildings" | "owners" | "tenants" | "office" | "field" | "repairs";
+  | "home"
+  | "buildings"
+  | "owners"
+  | "tenants"
+  | "office"
+  | "field"
+  | "repairs"
+  | "rent";
 
 interface StaffSidebarProps {
   displayName: string;
@@ -19,20 +38,31 @@ interface StaffSidebarProps {
   onNavigate?: () => void;
 }
 
-const NAV_ITEMS: { id: StaffNavId; href: string; label: string }[] = [
-  { id: "home", href: "/", label: "Home" },
-  { id: "buildings", href: "/buildings", label: "Buildings" },
-  { id: "owners", href: "/owners", label: "Owners" },
-  { id: "tenants", href: "/tenants", label: "Tenants" },
-  { id: "office", href: "/office", label: "Office" },
-  { id: "field", href: "/field", label: "Field" },
-  { id: "repairs", href: "/repairs", label: "Repairs" },
+const NAV_ITEMS: {
+  id: StaffNavId;
+  href: string;
+  label: string;
+  Icon: Icon;
+}[] = [
+  { id: "home", href: "/", label: "Home", Icon: IconHome },
+  {
+    id: "buildings",
+    href: "/buildings",
+    label: "Buildings",
+    Icon: IconBuilding,
+  },
+  { id: "owners", href: "/owners", label: "Owners", Icon: IconUser },
+  { id: "tenants", href: "/tenants", label: "Tenants", Icon: IconUsers },
+  { id: "office", href: "/office", label: "Staff", Icon: IconIdBadge2 },
+  { id: "field", href: "/field", label: "Field workers", Icon: IconHelmet },
+  { id: "repairs", href: "/repairs", label: "Repairs", Icon: IconTool },
+  { id: "rent", href: "/rent", label: "Rent", Icon: IconCashBanknote },
 ];
 
 const NAV_LINK_CLASS =
-  "block rounded-[8px] px-4 py-2.5 no-underline hover:bg-lightGrey";
+  "flex items-center gap-3 rounded-[8px] px-4 py-2.5 no-underline hover:bg-lightGrey";
 const NAV_LINK_ACTIVE_CLASS =
-  "bg-primary font-semibold text-white hover:bg-primary";
+  "bg-primary font-semibold text-white hover:bg-primary hover:text-white";
 const NAV_LINK_IDLE_CLASS = "font-medium text-darkGrey";
 
 const StaffSidebar: React.FC<StaffSidebarProps> = ({
@@ -67,17 +97,21 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({
                 isActive ? NAV_LINK_ACTIVE_CLASS : NAV_LINK_IDLE_CLASS
               )}
             >
-              {item.label}
+              <item.Icon size={20} stroke={1.75} aria-hidden />
+              <span>{item.label}</span>
             </Anchor>
           );
         })}
       </Box>
       <Box className="border-t border-border p-4">
-        <Box className="mb-3 px-4">
-          <Text className="text-sm font-semibold text-darkGrey">
-            {displayName}
-          </Text>
-          <Text className="text-xs text-grey">Staff</Text>
+        <Box className="mb-3 flex items-center gap-3 px-4">
+          <PersonAvatar displayName={displayName} />
+          <Box className="min-w-0">
+            <Text className="truncate text-sm font-semibold text-darkGrey">
+              {displayName}
+            </Text>
+            <Text className="text-xs text-grey">Staff</Text>
+          </Box>
         </Box>
         <Button
           variant="subtle"

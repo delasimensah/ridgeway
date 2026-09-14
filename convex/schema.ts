@@ -102,4 +102,18 @@ export default defineSchema({
     kind: v.union(v.literal("repair"), v.literal("completion")),
     uploadedByProfileId: v.id("profiles"),
   }).index("by_workOrderId", ["workOrderId"]),
+  rentPeriods: defineTable({
+    leaseId: v.id("leases"),
+    periodLabel: v.string(),
+    amount: v.number(),
+    currency: v.union(v.literal("GHS"), v.literal("USD")),
+    dueOn: v.string(),
+    confirmedStatus: v.union(
+      v.literal("unpaid"),
+      v.literal("partial"),
+      v.literal("paid")
+    ),
+    confirmedAmount: v.optional(v.number()),
+    tenantReportedAt: v.optional(v.number()),
+  }).index("by_leaseId_and_dueOn", ["leaseId", "dueOn"]),
 });

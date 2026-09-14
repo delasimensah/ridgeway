@@ -13,6 +13,8 @@ describe("AccountScreen", () => {
       />
     );
     expect(screen.getByText("Yaw Darko")).toBeTruthy();
+    expect(screen.getByText("YD")).toBeTruthy();
+    expect(screen.getByText("Field worker")).toBeTruthy();
     fireEvent.press(screen.getByText("Sign out"));
     expect(onSignOut).toHaveBeenCalled();
   });

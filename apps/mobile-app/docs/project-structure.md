@@ -26,28 +26,38 @@ Route files stay thin. They load Convex data and render a `*Screen` from `compon
 ```
 app/
 ├── _layout.tsx                   # Fonts, providers, Stack.Protected
-├── index.tsx                     # Redirect by session (sign-in, jobs, or not-allowed)
-├── not-allowed.tsx               # Signed-in staff, owner, or tenant
+├── index.tsx                     # Redirect by session (sign-in, jobs, tenant rent, or not-allowed)
+├── not-allowed.tsx               # Signed-in staff or owner
+├── lease-ended.tsx               # Tenant whose lease has ended
 ├── (auth)/
 │   ├── _layout.tsx
 │   └── sign-in.tsx
-└── (main-app)/                   # Field workers only
+├── (main-app)/                   # Field workers only
+│   ├── _layout.tsx
+│   ├── (tabs)/
+│   │   ├── _layout.tsx           # Jobs and Account
+│   │   ├── jobs/index.tsx
+│   │   └── account/index.tsx
+│   └── job/[workOrderId]/
+│       ├── _layout.tsx
+│       ├── index.tsx
+│       ├── update-status.tsx     # Modal
+│       └── completion-photo.tsx
+└── (tenant-app)/                 # Tenants with a current lease
     ├── _layout.tsx
-    ├── (tabs)/
-    │   ├── _layout.tsx           # Jobs and Account
-    │   ├── jobs/index.tsx
-    │   └── account/index.tsx
-    └── job/[workOrderId]/
-        ├── _layout.tsx
-        ├── index.tsx
-        ├── update-status.tsx     # Modal
-        └── completion-photo.tsx
+    └── (tabs)/
+        ├── _layout.tsx           # Home, Repairs, Rent
+        ├── home/index.tsx
+        ├── repairs/index.tsx
+        └── rent/index.tsx
 ```
 
 `Stack.Protected` in `app/_layout.tsx` chooses the group:
 
 - Signed-in field worker → `(main-app)`
-- Signed-in, not field → `not-allowed`
+- Signed-in tenant with a current lease → `(tenant-app)`
+- Signed-in tenant whose lease has ended → `lease-ended`
+- Signed-in staff or owner → `not-allowed`
 - Signed out → `(auth)`
 
 ## Components (`components/`)
@@ -60,7 +70,9 @@ components/
 ├── jobs/                         # JobCard, JobStatusChip, JobStatusOption, CompletionPhotoPicker
 ├── screens/
 │   ├── auth/SignInScreen/
-│   └── field/                    # Jobs, JobDetail, UpdateStatus, CompletionPhoto, Account, NotAllowed
+│   ├── field/                    # Jobs, JobDetail, UpdateStatus, CompletionPhoto, Account, NotAllowed
+│   └── tenant/                   # Home, Rent, Repairs, LeaseEnded
+├── rent/                         # RentStatusChip, TenantNextRentCard, invoice and history cards
 ├── shared/                       # AppProviders, LoadingScreen
 ├── feedback/
 └── bottom-sheets/

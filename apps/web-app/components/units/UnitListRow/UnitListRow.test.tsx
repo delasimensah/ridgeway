@@ -33,6 +33,8 @@ describe("UnitListRow", () => {
             tenantName="Akosua Darko"
             leaseId="lease-1"
             leaseEndedOn="2027-12-31"
+            rentAmount={450000}
+            rentCurrency="GHS"
           />
         </Table.Tbody>
       </Table>
@@ -43,5 +45,6 @@ describe("UnitListRow", () => {
       "/buildings/building-1/tenants/lease-1/edit"
     );
     expect(screen.getByText("31 Dec 2027")).toBeInTheDocument();
+    expect(screen.getByText("GH₵ 4,500")).toBeInTheDocument();
   });
 });

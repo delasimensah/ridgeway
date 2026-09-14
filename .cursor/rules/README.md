@@ -6,6 +6,7 @@ Rules guide the agent for this monorepo.
 
 - **`linear-issue-status.mdc`** — Todo → In Progress → Done. Backlog is later work only. Write STATUS as the post-merge state on a feature branch.
 - **`wait-for-approval-before-git.mdc`** — Implement and stop. Do not commit, push, or open a PR until asked.
+- **`pr-description-from-guidelines.mdc`** — PR body is Why / What / How / Testing from `docs/git-and-pr-guidelines.md`. Never Summary / Test plan.
 - **`wait-for-github-checks-on-pr.mdc`** — Local `yarn lint`, `yarn format:check`, `yarn type-check`, and `yarn test:ci` are the PR bar. Do not wait on GitHub.
 - **`never-branch-off-linear.mdc`** — Only `feature/RIDGE-n` for an existing Linear issue.
 - **`tests-necessary-and-fast.mdc`** — Few, fast tests. Default 5s timeout. Do not `user.type` long strings.

@@ -3,7 +3,7 @@
 import { Anchor, Table } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
-import { formatDateString } from "shared";
+import { type Currency, formatDateString, formatMoney } from "shared";
 
 interface UnitListRowProps {
   buildingId: string;
@@ -12,6 +12,8 @@ interface UnitListRowProps {
   tenantName?: string | null;
   leaseId?: string | null;
   leaseEndedOn?: string | null;
+  rentAmount?: number | null;
+  rentCurrency?: Currency | null;
 }
 
 const TD = "px-4 py-4 text-[15px] text-darkGrey sm:px-6 sm:py-5";
@@ -24,6 +26,8 @@ const UnitListRow: React.FC<UnitListRowProps> = ({
   tenantName = null,
   leaseId = null,
   leaseEndedOn = null,
+  rentAmount = null,
+  rentCurrency = null,
 }) => {
   return (
     <Table.Tr className="hover:bg-sidebar">
@@ -51,7 +55,11 @@ const UnitListRow: React.FC<UnitListRowProps> = ({
           "—"
         )}
       </Table.Td>
-      <Table.Td className={TD}>—</Table.Td>
+      <Table.Td className={TD}>
+        {rentAmount !== null && rentCurrency !== null
+          ? formatMoney(rentAmount, rentCurrency)
+          : "—"}
+      </Table.Td>
       <Table.Td className={TD}>
         {leaseEndedOn !== null
           ? formatDateString(leaseEndedOn, "d MMM yyyy")

@@ -38,8 +38,14 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 const RootNavigator = () => {
-  const { isSessionLoading, isAuthenticated, isViewerReady, isField } =
-    useFieldSession();
+  const {
+    isSessionLoading,
+    isAuthenticated,
+    isViewerReady,
+    isField,
+    isTenant,
+    currentLease,
+  } = useFieldSession();
   const isCheckingUpdate = useApplyAvailableUpdate();
 
   useEffect(() => {
@@ -52,7 +58,13 @@ const RootNavigator = () => {
     return null;
   }
 
-  const canEnterApp = isAuthenticated && (isField || !isViewerReady);
+  const canEnterField = isAuthenticated && (isField || !isViewerReady);
+  const canEnterTenant =
+    isAuthenticated && isViewerReady && currentLease !== null;
+  const canEnterEnded =
+    isAuthenticated && isViewerReady && isTenant && currentLease === null;
+  const canEnterNotAllowed =
+    isAuthenticated && isViewerReady && !isField && !isTenant;
 
   return (
     <Stack
@@ -63,10 +75,16 @@ const RootNavigator = () => {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Protected guard={canEnterApp}>
+      <Stack.Protected guard={canEnterField}>
         <Stack.Screen name="(main-app)" />
       </Stack.Protected>
-      <Stack.Protected guard={isAuthenticated && isViewerReady && !isField}>
+      <Stack.Protected guard={canEnterTenant}>
+        <Stack.Screen name="(tenant-app)" />
+      </Stack.Protected>
+      <Stack.Protected guard={canEnterEnded}>
+        <Stack.Screen name="lease-ended" />
+      </Stack.Protected>
+      <Stack.Protected guard={canEnterNotAllowed}>
         <Stack.Screen name="not-allowed" />
       </Stack.Protected>
       <Stack.Protected guard={!isAuthenticated}>

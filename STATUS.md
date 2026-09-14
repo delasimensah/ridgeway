@@ -10,9 +10,9 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-8 done** (staff end a lease; that tenant cannot see the unit). Next is [RIDGE-9](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported) (rent reminder). [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Canceled.
-- **Last updated:** 13 Sep 2026
-- **Blocked / open:** none
+- **Current phase:** Build slices — **RIDGE-9 done** (tenant rent reminder and staff confirm). Next is [RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-due-day-live-on-the-lease) then [RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-lease-is-charged-rent-each-month), because rent still only exists as seed data. [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Canceled.
+- **Last updated:** 14 Sep 2026
+- **Blocked / open:** Rent is not yet a working system. Nothing stores what a unit rents for, nothing charges the next month, and staff can only see the current month. [RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-due-day-live-on-the-lease), [RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-lease-is-charged-rent-each-month), and [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes) cover it.
 
 ---
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, RIDGE-29, RIDGE-30, RIDGE-32, RIDGE-33, RIDGE-31, RIDGE-34, RIDGE-7, RIDGE-35, and RIDGE-8 Done; next is RIDGE-9 (rent reminder); RIDGE-28 Canceled; then RIDGE-10–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, RIDGE-29, RIDGE-30, RIDGE-32, RIDGE-33, RIDGE-31, RIDGE-34, RIDGE-7, RIDGE-35, RIDGE-8, and RIDGE-9 Done; next is RIDGE-36, RIDGE-37, RIDGE-38 (rent on the lease, monthly charging, past months), then RIDGE-10 (staff command center); RIDGE-28 Canceled; then RIDGE-11–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,7 +58,7 @@
 
 ## Next action (one line)
 
-Start [RIDGE-9](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported) (tenant sees a rent reminder and can mark a payment as reported).
+Start [RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-due-day-live-on-the-lease) (rent amount and due day live on the lease).
 
 ---
 
@@ -81,7 +81,8 @@ Start [RIDGE-9](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-r
 - RIDGE-34 follow-up PR (merged): https://github.com/delasimensah/ridgeway/pull/16
 - RIDGE-7 PR (merged): https://github.com/delasimensah/ridgeway/pull/17
 - RIDGE-35 PR (merged): https://github.com/delasimensah/ridgeway/pull/18
-- RIDGE-8 PR: https://github.com/delasimensah/ridgeway/pull/19
+- RIDGE-8 PR (merged): https://github.com/delasimensah/ridgeway/pull/19
+- RIDGE-9 PR: https://github.com/delasimensah/ridgeway/pull/20
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`

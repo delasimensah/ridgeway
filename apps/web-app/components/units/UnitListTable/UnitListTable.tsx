@@ -11,6 +11,8 @@ export interface UnitListItem {
   tenantName?: string | null;
   leaseId?: string | null;
   leaseEndedOn?: string | null;
+  rentAmount?: number | null;
+  rentCurrency?: "GHS" | "USD" | null;
 }
 
 interface UnitListTableProps {
@@ -44,6 +46,8 @@ const UnitListTable: React.FC<UnitListTableProps> = ({ buildingId, units }) => {
                 tenantName={unit.tenantName}
                 leaseId={unit.leaseId}
                 leaseEndedOn={unit.leaseEndedOn}
+                rentAmount={unit.rentAmount}
+                rentCurrency={unit.rentCurrency}
               />
             ))}
           </Table.Tbody>

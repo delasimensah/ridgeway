@@ -158,6 +158,48 @@ export function latestEndedLease<T extends { endedOn?: string }>(
   );
 }
 
+export async function requireLeaseAccess(
+  ctx: { db: QueryCtx["db"] },
+  viewer: Viewer,
+  leaseId: Id<"leases">
+): Promise<Doc<"leases">> {
+  const lease = await ctx.db.get(leaseId);
+  if (lease === null) {
+    raise(ERROR_CODES.NOT_PERMITTED);
+  }
+
+  const unit = await ctx.db.get(lease.unitId);
+  if (unit === null) {
+    raise(ERROR_CODES.NOT_PERMITTED);
+  }
+
+  const building = await ctx.db.get(unit.buildingId);
+  if (building === null) {
+    raise(ERROR_CODES.NOT_PERMITTED);
+  }
+
+  if (viewer.isStaff && viewer.organizationId === building.organizationId) {
+    return lease;
+  }
+
+  if (
+    viewer.ownerId !== null &&
+    building.ownerId !== undefined &&
+    viewer.ownerId === building.ownerId
+  ) {
+    return lease;
+  }
+
+  if (
+    lease.tenantProfileId === viewer.profile._id &&
+    isLeaseCurrent(lease, utcToday())
+  ) {
+    return lease;
+  }
+
+  raise(ERROR_CODES.NOT_PERMITTED);
+}
+
 export async function requireBuildingAccess(
   ctx: { db: QueryCtx["db"] },
   viewer: Viewer,

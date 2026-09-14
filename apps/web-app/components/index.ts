@@ -1,4 +1,5 @@
 export { default as Heading } from "./ui/Heading/Heading";
+export { default as PersonAvatar } from "./ui/PersonAvatar/PersonAvatar";
 export { default as Skeleton } from "./ui/Skeleton/Skeleton";
 export { default as Text } from "./ui/Text/Text";
 
@@ -56,6 +57,15 @@ export { default as ScheduleRepairForm } from "./repairs/ScheduleRepairForm/Sche
 export { default as OpenRepairCard } from "./repairs/OpenRepairCard/OpenRepairCard";
 export { default as RepairListTable } from "./repairs/RepairListTable/RepairListTable";
 export { default as RepairStatusBadge } from "./repairs/RepairStatusBadge/RepairStatusBadge";
+export { default as ConfirmPartialRentModal } from "./rent/ConfirmPartialRentModal/ConfirmPartialRentModal";
+export { default as NextRentCard } from "./rent/NextRentCard/NextRentCard";
+export { default as RentReportingNote } from "./rent/RentReportingNote/RentReportingNote";
+export { default as RentStatusBadge } from "./rent/RentStatusBadge/RentStatusBadge";
+export { default as StaffRentRow } from "./rent/StaffRentRow/StaffRentRow";
+export { default as StaffRentSummary } from "./rent/StaffRentSummary/StaffRentSummary";
+export { default as StaffRentTable } from "./rent/StaffRentTable/StaffRentTable";
+export { default as TenantRentHistoryRow } from "./rent/TenantRentHistoryRow/TenantRentHistoryRow";
+export { default as TenantRentInvoiceRow } from "./rent/TenantRentInvoiceRow/TenantRentInvoiceRow";
 
 export { default as AddBuildingPage } from "./pages/AddBuildingPage/AddBuildingPage";
 export { default as AddFieldWorkerPage } from "./pages/AddFieldWorkerPage/AddFieldWorkerPage";
@@ -76,7 +86,9 @@ export { default as StaffOwnerPage } from "./pages/StaffOwnerPage/StaffOwnerPage
 export { default as StaffOwnersPage } from "./pages/StaffOwnersPage/StaffOwnersPage";
 export { default as StaffRepairDetailPage } from "./pages/StaffRepairDetailPage/StaffRepairDetailPage";
 export { default as StaffRepairsPage } from "./pages/StaffRepairsPage/StaffRepairsPage";
+export { default as StaffRentPage } from "./pages/StaffRentPage/StaffRentPage";
 export { default as StaffTenantsPage } from "./pages/StaffTenantsPage/StaffTenantsPage";
 export { default as TenantHomePage } from "./pages/TenantHomePage/TenantHomePage";
 export { default as TenantLeaseEndedPage } from "./pages/TenantLeaseEndedPage/TenantLeaseEndedPage";
+export { default as TenantRentPage } from "./pages/TenantRentPage/TenantRentPage";
 export { default as TenantRepairTimelinePage } from "./pages/TenantRepairTimelinePage/TenantRepairTimelinePage";

@@ -15,6 +15,16 @@ export type FieldSession = {
   isAuthenticated: boolean;
   isViewerReady: boolean;
   isField: boolean;
+  isTenant: boolean;
+  currentLease: {
+    unitLabel: string;
+    buildingName: string;
+    address: string;
+  } | null;
+  endedLease: {
+    unitLabel: string;
+    buildingName: string;
+  } | null;
   displayName: string;
   isSigningOut: boolean;
   handleSignOut: () => Promise<void>;
@@ -70,6 +80,17 @@ function useFieldSessionState(): FieldSession {
     isAuthenticated,
     isViewerReady: isAuthenticated && profileReady && viewer !== undefined,
     isField: viewer?.isField === true,
+    isTenant:
+      (viewer?.currentLease !== null && viewer?.currentLease !== undefined) ||
+      (viewer?.endedLease !== null && viewer?.endedLease !== undefined),
+    currentLease: viewer?.currentLease
+      ? {
+          unitLabel: viewer.currentLease.unitLabel,
+          buildingName: viewer.currentLease.buildingName,
+          address: viewer.currentLease.address,
+        }
+      : null,
+    endedLease: viewer?.endedLease ?? null,
     displayName: viewer?.displayName ?? "",
     isSigningOut,
     handleSignOut,

@@ -34,9 +34,11 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) is **Done**.
 - [RIDGE-35](https://linear.app/dm-studios/issue/RIDGE-35/field-app-completion-photo-uploads-on-device-android-system-bar) is **Done**.
 - [RIDGE-8](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-lease-that-tenant-cannot-see-the-unit) is **Done**.
+- [RIDGE-9](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported) is **Done**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
-- Next slice is [RIDGE-9](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported) (rent reminder).
-- RIDGE-9 through RIDGE-15 and the epics are **Todo**.
+- Next slice is [RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-due-day-live-on-the-lease), then [RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-lease-is-charged-rent-each-month). Rent only exists as seed data until those two land, so the command center would be reporting figures that disappear at the start of each month.
+- [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes) follows, then [RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) (staff command center).
+- RIDGE-36, RIDGE-37, RIDGE-38, RIDGE-10 through RIDGE-15, and the epics are **Todo**.
 - RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** until RIDGE-1 through RIDGE-13 are done.
 
 When a slice is started, move that issue to In Progress immediately. Do not use Backlog for queued first-version work. Linear stays In Progress until merge to `main`. In the feature PR, write this Status now block as that post-merge board.
@@ -75,6 +77,7 @@ Parent issues. Children sit under them.
 15. [RIDGE-7 Field worker can move a job received → assigned → scheduled → done and attach a completion photo](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-can-move-a-job-received-assigned-scheduled-done-and) — Work orders. Blocked by RIDGE-34. Design: `exports/mobile/field/job-detail.html`.
 16. [RIDGE-35 Field app: completion photo uploads on device, Android system bar, keyboard, and password visibility](https://linear.app/dm-studios/issue/RIDGE-35/field-app-completion-photo-uploads-on-device-android-system-bar) — Work orders. Follow-up on RIDGE-7. Full text in **RIDGE-35** below.
 17. [RIDGE-8 After staff end a lease, that tenant cannot see the unit](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-lease-that-tenant-cannot-see-the-unit) — Staff portfolio. Design: `exports/web/staff/end-lease.html`, `exports/web/tenant/lease-ended.html`.
+18. [RIDGE-9 Tenant sees a rent reminder and can mark a payment as reported](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported) — Rent. Design: `exports/web/tenant/rent.html`, `exports/web/staff/rent-list.html`.
 
 ---
 
@@ -467,9 +470,158 @@ Follow-up on [RIDGE-7](https://linear.app/dm-studios/issue/RIDGE-7/field-worker-
 
 ---
 
+## RIDGE-9. Tenant sees a rent reminder and can mark a payment as reported
+
+**Epic:** Rent status ([RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status))
+**Apps:** web (tenant and staff), mobile (tenant), shared, convex
+**Branch:** `feature/RIDGE-9`
+
+A tenant on a current lease sees rent for their period and can mark a payment as reported. Staff confirm paid, late, or partial. The tenant report does not set paid. An ended lease does not show rent.
+
+**Design:**
+
+- Tenant rent (web): `docs/ui-design/ridgeway/exports/web/tenant/rent.html`
+- Tenant rent (phone): `docs/ui-design/ridgeway/exports/mobile/tenant/rent.html`
+- Staff rent list: `docs/ui-design/ridgeway/exports/web/staff/rent-list.html`
+
+**What they do**
+
+- Akosua sees September rent as late and taps I have paid. Status stays late until staff confirm.
+- Ama opens Rent, picks Ridge Court, sees which tenants have reported a payment, and sets paid, not paid, or partial.
+- After a lease ends, that tenant cannot read rent.
+
+**How it is built**
+
+- Convex `rentPeriods`. Queries `rent.listForCurrentTenant` and `rent.listByBuilding`. Mutations `rent.reportPaymentByTenant` (writes `tenantReportedAt` only) and `rent.setConfirmedStatus` (staff only).
+- `getRentDisplayStatus` in `packages/shared` turns stored confirmed status plus due date and `serverNow` into paid, due, late, or partial. Unpaid before the due date is due, not late.
+- The staff row shows the monthly amount, its due date, what a partial payment left owing, and a line naming the day the tenant reported paying. A Reported filter counts the claims still waiting on staff.
+- Partial opens `ConfirmPartialRentModal` and staff type the amount received. `rent.setConfirmedStatus` refuses zero or the full rent.
+- Seed writes July and August paid and September unpaid for Akosua. New leases do not get periods until a later seed.
+
+**Acceptance (yes or no)**
+
+- A tenant on a current lease sees a rent reminder for their period.
+- That tenant can mark a payment as reported. The report does not set paid by itself.
+- Staff can set confirmed status to paid, not paid, or partial, and a partial payment records the amount staff actually received. Only staff write confirmedStatus.
+- Staff can see on the rent list which tenants have reported a payment and when.
+- An ended lease must not show rent to that tenant.
+- Tests cover tenant report vs staff confirm, and an ended lease refusing rent reads.
+
+**Out of scope**
+
+- Full accounts ledger, payroll, or bank connection.
+- Owner collected versus outstanding ([RIDGE-11](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus)).
+- Staff command center ([RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across)).
+- Accra world seed of thirty days of rent ([RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and)).
+- Rent stored on the lease ([RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-due-day-live-on-the-lease)), monthly charging ([RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-lease-is-charged-rent-each-month)), and past months with arrears ([RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes)).
+
+---
+
+## RIDGE-36. Rent amount and due day live on the lease
+
+**Epic:** Rent status ([RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status))
+**Apps:** web (staff), convex, shared
+**Branch:** `feature/RIDGE-36`
+
+Today a rent amount only exists on a `rentPeriods` row, copied from a constant in `convex/seed.ts`. Nothing records what a unit actually rents for, so staff cannot set rent when they put a tenant on a unit and cannot change it later.
+
+**What they do**
+
+- Ama adds a tenant to a unit and enters the monthly rent and the day it is due.
+- Ama opens an existing lease and corrects the rent when it changes.
+
+**How it is built**
+
+- Add `rentAmount`, `rentCurrency`, and `rentDueDay` to `leases`. Money stays whole pesewas.
+- Extend the add-unit and add-tenant lease forms and the staff mutations that create a lease.
+- A lease with no rent set keeps working and reads as not set.
+
+**Acceptance (yes or no)**
+
+- Staff set a monthly rent and due day when creating a lease, and see it back.
+- Staff change the rent on an existing lease.
+- A lease with no rent set does not break the rent screens.
+- Tests cover create with rent, change rent, and a lease with no rent.
+
+**Out of scope**
+
+- Ledger, deposits, late fees, pro-rata first months.
+- Generating rent periods ([RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-lease-is-charged-rent-each-month)).
+
+---
+
+## RIDGE-37. Every current lease is charged rent each month
+
+**Epic:** Rent status ([RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status))
+**Apps:** convex
+**Branch:** `feature/RIDGE-37`
+**Blocked by:** [RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-due-day-live-on-the-lease)
+
+Rent periods only exist because `seed.ensureRentPeriods` inserts three hardcoded months for one lease. Nothing creates next month, so on the first of a new month the staff rent page is empty for every building.
+
+**What they do**
+
+- A new month begins and every current lease already has an unpaid rent row due on the lease's due day.
+- Ama adds a tenant mid-month and that lease appears on the rent page without anyone running a script.
+
+**How it is built**
+
+- One internal mutation that charges a given month for every current lease that does not already have a row. Running it twice must not double-charge.
+- A Convex cron runs it at the start of each month. Creating a lease charges the current month straight away.
+- Amount, currency, and due day come from the lease. A lease with no rent set is skipped.
+
+**Acceptance (yes or no)**
+
+- Running the month job creates exactly one unpaid row per current lease.
+- Running it a second time changes nothing.
+- An ended lease is not charged for a month after it ended.
+- A lease with no rent amount is skipped rather than charged zero.
+- Tests cover first run, repeat run, ended lease, and no rent set.
+
+**Out of scope**
+
+- Back-filling months before the lease started.
+- Changing `confirmedStatus` on rows that already exist.
+
+---
+
+## RIDGE-38. Staff can open an earlier month and see what a tenant still owes
+
+**Epic:** Rent status ([RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status))
+**Apps:** web (staff), convex
+**Branch:** `feature/RIDGE-38`
+**Blocked by:** [RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-lease-is-charged-rent-each-month)
+
+`rent.listByBuilding` computes the current month from `Date.now()` and drops every other row. Staff cannot open August, and Collected and Outstanding only ever describe this month. If a tenant does not pay September, the row disappears on 1 October.
+
+**What they do**
+
+- Ama steps back to August and sees who paid and who did not.
+- Ama sees what a tenant owes in total, not only this month's charge.
+
+**How it is built**
+
+- `rent.listByBuilding` takes an optional month and defaults to the current one.
+- Month navigation on the staff rent page, back to the earliest charged month and never into the future.
+- Each row shows arrears carried from earlier months alongside this month's charge.
+
+**Acceptance (yes or no)**
+
+- Staff open a past month and see that month's rows and totals.
+- Staff cannot navigate past the earliest charged month or into a future month.
+- A tenant with an unpaid earlier month shows arrears on the current month.
+- Confirming a status while viewing a past month writes to that month's row.
+- Tests cover a past month, the totals following the month, and arrears on the current month.
+
+**Out of scope**
+
+- Per-tenant statement or downloadable report.
+- Late fees or interest.
+
+---
+
 ## Next slices
 
-18. [RIDGE-9 Tenant sees a rent reminder and can mark a payment as reported](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported) — Rent. Design: `exports/web/tenant/rent.html`, `exports/web/staff/rent-list.html`.
 19. [RIDGE-10 Staff command center](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) — Design: `exports/web/staff/home.html`.
 20. [RIDGE-11 Owner home](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus) — Design: `exports/web/owner/home.html`.
 21. [RIDGE-12 Seed Accra world](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) — Ten buildings, three owners, no user named "test user".
