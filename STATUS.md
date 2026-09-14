@@ -81,7 +81,8 @@ Start [RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-du
 - RIDGE-34 follow-up PR (merged): https://github.com/delasimensah/ridgeway/pull/16
 - RIDGE-7 PR (merged): https://github.com/delasimensah/ridgeway/pull/17
 - RIDGE-35 PR (merged): https://github.com/delasimensah/ridgeway/pull/18
-- RIDGE-8 PR: https://github.com/delasimensah/ridgeway/pull/19
+- RIDGE-8 PR (merged): https://github.com/delasimensah/ridgeway/pull/19
+- RIDGE-9 PR: https://github.com/delasimensah/ridgeway/pull/20
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
