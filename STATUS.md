@@ -83,7 +83,7 @@ Start [RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-leas
 - RIDGE-35 PR (merged): https://github.com/delasimensah/ridgeway/pull/18
 - RIDGE-8 PR (merged): https://github.com/delasimensah/ridgeway/pull/19
 - RIDGE-9 PR (merged): https://github.com/delasimensah/ridgeway/pull/20
-- RIDGE-36 PR: (open when published)
+- RIDGE-36 PR: https://github.com/delasimensah/ridgeway/pull/21
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
