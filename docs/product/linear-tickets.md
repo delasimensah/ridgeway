@@ -35,10 +35,11 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-35](https://linear.app/dm-studios/issue/RIDGE-35/field-app-completion-photo-uploads-on-device-android-system-bar) is **Done**.
 - [RIDGE-8](https://linear.app/dm-studios/issue/RIDGE-8/after-staff-end-a-lease-that-tenant-cannot-see-the-unit) is **Done**.
 - [RIDGE-9](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported) is **Done**.
+- [RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-due-day-live-on-the-lease) is **Done**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
-- Next slice is [RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-due-day-live-on-the-lease), then [RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-lease-is-charged-rent-each-month). Rent only exists as seed data until those two land, so the command center would be reporting figures that disappear at the start of each month.
-- [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes) follows, then [RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) (staff command center).
-- RIDGE-36, RIDGE-37, RIDGE-38, RIDGE-10 through RIDGE-15, and the epics are **Todo**.
+- Next slice is [RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-lease-is-charged-rent-each-month), then [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes). Rent on the lease is stored; monthly charging and past months are still open, so the command center would still lose rows at month start until those land.
+- [RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) (staff command center) follows.
+- RIDGE-37, RIDGE-38, RIDGE-10 through RIDGE-15, and the epics are **Todo**.
 - RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** until RIDGE-1 through RIDGE-13 are done.
 
 When a slice is started, move that issue to In Progress immediately. Do not use Backlog for queued first-version work. Linear stays In Progress until merge to `main`. In the feature PR, write this Status now block as that post-merge board.

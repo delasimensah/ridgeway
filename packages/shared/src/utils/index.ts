@@ -28,8 +28,10 @@ export {
   currencySymbol,
   formatMoney,
   formatPeriodLabel,
+  fromSmallestUnit,
   getRentDisplayStatus,
   rentStatusLabel,
+  toSmallestUnit,
 } from "./rent";
 
 export { getDisplayInitials } from "./displayInitials";

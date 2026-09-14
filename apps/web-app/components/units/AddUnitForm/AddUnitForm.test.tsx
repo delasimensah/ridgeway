@@ -171,6 +171,8 @@ describe("AddUnitForm", () => {
           displayName: "Akosua Darko",
           phone: "",
           email: "akosua@example.com",
+          rentAmount: "",
+          rentDueDay: "",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
         }}
@@ -210,6 +212,8 @@ describe("AddUnitForm", () => {
           displayName: "",
           phone: "",
           email: "",
+          rentAmount: "",
+          rentDueDay: "",
           startedOn: "2024-01-15",
           endedOn: "",
         }}

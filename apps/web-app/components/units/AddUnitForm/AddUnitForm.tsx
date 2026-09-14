@@ -14,6 +14,7 @@ import {
   addUnitSchema,
   getConvexErrorInfo,
   isExistingTenantChoice,
+  leaseRentMutationArgs,
   NEW_TENANT_CHOICE,
   UNIT_KIND_OPTIONS,
 } from "@/utils";
@@ -45,6 +46,8 @@ const EMPTY_VALUES: AddUnitFormValues = {
   displayName: "",
   phone: "",
   email: "",
+  rentAmount: "",
+  rentDueDay: "",
   startedOn: "",
   endedOn: "",
 };
@@ -94,6 +97,7 @@ const AddUnitForm: React.FC<AddUnitFormProps> = ({
         });
       } else {
         const tenantChoice = values.tenantChoice ?? "";
+        const rent = leaseRentMutationArgs(values);
         await createUnit({
           buildingId,
           label: values.label,
@@ -106,6 +110,7 @@ const AddUnitForm: React.FC<AddUnitFormProps> = ({
                   phone: values.phone,
                   startedOn: values.startedOn ?? "",
                   endedOn: values.endedOn,
+                  ...rent,
                 },
               }
             : isExistingTenantChoice(tenantChoice)
@@ -114,6 +119,7 @@ const AddUnitForm: React.FC<AddUnitFormProps> = ({
                     tenantProfileId: tenantChoice as Id<"profiles">,
                     startedOn: values.startedOn ?? "",
                     endedOn: values.endedOn,
+                    ...rent,
                   },
                 }
               : {}),

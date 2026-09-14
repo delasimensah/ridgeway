@@ -49,7 +49,8 @@ export const TENANT_SEED = {
 
 export const TENANT_RENT_SEED = {
   amount: 450000,
-  currency: "GHS",
+  currency: "GHS" as const,
+  dueDay: 5,
   periods: [
     {
       periodLabel: "2026-07",
@@ -271,6 +272,13 @@ export const ensureTenantOnBuilding = internalMutation({
           await ctx.db.patch(extra._id, { endedOn });
         }
       }
+      if (kept.rentAmount === undefined) {
+        await ctx.db.patch(kept._id, {
+          rentAmount: TENANT_RENT_SEED.amount,
+          rentCurrency: TENANT_RENT_SEED.currency,
+          rentDueDay: TENANT_RENT_SEED.dueDay,
+        });
+      }
       return kept._id;
     }
 
@@ -280,6 +288,13 @@ export const ensureTenantOnBuilding = internalMutation({
       .collect();
     const currentOnUnit = unitLeases.find((row) => isLeaseCurrent(row, today));
     if (currentOnUnit !== undefined) {
+      if (currentOnUnit.rentAmount === undefined) {
+        await ctx.db.patch(currentOnUnit._id, {
+          rentAmount: TENANT_RENT_SEED.amount,
+          rentCurrency: TENANT_RENT_SEED.currency,
+          rentDueDay: TENANT_RENT_SEED.dueDay,
+        });
+      }
       return currentOnUnit._id;
     }
 
@@ -287,6 +302,9 @@ export const ensureTenantOnBuilding = internalMutation({
       unitId,
       tenantProfileId: profileId,
       startedOn: args.startedOn,
+      rentAmount: TENANT_RENT_SEED.amount,
+      rentCurrency: TENANT_RENT_SEED.currency,
+      rentDueDay: TENANT_RENT_SEED.dueDay,
     });
   },
 });

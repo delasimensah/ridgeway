@@ -49,6 +49,16 @@ export function formatMoney(amount: number, currency: Currency): string {
   return `${currencySymbol(currency)} ${formatted}`;
 }
 
+/** Whole cedis or dollars → pesewas or cents. GH₵ 4,500 → 450000. */
+export function toSmallestUnit(major: number): number {
+  return Math.round(major * 100);
+}
+
+/** Pesewas or cents → whole cedis or dollars for form display. */
+export function fromSmallestUnit(amount: number): number {
+  return amount / 100;
+}
+
 export function formatPeriodLabel(periodLabel: string): string {
   const year = periodLabel.slice(0, 4);
   const month = Number(periodLabel.slice(5, 7));

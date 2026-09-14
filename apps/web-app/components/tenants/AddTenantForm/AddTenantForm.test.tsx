@@ -52,6 +52,10 @@ describe("AddTenantForm", () => {
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/lease start/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/due each month on/i)).toBeInTheDocument();
+    expect(
+      screen.getByText("Rent falls due on this day every month.")
+    ).toBeInTheDocument();
     expect(
       screen.queryByText(/started before Ridgeway the product existed/i)
     ).not.toBeInTheDocument();
@@ -72,6 +76,8 @@ describe("AddTenantForm", () => {
           displayName: "Akosua Darko",
           phone: "",
           email: "akosua@example.com",
+          rentAmount: "4500",
+          rentDueDay: "5",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
           password: "",
@@ -89,6 +95,9 @@ describe("AddTenantForm", () => {
         phone: "",
         startedOn: "2024-01-15",
         endedOn: "2027-12-31",
+        rentAmount: 450000,
+        rentCurrency: "GHS",
+        rentDueDay: 5,
       });
     });
     expect(mockReplace).toHaveBeenCalledWith("/buildings/building-id");
@@ -109,6 +118,8 @@ describe("AddTenantForm", () => {
           displayName: "Akosua Darko",
           phone: "024 111 2222",
           email: "akosua@example.com",
+          rentAmount: "",
+          rentDueDay: "",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
           password: "",
@@ -149,6 +160,8 @@ describe("AddTenantForm", () => {
           displayName: "Akosua Darko",
           phone: "",
           email: "akosua@example.com",
+          rentAmount: "",
+          rentDueDay: "",
           startedOn: "2024-01-15",
           endedOn: "",
           password: "",
@@ -181,6 +194,8 @@ describe("AddTenantForm", () => {
           displayName: "Akosua Darko",
           phone: "",
           email: "akosua@example.com",
+          rentAmount: "",
+          rentDueDay: "",
           startedOn: "2024-01-15",
           endedOn: "",
           password: "",
@@ -219,6 +234,8 @@ describe("AddTenantForm", () => {
           displayName: "",
           phone: "",
           email: "",
+          rentAmount: "",
+          rentDueDay: "",
           startedOn: "2024-01-15",
           endedOn: "",
           password: "",
@@ -250,6 +267,8 @@ describe("AddTenantForm", () => {
           displayName: "Akosua Darko",
           phone: "",
           email: "akosua@example.com",
+          rentAmount: "",
+          rentDueDay: "",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
           password: "",
@@ -295,6 +314,8 @@ describe("AddTenantForm", () => {
           displayName: "Akosua Darko",
           phone: "024 111 2222",
           email: "akosua@example.com",
+          rentAmount: "",
+          rentDueDay: "",
           startedOn: "2024-01-15",
           endedOn: "2027-12-31",
           password: "",

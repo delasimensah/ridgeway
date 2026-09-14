@@ -113,6 +113,9 @@ Indexed by `buildingId`.
 - `tenantProfileId`, a reference to the tenant's profile.
 - `startedOn`, a string holding a calendar date, which in the seed data is already in the past.
 - `endedOn`, an optional string holding a calendar date, set by staff when the person moves out.
+- `rentAmount`, an optional whole number of the currency's smallest unit (pesewas or cents). Absent means rent is not set on this lease.
+- `rentCurrency`, optional, `"GHS"` or `"USD"`, present when `rentAmount` is set.
+- `rentDueDay`, an optional day of the month from 1 to 31, present when `rentAmount` is set.
 
 Indexed by `tenantProfileId`, which is how we answer "what does this tenant currently have access to" on every tenant request. Also indexed by `unitId`, for the staff screen showing who is in a unit.
 
@@ -297,7 +300,7 @@ Where a function is described as staff-only, that means it is declared with `sta
 - `leases.listForStaff` is a staff-only query listing every tenant profile in the caller's organization. Each row includes the current lease (building and unit) when there is one, and none when the only leases have ended. New tenants are still created with a lease; this list does not invent a person who never rented.
 - `leases.listByBuilding` is a query for staff and for that building's owner. The owner sees occupancy, so this is where an owner's view of who is in a unit comes from.
 - `leases.createWithTenant` is a staff-only mutation that creates the tenant's profile if needed and the lease in one transaction, so a half-created tenancy cannot exist.
-- `leases.updateTenant` is a staff-only mutation that corrects typed tenant and lease fields. It does not create a website login.
+- `leases.updateTenant` is a staff-only mutation that corrects typed tenant and lease fields, including monthly rent and due day. It does not create a website login.
 - `leases.grantLogin` is a staff-only action. Staff type an email and a temporary password, for a new tenant or for a tenant who still has no login. Add tenant and edit tenant call it when a password is set on a person who does not yet have a login. It calls Convex Auth `createAccount`, then attaches that Auth user to the tenant profile the lease already points at (or creates the profile and lease for a new tenant). First grant only: it refuses when that email already belongs to a login (staff, field, an owner, or another tenant) and it refuses when the tenant already has a login. `leases.get` includes whether that tenant already has a login.
 - `leases.setPassword` is a staff-only action. Staff type a new password on a tenant who already has a login. It calls Convex Auth `modifyAccountCredentials`. An empty password on the form does not call it.
 - `leases.end` is a staff-only mutation that sets `endedOn`. It writes one field and nothing else, because everything downstream of a tenancy ending is derived rather than stored. This single small mutation is what the ended-lease requirement rests on, and it is worth noticing how little it has to do.

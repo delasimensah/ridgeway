@@ -87,13 +87,63 @@ function optionalCalendarDate(
   return requireCalendarDate(trimmed, field);
 }
 
+const rentCurrency = v.union(v.literal("GHS"), v.literal("USD"));
+
+const leaseRentFields = {
+  rentAmount: v.optional(v.number()),
+  rentCurrency: v.optional(rentCurrency),
+  rentDueDay: v.optional(v.number()),
+};
+
 const tenantFields = {
   displayName: v.string(),
   email: v.string(),
   phone: v.optional(v.string()),
   startedOn: v.string(),
   endedOn: v.optional(v.string()),
+  ...leaseRentFields,
 };
+
+type LeaseRentWrite = {
+  rentAmount: number;
+  rentCurrency: "GHS" | "USD";
+  rentDueDay: number;
+};
+
+function optionalLeaseRent(args: {
+  rentAmount?: number;
+  rentCurrency?: "GHS" | "USD";
+  rentDueDay?: number;
+}): LeaseRentWrite | null {
+  const hasAmount = args.rentAmount !== undefined;
+  const hasDueDay = args.rentDueDay !== undefined;
+  if (!hasAmount && !hasDueDay) {
+    return null;
+  }
+  if (!hasAmount || !hasDueDay) {
+    raise(ERROR_CODES.INVALID, "Monthly rent and due day must be set together");
+  }
+  if (
+    !Number.isInteger(args.rentAmount) ||
+    args.rentAmount === undefined ||
+    args.rentAmount <= 0
+  ) {
+    raise(ERROR_CODES.INVALID, "Monthly rent must be a positive amount");
+  }
+  if (
+    !Number.isInteger(args.rentDueDay) ||
+    args.rentDueDay === undefined ||
+    args.rentDueDay < 1 ||
+    args.rentDueDay > 31
+  ) {
+    raise(ERROR_CODES.INVALID, "Due day must be between 1 and 31");
+  }
+  return {
+    rentAmount: args.rentAmount,
+    rentCurrency: args.rentCurrency ?? "GHS",
+    rentDueDay: args.rentDueDay,
+  };
+}
 
 const leaseFormFields = v.object({
   _id: v.id("leases"),
@@ -104,6 +154,9 @@ const leaseFormFields = v.object({
   phone: v.union(v.string(), v.null()),
   startedOn: v.string(),
   endedOn: v.union(v.string(), v.null()),
+  rentAmount: v.union(v.number(), v.null()),
+  rentCurrency: v.union(rentCurrency, v.null()),
+  rentDueDay: v.union(v.number(), v.null()),
   hasLogin: v.boolean(),
 });
 
@@ -217,6 +270,9 @@ export const get = staffQuery({
       phone: profile.phone ?? null,
       startedOn: lease.startedOn,
       endedOn: lease.endedOn ?? null,
+      rentAmount: lease.rentAmount ?? null,
+      rentCurrency: lease.rentCurrency ?? null,
+      rentDueDay: lease.rentDueDay ?? null,
       hasLogin: await userHasPasswordLogin(ctx, profile.userId),
     };
   },
@@ -232,6 +288,9 @@ export async function insertLeaseWithTenant(
     phone?: string;
     startedOn: string;
     endedOn?: string;
+    rentAmount?: number;
+    rentCurrency?: "GHS" | "USD";
+    rentDueDay?: number;
   }
 ): Promise<Id<"leases">> {
   const { unit } = await requireUnitInStaffOrg(ctx, viewer, unitId);
@@ -241,6 +300,7 @@ export async function insertLeaseWithTenant(
   const phone = optionalText(args.phone);
   const startedOn = requireCalendarDate(args.startedOn, "Lease start");
   const endedOn = optionalCalendarDate(args.endedOn, "Lease end");
+  const rent = optionalLeaseRent(args);
   validateLeaseDates(startedOn, endedOn);
 
   const today = utcToday();
@@ -301,6 +361,7 @@ export async function insertLeaseWithTenant(
     tenantProfileId,
     startedOn,
     ...(endedOn !== undefined ? { endedOn } : {}),
+    ...(rent !== null ? rent : {}),
   });
 }
 
@@ -353,11 +414,15 @@ export async function insertLeaseForExistingTenant(
     tenantProfileId: Id<"profiles">;
     startedOn: string;
     endedOn?: string;
+    rentAmount?: number;
+    rentCurrency?: "GHS" | "USD";
+    rentDueDay?: number;
   }
 ): Promise<Id<"leases">> {
   const { unit, building } = await requireUnitInStaffOrg(ctx, viewer, unitId);
   const startedOn = requireCalendarDate(args.startedOn, "Lease start");
   const endedOn = optionalCalendarDate(args.endedOn, "Lease end");
+  const rent = optionalLeaseRent(args);
   validateLeaseDates(startedOn, endedOn);
 
   const today = utcToday();
@@ -377,6 +442,7 @@ export async function insertLeaseForExistingTenant(
     tenantProfileId: profile._id,
     startedOn,
     ...(endedOn !== undefined ? { endedOn } : {}),
+    ...(rent !== null ? rent : {}),
   });
 }
 
@@ -563,6 +629,9 @@ export const createWithTenant = staffMutation({
       phone: args.phone,
       startedOn: args.startedOn,
       endedOn: args.endedOn,
+      rentAmount: args.rentAmount,
+      rentCurrency: args.rentCurrency,
+      rentDueDay: args.rentDueDay,
     });
   },
 });
@@ -573,6 +642,7 @@ export const createForExistingTenant = staffMutation({
     tenantProfileId: v.id("profiles"),
     startedOn: v.string(),
     endedOn: v.optional(v.string()),
+    ...leaseRentFields,
   },
   returns: v.id("leases"),
   handler: async (ctx, args) => {
@@ -580,6 +650,9 @@ export const createForExistingTenant = staffMutation({
       tenantProfileId: args.tenantProfileId,
       startedOn: args.startedOn,
       endedOn: args.endedOn,
+      rentAmount: args.rentAmount,
+      rentCurrency: args.rentCurrency,
+      rentDueDay: args.rentDueDay,
     });
   },
 });
@@ -603,6 +676,7 @@ export const updateTenant = staffMutation({
     const phone = optionalText(args.phone);
     const startedOn = requireCalendarDate(args.startedOn, "Lease start");
     const endedOn = optionalCalendarDate(args.endedOn, "Lease end");
+    const rent = optionalLeaseRent(args);
     validateLeaseDates(startedOn, endedOn);
 
     const profile = await ctx.db.get(lease.tenantProfileId);
@@ -626,6 +700,7 @@ export const updateTenant = staffMutation({
     await ctx.db.patch(lease._id, {
       startedOn,
       ...(endedOn !== undefined ? { endedOn } : {}),
+      ...(rent !== null ? rent : {}),
     });
     return null;
   },
@@ -818,6 +893,7 @@ export const attachLogin = internalMutation({
     phone: v.optional(v.string()),
     startedOn: v.string(),
     endedOn: v.optional(v.string()),
+    ...leaseRentFields,
   },
   returns: v.id("leases"),
   handler: async (ctx, args) => {
@@ -826,6 +902,7 @@ export const attachLogin = internalMutation({
     const phone = optionalText(args.phone);
     const startedOn = requireCalendarDate(args.startedOn, "Lease start");
     const endedOn = optionalCalendarDate(args.endedOn, "Lease end");
+    const rent = optionalLeaseRent(args);
     validateLeaseDates(startedOn, endedOn);
 
     const authUser = await ctx.db.get(args.userId);
@@ -869,6 +946,7 @@ export const attachLogin = internalMutation({
       await ctx.db.patch(lease._id, {
         startedOn,
         ...(endedOn !== undefined ? { endedOn } : {}),
+        ...(rent !== null ? rent : {}),
       });
       return lease._id;
     }
@@ -926,6 +1004,7 @@ export const attachLogin = internalMutation({
       tenantProfileId,
       startedOn,
       ...(endedOn !== undefined ? { endedOn } : {}),
+      ...(rent !== null ? rent : {}),
     });
   },
 });
@@ -940,6 +1019,7 @@ export const grantLogin = staffAction({
     startedOn: v.string(),
     endedOn: v.optional(v.string()),
     password: v.string(),
+    ...leaseRentFields,
   },
   returns: v.id("leases"),
   handler: async (ctx, args): Promise<Id<"leases">> => {
@@ -956,6 +1036,7 @@ export const grantLogin = staffAction({
     const phone = optionalText(args.phone);
     const startedOn = requireCalendarDate(args.startedOn, "Lease start");
     const endedOn = optionalCalendarDate(args.endedOn, "Lease end");
+    const rent = optionalLeaseRent(args);
     validateLeaseDates(startedOn, endedOn);
 
     if (args.leaseId === undefined && args.unitId === undefined) {
@@ -1025,6 +1106,7 @@ export const grantLogin = staffAction({
       phone,
       startedOn,
       endedOn,
+      ...(rent !== null ? rent : {}),
     });
   },
 });

@@ -76,7 +76,94 @@ describe("leases", () => {
       phone: "024 111 2222",
       startedOn: "2024-01-15",
       endedOn: "2027-12-31",
+      rentAmount: null,
+      rentCurrency: null,
+      rentDueDay: null,
       hasLogin: false,
+    });
+  });
+
+  it("stores monthly rent and due day when creating a lease", async () => {
+    const { t, userId, unitId } = await staffWithUnit();
+
+    const leaseId = await asUser(t, userId).mutation(
+      api.leases.createWithTenant,
+      {
+        unitId,
+        displayName: "Akosua Darko",
+        email: "akosua@example.com",
+        startedOn: "2024-01-15",
+        rentAmount: 450000,
+        rentCurrency: "GHS",
+        rentDueDay: 5,
+      }
+    );
+
+    const loaded = await asUser(t, userId).query(api.leases.get, { leaseId });
+    expect(loaded).toMatchObject({
+      rentAmount: 450000,
+      rentCurrency: "GHS",
+      rentDueDay: 5,
+    });
+  });
+
+  it("lets staff change rent on an existing lease", async () => {
+    const { t, userId, unitId } = await staffWithUnit();
+    const leaseId = await asUser(t, userId).mutation(
+      api.leases.createWithTenant,
+      {
+        unitId,
+        displayName: "Akosua Darko",
+        email: "akosua@example.com",
+        startedOn: "2024-01-15",
+        rentAmount: 450000,
+        rentCurrency: "GHS",
+        rentDueDay: 5,
+      }
+    );
+
+    await asUser(t, userId).mutation(api.leases.updateTenant, {
+      leaseId,
+      displayName: "Akosua Darko",
+      email: "akosua@example.com",
+      startedOn: "2024-01-15",
+      rentAmount: 500000,
+      rentCurrency: "GHS",
+      rentDueDay: 1,
+    });
+
+    const loaded = await asUser(t, userId).query(api.leases.get, { leaseId });
+    expect(loaded).toMatchObject({
+      rentAmount: 500000,
+      rentCurrency: "GHS",
+      rentDueDay: 1,
+    });
+  });
+
+  it("keeps a lease without rent readable as not set", async () => {
+    const { t, userId, buildingId, unitId } = await staffWithUnit();
+    const leaseId = await asUser(t, userId).mutation(
+      api.leases.createWithTenant,
+      {
+        unitId,
+        displayName: "Akosua Darko",
+        email: "akosua@example.com",
+        startedOn: "2024-01-15",
+      }
+    );
+
+    const loaded = await asUser(t, userId).query(api.leases.get, { leaseId });
+    const list = await asUser(t, userId).query(api.units.listByBuilding, {
+      buildingId,
+    });
+    expect(loaded).toMatchObject({
+      rentAmount: null,
+      rentCurrency: null,
+      rentDueDay: null,
+    });
+    expect(list.find((row) => row._id === unitId)).toMatchObject({
+      rentAmount: null,
+      rentCurrency: null,
     });
   });
 

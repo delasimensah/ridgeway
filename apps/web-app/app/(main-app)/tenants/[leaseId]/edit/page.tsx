@@ -55,6 +55,9 @@ const EditTenantRoute = () => {
         displayName: lease.displayName,
         phone: lease.phone ?? "",
         email: lease.email,
+        rentAmount:
+          lease.rentAmount === null ? "" : String(lease.rentAmount / 100),
+        rentDueDay: lease.rentDueDay === null ? "" : String(lease.rentDueDay),
         startedOn: lease.startedOn,
         endedOn: lease.endedOn ?? "",
         password: "",
