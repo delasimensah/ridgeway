@@ -37,10 +37,10 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-9](https://linear.app/dm-studios/issue/RIDGE-9/tenant-sees-a-rent-reminder-and-can-mark-a-payment-as-reported) is **Done**.
 - [RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-due-day-live-on-the-lease) is **Done**.
 - [RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-lease-is-charged-rent-each-month) is **Done**.
+- [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes) is **Done**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
-- Next slice is [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes). Monthly charging runs; past months and arrears are still open, so the command center would still lose visibility into earlier months until that lands.
-- [RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) (staff command center) follows.
-- RIDGE-38, RIDGE-10 through RIDGE-15, and the epics are **Todo**.
+- Next slice is [RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) (staff command center). Past months and arrears are on the rent page, so the command center can use real rent status.
+- RIDGE-10 through RIDGE-15, and the epics are **Todo**.
 - RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** until RIDGE-1 through RIDGE-13 are done.
 
 When a slice is started, move that issue to In Progress immediately. Do not use Backlog for queued first-version work. Linear stays In Progress until merge to `main`. In the feature PR, write this Status now block as that post-merge board.

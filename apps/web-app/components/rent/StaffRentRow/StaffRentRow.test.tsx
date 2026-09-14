@@ -12,6 +12,7 @@ const BASE_PROPS = {
   currency: "GHS" as const,
   dueOn: "2026-09-05",
   confirmedAmount: null,
+  arrears: 0,
   serverNow: Date.UTC(2026, 8, 13),
 };
 
@@ -68,6 +69,14 @@ describe("StaffRentRow", () => {
 
     expect(
       screen.getByText("GH₵ 2,000 received · GH₵ 2,500 still owed")
+    ).toBeInTheDocument();
+  });
+
+  it("shows arrears carried from earlier months", () => {
+    renderRow({ arrears: 300000 });
+
+    expect(
+      screen.getByText("GH₵ 3,000 in arrears from earlier months")
     ).toBeInTheDocument();
   });
 });

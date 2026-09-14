@@ -325,7 +325,7 @@ There is one mutation per move rather than one that takes a target status, becau
 ### Rent
 
 - `rent.listForCurrentTenant` is a query returning the caller's own periods for their current leases, together with `serverNow`.
-- `rent.listByBuilding` is a paginated staff query, also returning `serverNow`.
+- `rent.listByBuilding` is a paginated staff query. It takes an optional `periodLabel` (defaults to the current UTC month), returns that month's rows and Collected / Outstanding totals, `earliestPeriodLabel` for navigation, and per-row `arrears` from unpaid earlier months. Requested months after the current month or before the earliest charge are clamped.
 - `rent.summaryForOwner` is a query for the caller's own buildings only, returning collected against outstanding as whole numbers in the same unit the periods are stored in. It reads the periods for the leases under those buildings and adds them up at read time. At ten buildings that is a small number of documents. If the portfolio grew, this is the function that would change first, into a maintained total.
 
 - `rent.chargeMonth` is an internal mutation that, for a given `YYYY-MM` month (or the current UTC month when omitted), inserts one unpaid `rentPeriods` row for every lease that covers that month, has rent set, and does not already have a row. Amount, currency, and due day come from the lease. Running it twice does not double-charge. Creating a lease calls the same helper for the current month so a new tenant appears on the rent page without waiting for the cron.

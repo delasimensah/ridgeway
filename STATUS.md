@@ -10,9 +10,9 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-37 done** (every current lease is charged rent each month). Next is [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes). [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Canceled.
+- **Current phase:** Build slices — **RIDGE-38 done** (staff can open earlier months and see arrears). Next is [RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across). [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Canceled.
 - **Last updated:** 14 Sep 2026
-- **Blocked / open:** Monthly charging runs, but staff can only see the current month. [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes) covers past months and arrears.
+- **Blocked / open:** None for the rent epic path into the command center.
 
 ---
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, RIDGE-29, RIDGE-30, RIDGE-32, RIDGE-33, RIDGE-31, RIDGE-34, RIDGE-7, RIDGE-35, RIDGE-8, RIDGE-9, RIDGE-36, and RIDGE-37 Done; next is RIDGE-38 (past months and arrears), then RIDGE-10 (staff command center); RIDGE-28 Canceled; then RIDGE-11–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, RIDGE-29, RIDGE-30, RIDGE-32, RIDGE-33, RIDGE-31, RIDGE-34, RIDGE-7, RIDGE-35, RIDGE-8, RIDGE-9, RIDGE-36, RIDGE-37, and RIDGE-38 Done; next is RIDGE-10 (staff command center); RIDGE-28 Canceled; then RIDGE-11–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,7 +58,7 @@
 
 ## Next action (one line)
 
-Start [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes) (staff can open an earlier month and see what a tenant still owes).
+Start [RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) (staff command center shows open work orders and rent status across buildings).
 
 ---
 
@@ -84,7 +84,8 @@ Start [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-
 - RIDGE-8 PR (merged): https://github.com/delasimensah/ridgeway/pull/19
 - RIDGE-9 PR (merged): https://github.com/delasimensah/ridgeway/pull/20
 - RIDGE-36 PR (merged): https://github.com/delasimensah/ridgeway/pull/21
-- RIDGE-37 PR: https://github.com/delasimensah/ridgeway/pull/22
+- RIDGE-37 PR (merged): https://github.com/delasimensah/ridgeway/pull/22
+- RIDGE-38 PR: https://github.com/delasimensah/ridgeway/pull/23
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
