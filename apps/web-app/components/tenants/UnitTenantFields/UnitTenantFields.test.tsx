@@ -19,6 +19,8 @@ function mockForm(
       displayName: "",
       phone: "",
       email: "",
+      rentAmount: "",
+      rentDueDay: "",
       startedOn: "",
       endedOn: "",
       ...values,

@@ -14,6 +14,7 @@ import {
 } from "@/utils";
 
 import Text from "../../ui/Text/Text";
+import LeaseRentFields from "../LeaseRentFields/LeaseRentFields";
 
 export interface AvailableTenantOption {
   _id: string;
@@ -142,38 +143,41 @@ const UnitTenantFields: React.FC<UnitTenantFieldsProps> = ({
         </Stack>
       ) : null}
       {showLeaseDates ? (
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
-          <DatePickerInput
-            id="startedOn"
-            label="Lease start"
-            placeholder="Pick a date"
-            valueFormat="D MMM YYYY"
-            maxDate={latestStart}
-            highlightToday
-            weekendDays={[]}
-            withAsterisk
-            pointer
-            leftSection={DATE_PICKER_ICON}
-            popoverProps={DATE_PICKER_POPOVER}
-            classNames={DATE_PICKER_CLASSNAMES}
-            {...datePickerProps(form, "startedOn")}
-          />
-          <DatePickerInput
-            id="endedOn"
-            label="Lease end"
-            placeholder="Pick a date"
-            valueFormat="D MMM YYYY"
-            minDate={form.values.startedOn || undefined}
-            clearable
-            highlightToday
-            weekendDays={[]}
-            pointer
-            leftSection={DATE_PICKER_ICON}
-            popoverProps={DATE_PICKER_POPOVER}
-            classNames={DATE_PICKER_CLASSNAMES}
-            {...datePickerProps(form, "endedOn")}
-          />
-        </SimpleGrid>
+        <>
+          <LeaseRentFields form={form} />
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
+            <DatePickerInput
+              id="startedOn"
+              label="Lease start"
+              placeholder="Pick a date"
+              valueFormat="D MMM YYYY"
+              maxDate={latestStart}
+              highlightToday
+              weekendDays={[]}
+              withAsterisk
+              pointer
+              leftSection={DATE_PICKER_ICON}
+              popoverProps={DATE_PICKER_POPOVER}
+              classNames={DATE_PICKER_CLASSNAMES}
+              {...datePickerProps(form, "startedOn")}
+            />
+            <DatePickerInput
+              id="endedOn"
+              label="Lease end"
+              placeholder="Pick a date"
+              valueFormat="D MMM YYYY"
+              minDate={form.values.startedOn || undefined}
+              clearable
+              highlightToday
+              weekendDays={[]}
+              pointer
+              leftSection={DATE_PICKER_ICON}
+              popoverProps={DATE_PICKER_POPOVER}
+              classNames={DATE_PICKER_CLASSNAMES}
+              {...datePickerProps(form, "endedOn")}
+            />
+          </SimpleGrid>
+        </>
       ) : null}
       <Text className="rounded-[8px] border border-border bg-sidebar p-4 text-sm leading-relaxed text-grey">
         Leave this empty if the unit is vacant. Pick someone who already rented,

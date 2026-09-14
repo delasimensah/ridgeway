@@ -1,4 +1,4 @@
-import { isValidEmail } from "shared";
+import { isValidEmail, toSmallestUnit } from "shared";
 import { z } from "zod";
 
 export const NEW_TENANT_CHOICE = "__new_tenant__";
@@ -48,6 +48,71 @@ export function addLeaseDateIssues(
   }
 }
 
+export function addLeaseRentIssues(
+  values: { rentAmount?: string; rentDueDay?: string },
+  ctx: z.RefinementCtx
+) {
+  const rentAmount = values.rentAmount?.trim() ?? "";
+  const rentDueDay = values.rentDueDay?.trim() ?? "";
+  if (rentAmount.length === 0 && rentDueDay.length === 0) {
+    return;
+  }
+  if (rentAmount.length === 0) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["rentAmount"],
+      message: "Monthly rent is required when a due day is set",
+    });
+  } else {
+    const major = Number(rentAmount);
+    if (!Number.isFinite(major) || major <= 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["rentAmount"],
+        message: "Enter a monthly rent greater than zero",
+      });
+    }
+  }
+  if (rentDueDay.length === 0) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["rentDueDay"],
+      message: "Due day is required when monthly rent is set",
+    });
+  } else {
+    const day = Number(rentDueDay);
+    if (!Number.isInteger(day) || day < 1 || day > 31) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["rentDueDay"],
+        message: "Due day must be between 1 and 31",
+      });
+    }
+  }
+}
+
+export function leaseRentMutationArgs(values: {
+  rentAmount?: string;
+  rentDueDay?: string;
+}):
+  | {
+      rentAmount: number;
+      rentCurrency: "GHS";
+      rentDueDay: number;
+    }
+  | Record<string, never> {
+  const rentAmount = values.rentAmount?.trim() ?? "";
+  const rentDueDay = values.rentDueDay?.trim() ?? "";
+  if (rentAmount.length === 0 && rentDueDay.length === 0) {
+    return {};
+  }
+  return {
+    rentAmount: toSmallestUnit(Number(rentAmount)),
+    rentCurrency: "GHS",
+    rentDueDay: Number(rentDueDay),
+  };
+}
+
 export const addTenantSchema = z
   .object({
     unitId: z.string().trim().min(1, "Unit is required"),
@@ -55,6 +120,8 @@ export const addTenantSchema = z
     displayName: z.string().trim(),
     phone: z.string().trim(),
     email: z.string().trim(),
+    rentAmount: z.string().trim(),
+    rentDueDay: z.string().trim(),
     startedOn: z.string().trim(),
     endedOn: z.string().trim(),
     password: z.string(),
@@ -93,6 +160,7 @@ export const addTenantSchema = z
       }
     }
     addLeaseDateIssues(values, ctx, true);
+    addLeaseRentIssues(values, ctx);
   });
 
 export type AddTenantFormValues = z.infer<typeof addTenantSchema>;

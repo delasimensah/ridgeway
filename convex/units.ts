@@ -71,8 +71,8 @@ export const listByBuilding = authedQuery({
           tenantName: tenant?.displayName ?? null,
           leaseId: current?._id ?? null,
           leaseEndedOn: current?.endedOn ?? null,
-          rentAmount: period?.amount ?? null,
-          rentCurrency: period?.currency ?? null,
+          rentAmount: current?.rentAmount ?? period?.amount ?? null,
+          rentCurrency: current?.rentCurrency ?? period?.currency ?? null,
         };
       })
     );
@@ -119,6 +119,9 @@ export const create = staffMutation({
         phone: v.optional(v.string()),
         startedOn: v.string(),
         endedOn: v.optional(v.string()),
+        rentAmount: v.optional(v.number()),
+        rentCurrency: v.optional(v.union(v.literal("GHS"), v.literal("USD"))),
+        rentDueDay: v.optional(v.number()),
       })
     ),
     existingTenant: v.optional(
@@ -126,6 +129,9 @@ export const create = staffMutation({
         tenantProfileId: v.id("profiles"),
         startedOn: v.string(),
         endedOn: v.optional(v.string()),
+        rentAmount: v.optional(v.number()),
+        rentCurrency: v.optional(v.union(v.literal("GHS"), v.literal("USD"))),
+        rentDueDay: v.optional(v.number()),
       })
     ),
   },

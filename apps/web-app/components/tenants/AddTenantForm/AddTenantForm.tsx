@@ -24,11 +24,13 @@ import {
   addTenantSchema,
   getConvexErrorInfo,
   isExistingTenantChoice,
+  leaseRentMutationArgs,
   NEW_TENANT_CHOICE,
   utcToday,
 } from "@/utils";
 
 import Text from "../../ui/Text/Text";
+import LeaseRentFields from "../LeaseRentFields/LeaseRentFields";
 
 const INPUT_CLASSNAMES = {
   label: "mb-2 text-[15px] font-semibold text-darkGrey",
@@ -94,6 +96,9 @@ const FIELD_BY_MESSAGE: Record<string, keyof AddTenantFormValues> = {
   "This tenant already has a login": "password",
   "This tenant does not have a login yet": "password",
   "Password must be at least 8 characters long": "password",
+  "Monthly rent and due day must be set together": "rentAmount",
+  "Monthly rent must be a positive amount": "rentAmount",
+  "Due day must be between 1 and 31": "rentDueDay",
 };
 
 export interface TenantUnitOption {
@@ -146,6 +151,8 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
       displayName: "",
       phone: "",
       email: "",
+      rentAmount: "",
+      rentDueDay: "",
       startedOn: "",
       endedOn: "",
       password: "",
@@ -163,6 +170,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
         !isExistingTenantChoice(values.tenantChoice) &&
         values.password.length > 0;
       const shouldSetPassword = hasLogin && values.password.length > 0;
+      const rent = leaseRentMutationArgs(values);
 
       if (shouldGrantLogin) {
         await grantLogin({
@@ -175,6 +183,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
           startedOn: values.startedOn,
           endedOn: values.endedOn,
           password: values.password,
+          ...rent,
         });
       } else if (leaseId !== undefined) {
         await updateTenant({
@@ -184,6 +193,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
           phone: values.phone,
           startedOn: values.startedOn,
           endedOn: values.endedOn,
+          ...rent,
         });
         if (shouldSetPassword) {
           await setPassword({
@@ -197,6 +207,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
           tenantProfileId: values.tenantChoice as Id<"profiles">,
           startedOn: values.startedOn,
           endedOn: values.endedOn,
+          ...rent,
         });
       } else {
         await createLease({
@@ -206,6 +217,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
           phone: values.phone,
           startedOn: values.startedOn,
           endedOn: values.endedOn,
+          ...rent,
         });
       }
       router.replace(doneHref);
@@ -337,6 +349,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
           </Text>
         </>
       ) : null}
+      <LeaseRentFields form={form} />
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
         <DatePickerInput
           id="startedOn"

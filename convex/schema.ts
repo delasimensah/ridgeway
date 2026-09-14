@@ -51,6 +51,9 @@ export default defineSchema({
     tenantProfileId: v.id("profiles"),
     startedOn: v.string(),
     endedOn: v.optional(v.string()),
+    rentAmount: v.optional(v.number()),
+    rentCurrency: v.optional(v.union(v.literal("GHS"), v.literal("USD"))),
+    rentDueDay: v.optional(v.number()),
   })
     .index("by_unitId", ["unitId"])
     .index("by_tenantProfileId", ["tenantProfileId"]),

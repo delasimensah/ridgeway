@@ -3,6 +3,7 @@ import {
   formatPeriodLabel,
   getRentDisplayStatus,
   rentStatusLabel,
+  toSmallestUnit,
 } from "../rent";
 
 describe("getRentDisplayStatus", () => {
@@ -61,6 +62,12 @@ describe("formatMoney", () => {
 
   it("formats pesewas with two decimal places", () => {
     expect(formatMoney(125075, "GHS")).toBe("GH₵ 1,250.75");
+  });
+});
+
+describe("toSmallestUnit", () => {
+  it("stores whole cedis as pesewas", () => {
+    expect(toSmallestUnit(4500)).toBe(450000);
   });
 });
 

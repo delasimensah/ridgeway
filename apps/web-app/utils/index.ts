@@ -30,6 +30,7 @@ export {
 export {
   addTenantSchema,
   isExistingTenantChoice,
+  leaseRentMutationArgs,
   MIN_TENANT_PASSWORD_LENGTH,
   NEW_TENANT_CHOICE,
   utcToday,

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import {
   addLeaseDateIssues,
+  addLeaseRentIssues,
   isExistingTenantChoice,
   NEW_TENANT_CHOICE,
 } from "./addTenantSchema";
@@ -24,6 +25,8 @@ export const addUnitSchema = z
     displayName: z.string().optional(),
     phone: z.string().optional(),
     email: z.string().optional(),
+    rentAmount: z.string().optional(),
+    rentDueDay: z.string().optional(),
     startedOn: z.string().optional(),
     endedOn: z.string().optional(),
   })
@@ -35,6 +38,7 @@ export const addUnitSchema = z
 
     if (isExistingTenantChoice(tenantChoice)) {
       addLeaseDateIssues(values, ctx, true);
+      addLeaseRentIssues(values, ctx);
       return;
     }
 
@@ -67,6 +71,7 @@ export const addUnitSchema = z
       });
     }
     addLeaseDateIssues(values, ctx, true);
+    addLeaseRentIssues(values, ctx);
   });
 
 export type AddUnitFormValues = z.infer<typeof addUnitSchema>;
