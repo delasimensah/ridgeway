@@ -16,6 +16,7 @@ export interface StaffRentItem {
   confirmedStatus: RentConfirmedStatus;
   confirmedAmount: number | null;
   tenantReportedAt: number | null;
+  arrears: number;
 }
 
 interface StaffRentTableProps {
@@ -61,6 +62,7 @@ const StaffRentTable: React.FC<StaffRentTableProps> = ({
                 confirmedStatus={period.confirmedStatus}
                 confirmedAmount={period.confirmedAmount}
                 tenantReportedAt={period.tenantReportedAt}
+                arrears={period.arrears}
                 serverNow={serverNow}
                 onSetStatus={(confirmedStatus) =>
                   onSetStatus(period._id, confirmedStatus)

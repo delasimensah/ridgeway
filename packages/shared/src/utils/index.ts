@@ -27,11 +27,15 @@ export {
 export {
   currencySymbol,
   formatMoney,
+  formatMonthName,
   formatPeriodLabel,
   fromSmallestUnit,
   getRentDisplayStatus,
+  periodLabelForYear,
   rentStatusLabel,
+  shiftPeriodLabel,
   toSmallestUnit,
+  yearsInPeriodRange,
 } from "./rent";
 
 export { getDisplayInitials } from "./displayInitials";

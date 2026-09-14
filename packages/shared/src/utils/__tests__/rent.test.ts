@@ -1,9 +1,13 @@
 import {
   formatMoney,
+  formatMonthName,
   formatPeriodLabel,
   getRentDisplayStatus,
+  periodLabelForYear,
   rentStatusLabel,
+  shiftPeriodLabel,
   toSmallestUnit,
+  yearsInPeriodRange,
 } from "../rent";
 
 describe("getRentDisplayStatus", () => {
@@ -74,6 +78,49 @@ describe("toSmallestUnit", () => {
 describe("formatPeriodLabel", () => {
   it("turns a stored month into a full month name", () => {
     expect(formatPeriodLabel("2026-09")).toBe("September 2026");
+  });
+});
+
+describe("formatMonthName", () => {
+  it("returns the month without the year", () => {
+    expect(formatMonthName("2026-09")).toBe("September");
+  });
+});
+
+describe("shiftPeriodLabel", () => {
+  it("moves back and forward across a year boundary", () => {
+    expect(shiftPeriodLabel("2026-01", -1)).toBe("2025-12");
+    expect(shiftPeriodLabel("2025-12", 1)).toBe("2026-01");
+  });
+});
+
+describe("yearsInPeriodRange", () => {
+  it("lists each year from earliest charge through the current month", () => {
+    expect(yearsInPeriodRange("2024-11", "2026-03")).toEqual([
+      "2024",
+      "2025",
+      "2026",
+    ]);
+  });
+});
+
+describe("periodLabelForYear", () => {
+  it("keeps the month when it falls inside the charged range", () => {
+    expect(periodLabelForYear("2026-09", 2025, "2025-07", "2026-09")).toBe(
+      "2025-09"
+    );
+  });
+
+  it("clamps to the earliest month in that year when needed", () => {
+    expect(periodLabelForYear("2026-03", 2025, "2025-07", "2026-09")).toBe(
+      "2025-07"
+    );
+  });
+
+  it("clamps to the latest allowed month in that year when needed", () => {
+    expect(periodLabelForYear("2025-11", 2026, "2025-07", "2026-09")).toBe(
+      "2026-09"
+    );
   });
 });
 

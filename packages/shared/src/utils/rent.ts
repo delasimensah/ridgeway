@@ -69,6 +69,66 @@ export function formatPeriodLabel(periodLabel: string): string {
   return `${monthName} ${year}`;
 }
 
+export function formatMonthName(periodLabel: string): string {
+  const month = Number(periodLabel.slice(5, 7));
+  return MONTH_NAMES[month - 1] ?? periodLabel;
+}
+
+/** Shift a YYYY-MM label by whole months. */
+export function shiftPeriodLabel(
+  periodLabel: string,
+  deltaMonths: number
+): string {
+  const year = Number(periodLabel.slice(0, 4));
+  const month = Number(periodLabel.slice(5, 7));
+  const index = year * 12 + (month - 1) + deltaMonths;
+  const nextYear = Math.floor(index / 12);
+  const nextMonth = (index % 12) + 1;
+  return `${nextYear}-${String(nextMonth).padStart(2, "0")}`;
+}
+
+/** Inclusive calendar years between two YYYY-MM labels. */
+export function yearsInPeriodRange(
+  earliestPeriodLabel: string,
+  latestPeriodLabel: string
+): string[] {
+  const start = Number(earliestPeriodLabel.slice(0, 4));
+  const end = Number(latestPeriodLabel.slice(0, 4));
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start > end) {
+    return [];
+  }
+  const years: string[] = [];
+  for (let year = start; year <= end; year += 1) {
+    years.push(String(year));
+  }
+  return years;
+}
+
+/**
+ * Keep the month when jumping years, clamped to the charged range
+ * inside that year.
+ */
+export function periodLabelForYear(
+  periodLabel: string,
+  year: number,
+  earliestPeriodLabel: string,
+  latestPeriodLabel: string
+): string {
+  const month = periodLabel.slice(5, 7);
+  const candidate = `${year}-${month}`;
+  const yearStart = `${year}-01`;
+  const yearEnd = `${year}-12`;
+  const lo = earliestPeriodLabel > yearStart ? earliestPeriodLabel : yearStart;
+  const hi = latestPeriodLabel < yearEnd ? latestPeriodLabel : yearEnd;
+  if (candidate < lo) {
+    return lo;
+  }
+  if (candidate > hi) {
+    return hi;
+  }
+  return candidate;
+}
+
 export function rentStatusLabel(status: RentStatus): string {
   if (status === "paid") {
     return "Paid";

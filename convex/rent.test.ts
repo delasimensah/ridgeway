@@ -454,4 +454,120 @@ describe("rent", () => {
       confirmedStatus: "unpaid",
     });
   });
+
+  it("lists a past month with that month's totals and carries arrears forward", async () => {
+    const t = makeBackend();
+    const { staff, buildingId, leaseId } = await seedLeaseWithPeriod(t, {
+      startedOn: "2025-01-01",
+      confirmedStatus: "paid",
+    });
+    await t.run(async (ctx) => {
+      await ctx.db.insert("rentPeriods", {
+        leaseId,
+        periodLabel: "2026-08",
+        amount: 450000,
+        currency: "GHS",
+        dueOn: "2026-08-05",
+        confirmedStatus: "unpaid",
+      });
+      await ctx.db.insert("rentPeriods", {
+        leaseId,
+        periodLabel: "2026-07",
+        amount: 450000,
+        currency: "GHS",
+        dueOn: "2026-07-05",
+        confirmedStatus: "partial",
+        confirmedAmount: 150000,
+      });
+    });
+
+    const august = await asUser(t, staff.userId).query(
+      api.rent.listByBuilding,
+      {
+        buildingId,
+        periodLabel: "2026-08",
+        paginationOpts: { numItems: 20, cursor: null },
+      }
+    );
+    expect(august.periodLabel).toBe("2026-08");
+    expect(august.earliestPeriodLabel).toBe("2026-07");
+    expect(august.collected).toBe(0);
+    expect(august.outstanding).toBe(450000);
+    expect(august.page).toEqual([
+      expect.objectContaining({
+        unitLabel: "B12",
+        periodLabel: "2026-08",
+        confirmedStatus: "unpaid",
+        amount: 450000,
+        arrears: 300000,
+      }),
+    ]);
+
+    const september = await asUser(t, staff.userId).query(
+      api.rent.listByBuilding,
+      {
+        buildingId,
+        periodLabel: "2026-09",
+        paginationOpts: { numItems: 20, cursor: null },
+      }
+    );
+    expect(september.periodLabel).toBe("2026-09");
+    expect(september.collected).toBe(450000);
+    expect(september.outstanding).toBe(0);
+    expect(september.page[0]).toMatchObject({
+      periodLabel: "2026-09",
+      confirmedStatus: "paid",
+      arrears: 750000,
+    });
+
+    await asUser(t, staff.userId).mutation(api.rent.setConfirmedStatus, {
+      rentPeriodId: august.page[0]._id,
+      confirmedStatus: "paid",
+    });
+    const augustAfter = await asUser(t, staff.userId).query(
+      api.rent.listByBuilding,
+      {
+        buildingId,
+        periodLabel: "2026-08",
+        paginationOpts: { numItems: 20, cursor: null },
+      }
+    );
+    expect(augustAfter.collected).toBe(450000);
+    expect(augustAfter.outstanding).toBe(0);
+    expect(augustAfter.page[0].confirmedStatus).toBe("paid");
+  });
+
+  it("does not open a month before the earliest charge or after the current month", async () => {
+    const t = makeBackend();
+    const { staff, buildingId } = await seedLeaseWithPeriod(t, {
+      startedOn: "2025-01-01",
+    });
+    const currentMonth = monthLabelFromMillis(Date.now());
+
+    const tooEarly = await asUser(t, staff.userId).query(
+      api.rent.listByBuilding,
+      {
+        buildingId,
+        periodLabel: "2020-01",
+        paginationOpts: { numItems: 20, cursor: null },
+      }
+    );
+    expect(tooEarly.periodLabel).toBe("2026-09");
+    expect(tooEarly.earliestPeriodLabel).toBe("2026-09");
+
+    const [year, month] = currentMonth.split("-").map(Number);
+    const futureMonth =
+      month === 12
+        ? `${year + 1}-01`
+        : `${year}-${String(month + 1).padStart(2, "0")}`;
+    const tooLate = await asUser(t, staff.userId).query(
+      api.rent.listByBuilding,
+      {
+        buildingId,
+        periodLabel: futureMonth,
+        paginationOpts: { numItems: 20, cursor: null },
+      }
+    );
+    expect(tooLate.periodLabel).toBe(currentMonth);
+  });
 });

@@ -53,7 +53,31 @@ const staffPeriod = v.object({
   confirmedStatus,
   confirmedAmount: v.union(v.number(), v.null()),
   tenantReportedAt: v.union(v.number(), v.null()),
+  arrears: v.number(),
 });
+
+function outstandingOnPeriod(period: Doc<"rentPeriods">): number {
+  if (period.confirmedStatus === "paid") {
+    return 0;
+  }
+  if (period.confirmedStatus === "partial") {
+    return Math.max(period.amount - (period.confirmedAmount ?? 0), 0);
+  }
+  return period.amount;
+}
+
+function arrearsBeforeMonth(
+  periods: Doc<"rentPeriods">[],
+  periodLabel: string
+): number {
+  let total = 0;
+  for (const row of periods) {
+    if (row.periodLabel < periodLabel) {
+      total += outstandingOnPeriod(row);
+    }
+  }
+  return total;
+}
 
 function toTenantPeriod(
   period: Doc<"rentPeriods">,
@@ -282,6 +306,7 @@ export const listByBuilding = staffQuery({
   args: {
     buildingId: v.id("buildings"),
     paginationOpts: paginationOptsValidator,
+    periodLabel: v.optional(v.string()),
   },
   returns: v.object({
     page: v.array(staffPeriod),
@@ -292,6 +317,7 @@ export const listByBuilding = staffQuery({
     outstanding: v.number(),
     currency,
     periodLabel: v.string(),
+    earliestPeriodLabel: v.union(v.string(), v.null()),
   }),
   handler: async (ctx, args) => {
     await requireBuildingAccess(ctx, ctx.viewer, args.buildingId);
@@ -302,13 +328,16 @@ export const listByBuilding = staffQuery({
       .collect();
 
     const serverNow = Date.now();
-    const periodLabel = monthLabelFromMillis(serverNow);
+    const currentMonth = monthLabelFromMillis(serverNow);
     const today = utcToday();
-    const enriched: {
-      period: Doc<"rentPeriods">;
+
+    type LeaseBundle = {
       unitLabel: string;
       tenantName: string;
-    }[] = [];
+      periods: Doc<"rentPeriods">[];
+    };
+    const leasesInBuilding: LeaseBundle[] = [];
+    let earliestPeriodLabel: string | null = null;
 
     for (const unit of units) {
       const leases = await ctx.db
@@ -322,12 +351,51 @@ export const listByBuilding = staffQuery({
         const tenant = await ctx.db.get(lease.tenantProfileId);
         const tenantName = tenant?.displayName ?? "";
         const rows = await periodsForLease(ctx, lease._id);
-        for (const period of rows) {
-          if (period.periodLabel !== periodLabel) {
-            continue;
+        for (const row of rows) {
+          if (
+            earliestPeriodLabel === null ||
+            row.periodLabel < earliestPeriodLabel
+          ) {
+            earliestPeriodLabel = row.periodLabel;
           }
-          enriched.push({ period, unitLabel: unit.label, tenantName });
         }
+        leasesInBuilding.push({
+          unitLabel: unit.label,
+          tenantName,
+          periods: rows,
+        });
+      }
+    }
+
+    let periodLabel =
+      args.periodLabel !== undefined
+        ? requirePeriodLabel(args.periodLabel)
+        : currentMonth;
+    if (periodLabel > currentMonth) {
+      periodLabel = currentMonth;
+    }
+    if (earliestPeriodLabel !== null && periodLabel < earliestPeriodLabel) {
+      periodLabel = earliestPeriodLabel;
+    }
+
+    const enriched: {
+      period: Doc<"rentPeriods">;
+      unitLabel: string;
+      tenantName: string;
+      arrears: number;
+    }[] = [];
+
+    for (const lease of leasesInBuilding) {
+      for (const period of lease.periods) {
+        if (period.periodLabel !== periodLabel) {
+          continue;
+        }
+        enriched.push({
+          period,
+          unitLabel: lease.unitLabel,
+          tenantName: lease.tenantName,
+          arrears: arrearsBeforeMonth(lease.periods, periodLabel),
+        });
       }
     }
 
@@ -359,6 +427,7 @@ export const listByBuilding = staffQuery({
         confirmedStatus: row.period.confirmedStatus,
         confirmedAmount: row.period.confirmedAmount ?? null,
         tenantReportedAt: row.period.tenantReportedAt ?? null,
+        arrears: row.arrears,
       })),
       isDone: end >= enriched.length,
       continueCursor: String(end),
@@ -367,6 +436,7 @@ export const listByBuilding = staffQuery({
       outstanding: totals.outstanding,
       currency: totals.currency,
       periodLabel,
+      earliestPeriodLabel,
     };
   },
 });

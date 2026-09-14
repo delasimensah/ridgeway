@@ -21,6 +21,7 @@ const RentRoute = () => {
     session.isStaff ? {} : "skip"
   );
   const [buildingId, setBuildingId] = useState<Id<"buildings"> | "">("");
+  const [periodLabel, setPeriodLabel] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | "reported" | "late">(
     "all"
   );
@@ -39,6 +40,7 @@ const RentRoute = () => {
       ? {
           buildingId: selectedBuildingId,
           paginationOpts: { numItems: 50, cursor: null },
+          ...(periodLabel !== null ? { periodLabel } : {}),
         }
       : "skip"
   );
@@ -54,19 +56,24 @@ const RentRoute = () => {
   }
 
   if (session.isStaff) {
-    if (
-      buildings === undefined ||
-      (selectedBuildingId !== "" && staffRent === undefined)
-    ) {
+    if (buildings === undefined) {
       return <LoadingScreen fillViewport={false} />;
     }
 
+    const isRentLoading = selectedBuildingId !== "" && staffRent === undefined;
+
     return (
       <StaffRentPage
-        periodLabel={staffRent?.periodLabel ?? ""}
+        isLoading={isRentLoading}
+        periodLabel={periodLabel ?? staffRent?.periodLabel ?? ""}
+        earliestPeriodLabel={staffRent?.earliestPeriodLabel ?? null}
+        onPeriodLabelChange={setPeriodLabel}
         buildings={buildings}
         buildingId={selectedBuildingId}
-        onBuildingIdChange={(next) => setBuildingId(next as Id<"buildings">)}
+        onBuildingIdChange={(next) => {
+          setBuildingId(next as Id<"buildings">);
+          setPeriodLabel(null);
+        }}
         collected={staffRent?.collected ?? 0}
         outstanding={staffRent?.outstanding ?? 0}
         currency={staffRent?.currency ?? "GHS"}

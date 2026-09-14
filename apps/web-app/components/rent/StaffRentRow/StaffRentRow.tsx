@@ -29,6 +29,7 @@ interface StaffRentRowProps {
   confirmedStatus: RentConfirmedStatus;
   confirmedAmount: number | null;
   tenantReportedAt: number | null;
+  arrears: number;
   serverNow: number;
   onSetStatus: (confirmedStatus: "paid" | "unpaid") => void;
   onRequestPartial: () => void;
@@ -46,6 +47,7 @@ const StaffRentRow: React.FC<StaffRentRowProps> = ({
   confirmedStatus,
   confirmedAmount,
   tenantReportedAt,
+  arrears,
   serverNow,
   onSetStatus,
   onRequestPartial,
@@ -70,6 +72,11 @@ const StaffRentRow: React.FC<StaffRentRowProps> = ({
         {confirmedStatus === "partial" ? (
           <Text className="mt-1 text-[13px] text-grey">
             {`${formatMoney(confirmedAmount ?? 0, currency)} received · ${formatMoney(outstanding, currency)} still owed`}
+          </Text>
+        ) : null}
+        {arrears > 0 ? (
+          <Text className="mt-1 text-[13px] font-semibold text-accent">
+            {`${formatMoney(arrears, currency)} in arrears from earlier months`}
           </Text>
         ) : null}
       </Table.Td>

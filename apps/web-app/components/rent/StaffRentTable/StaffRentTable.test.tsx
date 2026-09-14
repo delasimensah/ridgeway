@@ -22,6 +22,7 @@ describe("StaffRentTable", () => {
             confirmedStatus: "unpaid",
             confirmedAmount: null,
             tenantReportedAt: null,
+            arrears: 0,
           },
         ]}
       />
