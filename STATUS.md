@@ -83,7 +83,8 @@ Start [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-
 - RIDGE-35 PR (merged): https://github.com/delasimensah/ridgeway/pull/18
 - RIDGE-8 PR (merged): https://github.com/delasimensah/ridgeway/pull/19
 - RIDGE-9 PR (merged): https://github.com/delasimensah/ridgeway/pull/20
-- RIDGE-36 PR: https://github.com/delasimensah/ridgeway/pull/21
+- RIDGE-36 PR (merged): https://github.com/delasimensah/ridgeway/pull/21
+- RIDGE-37 PR: https://github.com/delasimensah/ridgeway/pull/22
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
