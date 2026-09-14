@@ -17,7 +17,15 @@ const HomeRoute = () => {
   const home = useQuery(api.staff.getHome, session.isStaff ? {} : "skip");
   const buildings = useQuery(
     api.buildings.listForViewer,
-    session.isOwner ? {} : "skip"
+    session.isStaff || session.isOwner ? {} : "skip"
+  );
+  const staffRepairs = useQuery(
+    api.workOrders.listForStaff,
+    session.isStaff ? {} : "skip"
+  );
+  const staffRent = useQuery(
+    api.rent.listForStaff,
+    session.isStaff ? {} : "skip"
   );
   const repairs = useQuery(
     api.workOrders.listForCurrentTenant,
@@ -33,10 +41,30 @@ const HomeRoute = () => {
   }
 
   if (session.isStaff) {
-    if (home === undefined) {
+    if (
+      home === undefined ||
+      buildings === undefined ||
+      staffRepairs === undefined ||
+      staffRent === undefined
+    ) {
       return <LoadingScreen fillViewport={false} />;
     }
-    return <StaffHomePage greeting={staffGreeting(home.displayName)} />;
+    return (
+      <StaffHomePage
+        greeting={staffGreeting(home.displayName)}
+        buildingCount={buildings.length}
+        emptyUnitCount={buildings.reduce(
+          (sum, row) => sum + row.emptyUnitCount,
+          0
+        )}
+        repairs={staffRepairs}
+        collected={staffRent.collected}
+        outstanding={staffRent.outstanding}
+        currency={staffRent.currency}
+        rentPeriods={staffRent.periods}
+        serverNow={staffRent.serverNow}
+      />
+    );
   }
 
   if (session.isOwner) {
