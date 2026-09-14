@@ -27,6 +27,8 @@ describe("useFieldSession", () => {
     (useQuery as jest.Mock).mockReturnValue({
       isField: true,
       displayName: "Yaw Darko",
+      currentLease: null,
+      endedLease: null,
     });
   });
 

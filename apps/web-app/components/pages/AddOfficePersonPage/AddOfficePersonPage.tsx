@@ -29,7 +29,7 @@ const AddOfficePersonPage: React.FC<AddOfficePersonPageProps> = ({
             underline="never"
             className="text-grey hover:text-darkGrey"
           >
-            Office
+            Staff
           </Anchor>
         </Group>
         <Heading

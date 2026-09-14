@@ -19,7 +19,7 @@ describe("StaffOfficePage", () => {
       />
     );
 
-    expect(screen.getByRole("heading", { name: "Office" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Staff" })).toBeInTheDocument();
     expect(screen.getByText("Ama Boateng")).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Add office person" })

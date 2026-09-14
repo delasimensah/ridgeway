@@ -29,7 +29,7 @@ const AddFieldWorkerPage: React.FC<AddFieldWorkerPageProps> = ({
             underline="never"
             className="text-grey hover:text-darkGrey"
           >
-            Field
+            Field workers
           </Anchor>
         </Group>
         <Heading

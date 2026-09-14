@@ -19,7 +19,9 @@ describe("StaffFieldPage", () => {
       />
     );
 
-    expect(screen.getByRole("heading", { name: "Field" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Field workers" })
+    ).toBeInTheDocument();
     expect(screen.getByText("Yaw Darko")).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Add field worker" })

@@ -23,6 +23,10 @@ const HomeRoute = () => {
     api.workOrders.listForCurrentTenant,
     session.isTenant ? {} : "skip"
   );
+  const rent = useQuery(
+    api.rent.listForCurrentTenant,
+    session.isTenant && session.currentLease !== null ? {} : "skip"
+  );
 
   if (session.isSessionLoading) {
     return <LoadingScreen fillViewport={false} />;
@@ -48,15 +52,23 @@ const HomeRoute = () => {
   }
 
   if (session.isTenant) {
-    if (repairs === undefined || session.currentLease === null) {
+    if (
+      repairs === undefined ||
+      rent === undefined ||
+      session.currentLease === null
+    ) {
       return <LoadingScreen fillViewport={false} />;
     }
+    const nextRent =
+      rent.periods.find((period) => period.confirmedStatus !== "paid") ?? null;
     return (
       <TenantHomePage
         unitLabel={session.currentLease.unitLabel}
         buildingName={session.currentLease.buildingName}
         address={session.currentLease.address}
         repairs={repairs}
+        nextRent={nextRent}
+        serverNow={rent.serverNow}
       />
     );
   }

@@ -23,7 +23,7 @@ describe("AddFieldWorkerPage", () => {
     expect(
       screen.getByRole("heading", { name: "Add field worker" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Field" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Field workers" })).toHaveAttribute(
       "href",
       "/field"
     );

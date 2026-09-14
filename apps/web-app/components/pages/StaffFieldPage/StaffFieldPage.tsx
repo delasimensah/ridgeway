@@ -31,7 +31,7 @@ const StaffFieldPage: React.FC<StaffFieldPageProps> = ({ people }) => {
           variant="page"
           className="mb-0 text-[24px] font-bold text-darkGrey sm:text-[28px] md:text-[32px]"
         >
-          Field
+          Field workers
         </Heading>
         <Button
           component={Link}

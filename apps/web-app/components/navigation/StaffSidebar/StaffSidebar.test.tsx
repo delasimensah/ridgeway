@@ -12,7 +12,6 @@ describe("StaffSidebar", () => {
     render(<StaffSidebar displayName="Ama Boateng" onSignOut={onSignOut} />);
 
     expect(screen.getByText("Ama Boateng")).toBeInTheDocument();
-    expect(screen.getByText("Staff")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute(
       "href",
       "/"
@@ -29,17 +28,21 @@ describe("StaffSidebar", () => {
       "href",
       "/tenants"
     );
-    expect(screen.getByRole("link", { name: "Office" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Staff" })).toHaveAttribute(
       "href",
       "/office"
     );
-    expect(screen.getByRole("link", { name: "Field" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Field workers" })).toHaveAttribute(
       "href",
       "/field"
     );
     expect(screen.getByRole("link", { name: "Repairs" })).toHaveAttribute(
       "href",
       "/repairs"
+    );
+    expect(screen.getByRole("link", { name: "Rent" })).toHaveAttribute(
+      "href",
+      "/rent"
     );
 
     await user.click(screen.getByRole("button", { name: /sign out/i }));

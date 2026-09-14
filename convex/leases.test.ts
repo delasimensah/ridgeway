@@ -111,6 +111,28 @@ describe("leases", () => {
     });
   });
 
+  it("refuses a second current lease for the same person on another unit", async () => {
+    const { t, userId, unitId, otherUnitId } = await staffWithUnit();
+    await asUser(t, userId).mutation(api.leases.createWithTenant, {
+      unitId,
+      displayName: "Akosua Darko",
+      email: "akosua@example.com",
+      startedOn: "2024-01-15",
+    });
+
+    try {
+      await asUser(t, userId).mutation(api.leases.createWithTenant, {
+        unitId: otherUnitId,
+        displayName: "Akosua Darko",
+        email: "akosua@example.com",
+        startedOn: "2024-02-01",
+      });
+      throw new Error("expected createWithTenant to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("INVALID");
+    }
+  });
+
   it("refuses a second current lease on the same unit", async () => {
     const { t, userId, unitId } = await staffWithUnit();
     await asUser(t, userId).mutation(api.leases.createWithTenant, {

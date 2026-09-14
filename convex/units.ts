@@ -4,6 +4,7 @@ import { insertLeaseForExistingTenant, insertLeaseWithTenant } from "./leases";
 import { ERROR_CODES, raise } from "./lib/errors";
 import { authedQuery, staffMutation, staffQuery } from "./lib/functions";
 import { isLeaseCurrent, requireBuildingAccess, utcToday } from "./lib/viewer";
+import { latestPeriodForLease } from "./rent";
 
 const unitKind = v.union(v.literal("apartment"), v.literal("commercial"));
 
@@ -14,6 +15,8 @@ const unitListItem = v.object({
   tenantName: v.union(v.string(), v.null()),
   leaseId: v.union(v.id("leases"), v.null()),
   leaseEndedOn: v.union(v.string(), v.null()),
+  rentAmount: v.union(v.number(), v.null()),
+  rentCurrency: v.union(v.literal("GHS"), v.literal("USD"), v.null()),
 });
 
 const unitFormFields = v.object({
@@ -56,6 +59,10 @@ export const listByBuilding = authedQuery({
           leases.find((lease) => isLeaseCurrent(lease, today)) ?? null;
         const tenant =
           current === null ? null : await ctx.db.get(current.tenantProfileId);
+        const period =
+          current === null
+            ? null
+            : await latestPeriodForLease(ctx, current._id);
 
         return {
           _id: row._id,
@@ -64,6 +71,8 @@ export const listByBuilding = authedQuery({
           tenantName: tenant?.displayName ?? null,
           leaseId: current?._id ?? null,
           leaseEndedOn: current?.endedOn ?? null,
+          rentAmount: period?.amount ?? null,
+          rentCurrency: period?.currency ?? null,
         };
       })
     );

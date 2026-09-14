@@ -5,12 +5,19 @@ import { render } from "@/test-utils";
 import TenantHomePage from "./TenantHomePage";
 
 describe("TenantHomePage", () => {
-  it("shows the unit, file-repair action, and open repairs", () => {
+  it("shows the unit, rent reminder, file-repair action, and open repairs", () => {
     render(
       <TenantHomePage
         unitLabel="B12"
         buildingName="Ridge Court"
         address="14 Ridge Road, Cantonments, Accra"
+        serverNow={Date.UTC(2026, 8, 13)}
+        nextRent={{
+          amount: 450000,
+          currency: "GHS",
+          dueOn: "2026-09-05",
+          confirmedStatus: "unpaid",
+        }}
         repairs={[
           {
             _id: "wo-1",
@@ -29,7 +36,11 @@ describe("TenantHomePage", () => {
       "href",
       "/repairs/new"
     );
-    expect(screen.queryByText("GH₵ 4,500")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Rent" })).toHaveAttribute(
+      "href",
+      "/rent"
+    );
+    expect(screen.getByText("GH₵ 4,500")).toBeInTheDocument();
     expect(screen.queryByText("Ask house rules")).not.toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /kitchen tap leak/i })

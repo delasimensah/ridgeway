@@ -23,7 +23,7 @@ describe("AddOfficePersonPage", () => {
     expect(
       screen.getByRole("heading", { name: "Add office person" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Office" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Staff" })).toHaveAttribute(
       "href",
       "/office"
     );

@@ -1,6 +1,6 @@
 # Adding Screens Guide
 
-How to add a screen to the Ridgeway field app.
+How to add a screen to the Ridgeway field or tenant app.
 
 ## Architecture
 
@@ -10,14 +10,20 @@ Expo Router files under `app/` are thin `*Route` components. They call Convex `u
 Root Stack (app/_layout.tsx)
 ├── index                  Redirect by session
 ├── (auth)                 Sign in
-├── not-allowed            Signed-in, not a field worker
-└── (main-app)
-    ├── (tabs)
-    │   ├── jobs
-    │   └── account
-    └── job/[workOrderId]
-        ├── update-status  Modal
-        └── completion-photo
+├── not-allowed            Signed-in staff or owner
+├── lease-ended            Tenant whose lease has ended
+├── (main-app)             Field workers
+│   ├── (tabs)
+│   │   ├── jobs
+│   │   └── account
+│   └── job/[workOrderId]
+│       ├── update-status  Modal
+│       └── completion-photo
+└── (tenant-app)           Tenants with a current lease
+    └── (tabs)
+        ├── home
+        ├── repairs
+        └── rent
 ```
 
 ## 1. Add a tab screen

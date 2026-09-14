@@ -51,6 +51,8 @@ describe("units", () => {
         tenantName: null,
         leaseId: null,
         leaseEndedOn: null,
+        rentAmount: null,
+        rentCurrency: null,
       },
     ]);
     expect(otherList).toEqual([]);
@@ -354,6 +356,8 @@ describe("units", () => {
         tenantName: null,
         leaseId: null,
         leaseEndedOn: null,
+        rentAmount: null,
+        rentCurrency: null,
       },
     ]);
   });

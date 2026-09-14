@@ -166,7 +166,7 @@ Indexed by `leaseId` together with `dueOn`, which serves both the tenant's remin
 
 **Money is stored as a whole number of pesewas or cents, never as a decimal.** A decimal amount invites arithmetic that quietly loses a fraction of a unit, and a total that is off by one pesewa is a total we cannot explain to Ridgeway. Whole numbers cannot drift. Formatting a stored `125075` back into something a person reads as cedis and pesewas is done once, in `packages/shared`, alongside the other formatting helpers. The currency travels with the amount rather than being assumed, because the requirements allow both cedis and dollars in the same demonstration.
 
-**There is no stored `late`.** A period is shown as late when its `dueOn` has passed and `confirmedStatus` is not `"paid"`, worked out when the data is read, so the screens show paid, late, or partial exactly as the requirements promise while the database holds only what staff confirmed. The conversion is one function in `packages/shared` with this shape:
+**There is no stored `late`.** A period is shown as late when its `dueOn` has passed and `confirmedStatus` is not `"paid"`, worked out when the data is read, so the database holds only what staff confirmed. An unpaid period whose `dueOn` has not passed yet is shown as due, not late, because a tenant who still has days to pay is not behind. The screens therefore show paid, due, late, or partial. The conversion is one function in `packages/shared` with this shape:
 
 ```ts
 getRentDisplayStatus(

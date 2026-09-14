@@ -10,6 +10,7 @@ import {
   internalQuery,
 } from "./_generated/server";
 import { formatAccraAddress } from "./buildings";
+import { isLeaseCurrent, previousCalendarDate, utcToday } from "./lib/viewer";
 
 export const ORGANIZATION_NAME = "Ridgeway Property Group";
 
@@ -44,6 +45,28 @@ export const TENANT_SEED = {
   displayName: "Akosua Darko",
   unitLabel: "B12",
   startedOn: "2025-01-01",
+} as const;
+
+export const TENANT_RENT_SEED = {
+  amount: 450000,
+  currency: "GHS",
+  periods: [
+    {
+      periodLabel: "2026-07",
+      dueOn: "2026-07-05",
+      confirmedStatus: "paid" as const,
+    },
+    {
+      periodLabel: "2026-08",
+      dueOn: "2026-08-05",
+      confirmedStatus: "paid" as const,
+    },
+    {
+      periodLabel: "2026-09",
+      dueOn: "2026-09-05",
+      confirmedStatus: "unpaid" as const,
+    },
+  ],
 } as const;
 
 export const findUserByEmail = internalQuery({
@@ -225,13 +248,39 @@ export const ensureTenantOnBuilding = internalMutation({
         kind: "apartment",
       }));
 
-    const leases = await ctx.db
+    const today = utcToday();
+    const profileLeases = await ctx.db
+      .query("leases")
+      .withIndex("by_tenantProfileId", (q) =>
+        q.eq("tenantProfileId", profileId)
+      )
+      .collect();
+    const currentForPerson = profileLeases.filter((row) =>
+      isLeaseCurrent(row, today)
+    );
+    if (currentForPerson.length > 0) {
+      const onSeedUnit = currentForPerson.find((row) => row.unitId === unitId);
+      const kept =
+        onSeedUnit ??
+        currentForPerson.reduce((oldest, row) =>
+          row._creationTime < oldest._creationTime ? row : oldest
+        );
+      const endedOn = previousCalendarDate(today);
+      for (const extra of currentForPerson) {
+        if (extra._id !== kept._id) {
+          await ctx.db.patch(extra._id, { endedOn });
+        }
+      }
+      return kept._id;
+    }
+
+    const unitLeases = await ctx.db
       .query("leases")
       .withIndex("by_unitId", (q) => q.eq("unitId", unitId))
       .collect();
-    const current = leases.find((row) => row.endedOn === undefined);
-    if (current !== undefined) {
-      return current._id;
+    const currentOnUnit = unitLeases.find((row) => isLeaseCurrent(row, today));
+    if (currentOnUnit !== undefined) {
+      return currentOnUnit._id;
     }
 
     return await ctx.db.insert("leases", {
@@ -239,6 +288,35 @@ export const ensureTenantOnBuilding = internalMutation({
       tenantProfileId: profileId,
       startedOn: args.startedOn,
     });
+  },
+});
+
+export const ensureRentPeriods = internalMutation({
+  args: {
+    leaseId: v.id("leases"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("rentPeriods")
+      .withIndex("by_leaseId_and_dueOn", (q) => q.eq("leaseId", args.leaseId))
+      .collect();
+    const labels = new Set(existing.map((row) => row.periodLabel));
+
+    for (const period of TENANT_RENT_SEED.periods) {
+      if (labels.has(period.periodLabel)) {
+        continue;
+      }
+      await ctx.db.insert("rentPeriods", {
+        leaseId: args.leaseId,
+        periodLabel: period.periodLabel,
+        amount: TENANT_RENT_SEED.amount,
+        currency: TENANT_RENT_SEED.currency,
+        dueOn: period.dueOn,
+        confirmedStatus: period.confirmedStatus,
+      });
+    }
+    return null;
   },
 });
 
@@ -362,13 +440,17 @@ export const run = internalAction({
       area: OWNER_B_SEED.area,
     });
 
-    await ctx.runMutation(internal.seed.ensureTenantOnBuilding, {
-      userId: tenantUserId,
-      displayName: TENANT_SEED.displayName,
-      buildingName: OWNER_A_SEED.buildingName,
-      unitLabel: TENANT_SEED.unitLabel,
-      startedOn: TENANT_SEED.startedOn,
-    });
+    const leaseId = await ctx.runMutation(
+      internal.seed.ensureTenantOnBuilding,
+      {
+        userId: tenantUserId,
+        displayName: TENANT_SEED.displayName,
+        buildingName: OWNER_A_SEED.buildingName,
+        unitLabel: TENANT_SEED.unitLabel,
+        startedOn: TENANT_SEED.startedOn,
+      }
+    );
+    await ctx.runMutation(internal.seed.ensureRentPeriods, { leaseId });
 
     return {
       staffEmail: STAFF_SEED.email,

@@ -36,6 +36,9 @@ function navFromPath(pathname: string): StaffNavId {
   if (pathname.startsWith("/repairs")) {
     return "repairs";
   }
+  if (pathname.startsWith("/rent")) {
+    return "rent";
+  }
   return "home";
 }
 

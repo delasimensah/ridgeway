@@ -20,6 +20,7 @@ import type * as lib_functions from "../lib/functions.js";
 import type * as lib_viewer from "../lib/viewer.js";
 import type * as owners from "../owners.js";
 import type * as profiles from "../profiles.js";
+import type * as rent from "../rent.js";
 import type * as seed from "../seed.js";
 import type * as staff from "../staff.js";
 import type * as units from "../units.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   "lib/viewer": typeof lib_viewer;
   owners: typeof owners;
   profiles: typeof profiles;
+  rent: typeof rent;
   seed: typeof seed;
   staff: typeof staff;
   units: typeof units;
