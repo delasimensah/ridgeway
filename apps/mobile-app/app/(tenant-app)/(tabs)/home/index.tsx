@@ -6,7 +6,7 @@ import { LoadingScreen, TenantHomeScreen } from "@/components";
 import { useFieldSession } from "@/hooks";
 
 const TenantHomeRoute = () => {
-  const { isViewerReady, currentLease } = useFieldSession();
+  const { isViewerReady, currentLease, displayName } = useFieldSession();
   const rent = useQuery(
     api.rent.listForCurrentTenant,
     isViewerReady && currentLease !== null ? {} : "skip"
@@ -25,6 +25,7 @@ const TenantHomeRoute = () => {
 
   return (
     <TenantHomeScreen
+      displayName={displayName}
       unitLabel={currentLease.unitLabel}
       buildingName={currentLease.buildingName}
       address={currentLease.address}

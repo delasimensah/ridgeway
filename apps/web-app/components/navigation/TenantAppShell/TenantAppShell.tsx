@@ -5,6 +5,7 @@ import Link from "next/link";
 import React from "react";
 
 import Heading from "../../ui/Heading/Heading";
+import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 import Text from "../../ui/Text/Text";
 
 interface TenantAppShellProps {
@@ -35,9 +36,12 @@ const TenantAppShell: React.FC<TenantAppShellProps> = ({
           </Box>
         </Heading>
         <Box className="flex items-center gap-3 sm:gap-6">
-          <Text className="text-sm font-semibold text-darkGrey">
-            {displayName}
-          </Text>
+          <Box className="flex items-center gap-2">
+            <PersonAvatar displayName={displayName} size={28} />
+            <Text className="hidden text-sm font-semibold text-darkGrey sm:block">
+              {displayName}
+            </Text>
+          </Box>
           <Button
             variant="subtle"
             onClick={onSignOut}

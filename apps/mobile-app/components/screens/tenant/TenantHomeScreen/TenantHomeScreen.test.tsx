@@ -7,6 +7,7 @@ describe("TenantHomeScreen", () => {
     const onManageRent = jest.fn();
     render(
       <TenantHomeScreen
+        displayName="Akosua Darko"
         unitLabel="B12"
         buildingName="Ridge Court"
         address="14 Ridge Road, Cantonments, Accra"

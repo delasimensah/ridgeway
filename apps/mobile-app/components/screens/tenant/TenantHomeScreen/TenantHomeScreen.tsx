@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { Currency, RentConfirmedStatus, WorkOrderStatus } from "shared";
 
 import TenantNextRentCard from "../../../rent/TenantNextRentCard/TenantNextRentCard";
+import PersonAvatar from "../../../ui/PersonAvatar/PersonAvatar";
 import ScrollableStack from "../../../ui/ScrollableStack/ScrollableStack";
 import { HStack, VStack } from "../../../ui/Stack/Stack";
 import Text from "../../../ui/Text/Text";
@@ -21,6 +22,7 @@ interface TenantHomeNextRent {
 }
 
 interface TenantHomeScreenProps {
+  displayName: string;
   unitLabel: string;
   buildingName: string;
   address: string;
@@ -31,6 +33,7 @@ interface TenantHomeScreenProps {
 }
 
 const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
+  displayName,
   unitLabel,
   buildingName,
   address,
@@ -48,9 +51,12 @@ const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
       style={{ paddingTop: insets.top + 8 }}
     >
       <VStack spacing="sm" paddingX="md" className="pb-2 pt-3">
-        <Text className="font-app-bold text-xl tracking-tight text-darkGrey">
-          Ridgeway
-        </Text>
+        <HStack align="center" justify="between">
+          <Text className="font-app-bold text-xl tracking-tight text-darkGrey">
+            Ridgeway
+          </Text>
+          <PersonAvatar displayName={displayName} size={32} />
+        </HStack>
         <VStack spacing="none">
           <Text className="font-app-bold text-2xl text-darkGrey">
             {unitLabel} · {buildingName}

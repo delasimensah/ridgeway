@@ -12,6 +12,7 @@ describe("StaffSidebar", () => {
     render(<StaffSidebar displayName="Ama Boateng" onSignOut={onSignOut} />);
 
     expect(screen.getByText("Ama Boateng")).toBeInTheDocument();
+    expect(screen.getByText("AB")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute(
       "href",
       "/"

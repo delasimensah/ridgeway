@@ -17,6 +17,7 @@ import React from "react";
 import { cn } from "shared";
 
 import Heading from "../../ui/Heading/Heading";
+import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 import Text from "../../ui/Text/Text";
 
 export type StaffNavId =
@@ -103,11 +104,14 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({
         })}
       </Box>
       <Box className="border-t border-border p-4">
-        <Box className="mb-3 px-4">
-          <Text className="text-sm font-semibold text-darkGrey">
-            {displayName}
-          </Text>
-          <Text className="text-xs text-grey">Staff</Text>
+        <Box className="mb-3 flex items-center gap-3 px-4">
+          <PersonAvatar displayName={displayName} />
+          <Box className="min-w-0">
+            <Text className="truncate text-sm font-semibold text-darkGrey">
+              {displayName}
+            </Text>
+            <Text className="text-xs text-grey">Staff</Text>
+          </Box>
         </Box>
         <Button
           variant="subtle"

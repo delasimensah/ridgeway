@@ -31,3 +31,5 @@ export {
   getRentDisplayStatus,
   rentStatusLabel,
 } from "./rent";
+
+export { getDisplayInitials } from "./displayInitials";
