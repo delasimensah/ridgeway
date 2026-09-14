@@ -328,6 +328,7 @@ There is one mutation per move rather than one that takes a target status, becau
 - `rent.listByBuilding` is a paginated staff query, also returning `serverNow`.
 - `rent.summaryForOwner` is a query for the caller's own buildings only, returning collected against outstanding as whole numbers in the same unit the periods are stored in. It reads the periods for the leases under those buildings and adds them up at read time. At ten buildings that is a small number of documents. If the portfolio grew, this is the function that would change first, into a maintained total.
 
+- `rent.chargeMonth` is an internal mutation that, for a given `YYYY-MM` month (or the current UTC month when omitted), inserts one unpaid `rentPeriods` row for every lease that covers that month, has rent set, and does not already have a row. Amount, currency, and due day come from the lease. Running it twice does not double-charge. Creating a lease calls the same helper for the current month so a new tenant appears on the rent page without waiting for the cron.
 - `rent.setConfirmedStatus` is a staff-only mutation, and it is the only function in the system that writes `confirmedStatus`.
 - `rent.reportPaymentByTenant` is a mutation available to the tenant on that lease, and it writes only `tenantReportedAt`. It cannot touch `confirmedStatus`, because that field is not among the ones it writes.
 
@@ -374,7 +375,7 @@ If staff later need to undo an assignment, that is a new move added to the decla
 
 The first version needs almost none of this, which is deliberate.
 
-There is no cron job and no `convex/crons.ts`, because nothing in the first version has to happen on a timer. Lateness on rent is worked out when the data is read, which is what removes the only scheduled job this product would otherwise have needed. That is worth noticing as a general point: a derived value costs a little arithmetic on every read, and a stored value costs a job, a schedule, a time zone rule, and a way to find out when it did not run.
+There is one cron job in `convex/crons.ts`. At midnight UTC on the first of each month it runs `rent.chargeMonth` with no arguments, which charges every current lease for the new month. Lateness on rent is still worked out when the data is read, not stored by a job. That split is deliberate: generating the next month's rows needs a schedule; calling a period late does not.
 
 The three optional language-model features go in `convex/ai.ts` as actions, because an action is the only Convex function type permitted to call the outside world. Each one reads the data it needs through an internal query rather than being handed data by the client, so the permission rules still apply to what the model sees. The provider's API key lives only in the Convex deployment's environment variables. The house-rules action may read only the `houseRules` text of the building it was asked about, and when that text does not answer the question it says so and points the person at the office. Nothing an action returns is treated as confirmed: a suggested category is editable, and the owner summary is a draft a staff member edits.
 

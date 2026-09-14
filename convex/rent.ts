@@ -2,7 +2,11 @@ import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 
 import type { Doc, Id } from "./_generated/dataModel";
-import type { QueryCtx } from "./_generated/server";
+import {
+  internalMutation,
+  type MutationCtx,
+  type QueryCtx,
+} from "./_generated/server";
 import { ERROR_CODES, raise } from "./lib/errors";
 import {
   authedMutation,
@@ -93,9 +97,123 @@ export async function latestPeriodForLease(
   );
 }
 
-function monthLabelFromMillis(serverNow: number): string {
+const PERIOD_LABEL = /^(\d{4})-(\d{2})$/;
+
+export function monthLabelFromMillis(serverNow: number): string {
   return new Date(serverNow).toISOString().slice(0, 7);
 }
+
+function requirePeriodLabel(value: string): string {
+  const match = PERIOD_LABEL.exec(value);
+  if (match === null) {
+    raise(ERROR_CODES.INVALID, "Month must be YYYY-MM");
+  }
+  const month = Number(match[2]);
+  if (month < 1 || month > 12) {
+    raise(ERROR_CODES.INVALID, "Month must be YYYY-MM");
+  }
+  return value;
+}
+
+export function dueOnForPeriod(
+  periodLabel: string,
+  rentDueDay: number
+): string {
+  const year = Number(periodLabel.slice(0, 4));
+  const month = Number(periodLabel.slice(5, 7));
+  const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  const day = Math.min(rentDueDay, lastDay);
+  return `${periodLabel}-${String(day).padStart(2, "0")}`;
+}
+
+function leaseCoversPeriod(
+  lease: { startedOn: string; endedOn?: string },
+  periodLabel: string
+): boolean {
+  if (lease.startedOn.slice(0, 7) > periodLabel) {
+    return false;
+  }
+  const monthStart = `${periodLabel}-01`;
+  return lease.endedOn === undefined || lease.endedOn >= monthStart;
+}
+
+function leaseHasRent(lease: Doc<"leases">): lease is Doc<"leases"> & {
+  rentAmount: number;
+  rentCurrency: "GHS" | "USD";
+  rentDueDay: number;
+} {
+  return (
+    lease.rentAmount !== undefined &&
+    lease.rentCurrency !== undefined &&
+    lease.rentDueDay !== undefined
+  );
+}
+
+/** Inserts one unpaid row when the lease is chargeable and the month is missing. */
+export async function ensureUnpaidPeriodForLease(
+  ctx: { db: MutationCtx["db"] },
+  lease: Doc<"leases">,
+  periodLabel: string
+): Promise<boolean> {
+  if (!leaseHasRent(lease)) {
+    return false;
+  }
+  if (!leaseCoversPeriod(lease, periodLabel)) {
+    return false;
+  }
+
+  const existing = await periodsForLease(ctx, lease._id);
+  if (existing.some((row) => row.periodLabel === periodLabel)) {
+    return false;
+  }
+
+  await ctx.db.insert("rentPeriods", {
+    leaseId: lease._id,
+    periodLabel,
+    amount: lease.rentAmount,
+    currency: lease.rentCurrency,
+    dueOn: dueOnForPeriod(periodLabel, lease.rentDueDay),
+    confirmedStatus: "unpaid",
+  });
+  return true;
+}
+
+export async function chargeCurrentMonthForLease(
+  ctx: { db: MutationCtx["db"] },
+  leaseId: Id<"leases">
+): Promise<void> {
+  const lease = await ctx.db.get(leaseId);
+  if (lease === null) {
+    return;
+  }
+  await ensureUnpaidPeriodForLease(
+    ctx,
+    lease,
+    monthLabelFromMillis(Date.now())
+  );
+}
+
+export const chargeMonth = internalMutation({
+  args: {
+    periodLabel: v.optional(v.string()),
+  },
+  returns: v.object({
+    inserted: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    const periodLabel = requirePeriodLabel(
+      args.periodLabel ?? monthLabelFromMillis(Date.now())
+    );
+    const leases = await ctx.db.query("leases").collect();
+    let inserted = 0;
+    for (const lease of leases) {
+      if (await ensureUnpaidPeriodForLease(ctx, lease, periodLabel)) {
+        inserted += 1;
+      }
+    }
+    return { inserted };
+  },
+});
 
 function totalsForMonth(
   periods: Doc<"rentPeriods">[],

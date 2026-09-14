@@ -24,6 +24,7 @@ import {
   utcToday,
   type Viewer,
 } from "./lib/viewer";
+import { chargeCurrentMonthForLease } from "./rent";
 
 const EMAIL_TAKEN = "That email already belongs to someone who can sign in";
 const LOGIN_ALREADY_GRANTED = "This tenant already has a login";
@@ -356,13 +357,15 @@ export async function insertLeaseWithTenant(
     });
   }
 
-  return await ctx.db.insert("leases", {
+  const leaseId = await ctx.db.insert("leases", {
     unitId: unit._id,
     tenantProfileId,
     startedOn,
     ...(endedOn !== undefined ? { endedOn } : {}),
     ...(rent !== null ? rent : {}),
   });
+  await chargeCurrentMonthForLease(ctx, leaseId);
+  return leaseId;
 }
 
 async function requireAvailableTenantInOrg(
@@ -437,13 +440,15 @@ export async function insertLeaseForExistingTenant(
     args.tenantProfileId
   );
 
-  return await ctx.db.insert("leases", {
+  const leaseId = await ctx.db.insert("leases", {
     unitId: unit._id,
     tenantProfileId: profile._id,
     startedOn,
     ...(endedOn !== undefined ? { endedOn } : {}),
     ...(rent !== null ? rent : {}),
   });
+  await chargeCurrentMonthForLease(ctx, leaseId);
+  return leaseId;
 }
 
 async function tenantLeasesInStaffOrg(
@@ -948,6 +953,7 @@ export const attachLogin = internalMutation({
         ...(endedOn !== undefined ? { endedOn } : {}),
         ...(rent !== null ? rent : {}),
       });
+      await chargeCurrentMonthForLease(ctx, lease._id);
       return lease._id;
     }
 
@@ -999,13 +1005,15 @@ export const attachLogin = internalMutation({
       tenantProfileId = existingProfile._id;
     }
 
-    return await ctx.db.insert("leases", {
+    const leaseId = await ctx.db.insert("leases", {
       unitId: unit._id,
       tenantProfileId,
       startedOn,
       ...(endedOn !== undefined ? { endedOn } : {}),
       ...(rent !== null ? rent : {}),
     });
+    await chargeCurrentMonthForLease(ctx, leaseId);
+    return leaseId;
   },
 });
 

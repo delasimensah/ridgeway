@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import { asUser, errorCode, insertPerson, makeBackend } from "./test.setup";
-
+import { dueOnForPeriod, monthLabelFromMillis } from "./rent";
 async function tenantUserIdByEmail(
   t: ReturnType<typeof makeBackend>,
   email: string
@@ -272,5 +272,186 @@ describe("rent", () => {
     } catch (error) {
       expect(errorCode(error)).toBe("INVALID");
     }
+  });
+
+  it("charges each current lease once for a month and skips repeats", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const buildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+    const unitId = await asUser(t, staff.userId).mutation(api.units.create, {
+      buildingId,
+      label: "B12",
+      kind: "apartment",
+    });
+    await asUser(t, staff.userId).mutation(api.leases.createWithTenant, {
+      unitId,
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      startedOn: "2025-01-01",
+      rentAmount: 450000,
+      rentCurrency: "GHS",
+      rentDueDay: 5,
+    });
+
+    const first = await t.mutation(internal.rent.chargeMonth, {
+      periodLabel: "2026-10",
+    });
+    expect(first.inserted).toBe(1);
+
+    const rows = await t.run(async (ctx) => {
+      return await ctx.db.query("rentPeriods").collect();
+    });
+    const october = rows.filter((row) => row.periodLabel === "2026-10");
+    expect(october).toHaveLength(1);
+    expect(october[0]).toMatchObject({
+      amount: 450000,
+      currency: "GHS",
+      dueOn: "2026-10-05",
+      confirmedStatus: "unpaid",
+    });
+
+    const second = await t.mutation(internal.rent.chargeMonth, {
+      periodLabel: "2026-10",
+    });
+    expect(second.inserted).toBe(0);
+    const afterRepeat = await t.run(async (ctx) => {
+      return await ctx.db.query("rentPeriods").collect();
+    });
+    expect(
+      afterRepeat.filter((row) => row.periodLabel === "2026-10")
+    ).toHaveLength(1);
+  });
+
+  it("does not charge an ended lease for a later month", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const buildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+    const unitId = await asUser(t, staff.userId).mutation(api.units.create, {
+      buildingId,
+      label: "B12",
+      kind: "apartment",
+    });
+    await asUser(t, staff.userId).mutation(api.leases.createWithTenant, {
+      unitId,
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      startedOn: "2025-01-01",
+      endedOn: "2026-08-31",
+      rentAmount: 450000,
+      rentCurrency: "GHS",
+      rentDueDay: 5,
+    });
+
+    const result = await t.mutation(internal.rent.chargeMonth, {
+      periodLabel: "2026-09",
+    });
+    expect(result.inserted).toBe(0);
+    const rows = await t.run(async (ctx) => {
+      return await ctx.db.query("rentPeriods").collect();
+    });
+    expect(rows.filter((row) => row.periodLabel === "2026-09")).toHaveLength(0);
+  });
+
+  it("skips a lease with no rent set", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const buildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+    const unitId = await asUser(t, staff.userId).mutation(api.units.create, {
+      buildingId,
+      label: "B12",
+      kind: "apartment",
+    });
+    await asUser(t, staff.userId).mutation(api.leases.createWithTenant, {
+      unitId,
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      startedOn: "2025-01-01",
+    });
+
+    const result = await t.mutation(internal.rent.chargeMonth, {
+      periodLabel: "2026-09",
+    });
+    expect(result.inserted).toBe(0);
+    const rows = await t.run(async (ctx) => {
+      return await ctx.db.query("rentPeriods").collect();
+    });
+    expect(rows).toHaveLength(0);
+  });
+
+  it("charges the current month when staff create a lease with rent", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const buildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+    const unitId = await asUser(t, staff.userId).mutation(api.units.create, {
+      buildingId,
+      label: "B12",
+      kind: "apartment",
+    });
+    await asUser(t, staff.userId).mutation(api.leases.createWithTenant, {
+      unitId,
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      startedOn: "2025-01-01",
+      rentAmount: 450000,
+      rentCurrency: "GHS",
+      rentDueDay: 5,
+    });
+
+    const periodLabel = monthLabelFromMillis(Date.now());
+    const rows = await t.run(async (ctx) => {
+      return await ctx.db.query("rentPeriods").collect();
+    });
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      periodLabel,
+      amount: 450000,
+      currency: "GHS",
+      dueOn: dueOnForPeriod(periodLabel, 5),
+      confirmedStatus: "unpaid",
+    });
   });
 });
