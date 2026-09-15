@@ -69,4 +69,20 @@ describe("TenantRepairTimelinePage", () => {
       screen.queryByRole("button", { name: "Save description" })
     ).not.toBeInTheDocument();
   });
+
+  it("keeps the timeline chrome while the repair loads", () => {
+    render(
+      <TenantRepairTimelinePage
+        {...ticket}
+        loadState="loading"
+        canEditDescription
+      />
+    );
+
+    expect(screen.getByText("Back to home")).toBeInTheDocument();
+    expect(screen.getByText("Building")).toBeInTheDocument();
+    expect(screen.getByText("Activity timeline")).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading repair")).toBeInTheDocument();
+    expect(screen.queryByText("Kitchen tap leak")).not.toBeInTheDocument();
+  });
 });

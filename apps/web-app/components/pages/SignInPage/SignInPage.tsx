@@ -19,7 +19,7 @@ const SignInPage: React.FC = () => {
         </Heading>
         <SignInForm />
         <Text className="mt-8 text-center text-sm text-grey sm:mt-12">
-          Office, owners, and tenants use this site.
+          Staff, owners, and tenants use this site.
         </Text>
       </Box>
     </Box>

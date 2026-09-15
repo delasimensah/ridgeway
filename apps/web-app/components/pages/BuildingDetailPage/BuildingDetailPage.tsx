@@ -3,10 +3,12 @@
 import { Box, Button, Group } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
-import type { WorkOrderStatus } from "shared";
+import type { ScreenLoadState, WorkOrderStatus } from "shared";
 
 import BuildingDetailHeader from "../../buildings/BuildingDetailHeader/BuildingDetailHeader";
 import OpenRepairCard from "../../repairs/OpenRepairCard/OpenRepairCard";
+import ListTableSkeleton from "../../shared/ListTableSkeleton/ListTableSkeleton";
+import LoadFailed from "../../shared/LoadFailed/LoadFailed";
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 import UnitListEmpty from "../../units/UnitListEmpty/UnitListEmpty";
@@ -29,6 +31,8 @@ interface BuildingDetailPageProps {
   ownerName?: string | null;
   units: UnitListItem[];
   openRepairs?: BuildingOpenRepair[];
+  loadState?: ScreenLoadState;
+  onRetry?: () => void;
 }
 
 const PRIMARY_BUTTON =
@@ -45,6 +49,8 @@ const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
   ownerName = null,
   units,
   openRepairs = [],
+  loadState = "ready",
+  onRetry,
 }) => {
   const isEmpty = units.length === 0;
   const hasVacantUnit = units.some((unit) => unit.leaseId == null);
@@ -91,35 +97,44 @@ const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
             ) : null}
           </Group>
         </Group>
-        {isEmpty ? (
+        {loadState === "loading" ? (
+          <ListTableSkeleton label="Loading units" />
+        ) : null}
+        {loadState === "failed" ? (
+          <LoadFailed title="Couldn't load this building." onRetry={onRetry} />
+        ) : null}
+        {loadState === "ready" && isEmpty ? (
           <UnitListEmpty buildingId={buildingId} />
-        ) : (
+        ) : null}
+        {loadState === "ready" && !isEmpty ? (
           <UnitListTable buildingId={buildingId} units={units} />
-        )}
+        ) : null}
       </Box>
-      <Box component="section" className="mt-12">
-        <Heading
-          variant="section"
-          className="mb-6 text-[20px] font-bold text-darkGrey"
-        >
-          Open repairs
-        </Heading>
-        {openRepairs.length === 0 ? (
-          <Text className="text-base text-grey">No open repairs.</Text>
-        ) : (
-          <Box className="space-y-4">
-            {openRepairs.map((repair) => (
-              <OpenRepairCard
-                key={repair._id}
-                href={`/repairs/${repair._id}`}
-                title={repair.title}
-                subtitle={repair.unitLabel}
-                status={repair.status}
-              />
-            ))}
-          </Box>
-        )}
-      </Box>
+      {loadState === "ready" ? (
+        <Box component="section" className="mt-12">
+          <Heading
+            variant="section"
+            className="mb-6 text-[20px] font-bold text-darkGrey"
+          >
+            Open repairs
+          </Heading>
+          {openRepairs.length === 0 ? (
+            <Text className="text-base text-grey">No open repairs.</Text>
+          ) : (
+            <Box className="space-y-4">
+              {openRepairs.map((repair) => (
+                <OpenRepairCard
+                  key={repair._id}
+                  href={`/repairs/${repair._id}`}
+                  title={repair.title}
+                  subtitle={repair.unitLabel}
+                  status={repair.status}
+                />
+              ))}
+            </Box>
+          )}
+        </Box>
+      ) : null}
     </Box>
   );
 };

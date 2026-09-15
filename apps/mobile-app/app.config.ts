@@ -5,7 +5,7 @@ const ASSET_PATHS = {
   splashIcon: "./assets/icons/splash-icon.png",
 };
 
-const BRAND_COLOR = "#208AEF";
+const BRAND_COLOR = "#D6BD98";
 
 const IS_DEV = process.env.APP_VARIANT === "development";
 const IS_STAGING = process.env.APP_VARIANT === "staging";

@@ -27,8 +27,13 @@ describe("StaffOfficePage", () => {
     expect(screen.queryByText("No office people yet.")).not.toBeInTheDocument();
   });
 
-  it("shows an empty line when there are none", () => {
+  it("shows an empty state with a next action when there are none", () => {
     render(<StaffOfficePage people={[]} />);
-    expect(screen.getByText("No office people yet.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "No office people yet." })
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("link", { name: "Add office person" }).length
+    ).toBe(2);
   });
 });

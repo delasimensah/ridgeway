@@ -3,12 +3,20 @@
 import { Box, Button, Group } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
-import type { Currency, RentConfirmedStatus, WorkOrderStatus } from "shared";
+import type {
+  Currency,
+  RentConfirmedStatus,
+  ScreenLoadState,
+  WorkOrderStatus,
+} from "shared";
 
 import { formatRepairDate } from "@/utils";
 
 import NextRentCard from "../../rent/NextRentCard/NextRentCard";
+import NextRentCardSkeleton from "../../rent/NextRentCard/NextRentCardSkeleton";
 import OpenRepairCard from "../../repairs/OpenRepairCard/OpenRepairCard";
+import OpenRepairCardSkeleton from "../../repairs/OpenRepairCard/OpenRepairCardSkeleton";
+import LoadFailed from "../../shared/LoadFailed/LoadFailed";
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
@@ -33,6 +41,8 @@ interface TenantHomePageProps {
   repairs: TenantHomeRepair[];
   nextRent?: TenantHomeNextRent | null;
   serverNow?: number;
+  loadState?: ScreenLoadState;
+  onRetry?: () => void;
 }
 
 const PRIMARY_BUTTON =
@@ -47,6 +57,8 @@ const TenantHomePage: React.FC<TenantHomePageProps> = ({
   repairs,
   nextRent = null,
   serverNow = 0,
+  loadState = "ready",
+  onRetry,
 }) => {
   return (
     <Box className="mx-auto w-full max-w-[800px] px-4 py-8 sm:px-6 sm:py-12">
@@ -65,48 +77,66 @@ const TenantHomePage: React.FC<TenantHomePageProps> = ({
           Rent
         </Button>
       </Group>
-      <Box className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        {nextRent !== null ? (
+      {loadState === "failed" ? (
+        <LoadFailed title="Couldn't load home." onRetry={onRetry} />
+      ) : (
+        <Box className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {loadState === "loading" || nextRent !== null ? (
+            <Box component="section">
+              <Heading
+                variant="section"
+                className="mb-4 text-[14px] font-bold uppercase tracking-wider text-grey"
+              >
+                Next rent
+              </Heading>
+              {loadState === "loading" ? <NextRentCardSkeleton /> : null}
+              {loadState === "ready" && nextRent !== null ? (
+                <NextRentCard
+                  amount={nextRent.amount}
+                  currency={nextRent.currency}
+                  dueOn={nextRent.dueOn}
+                  confirmedStatus={nextRent.confirmedStatus}
+                  serverNow={serverNow}
+                />
+              ) : null}
+            </Box>
+          ) : null}
           <Box component="section">
             <Heading
               variant="section"
               className="mb-4 text-[14px] font-bold uppercase tracking-wider text-grey"
             >
-              Next rent
+              Open repairs
             </Heading>
-            <NextRentCard
-              amount={nextRent.amount}
-              currency={nextRent.currency}
-              dueOn={nextRent.dueOn}
-              confirmedStatus={nextRent.confirmedStatus}
-              serverNow={serverNow}
-            />
+            {loadState === "loading" ? (
+              <Box
+                className="space-y-4"
+                aria-busy="true"
+                aria-label="Loading repairs"
+              >
+                <OpenRepairCardSkeleton />
+                <OpenRepairCardSkeleton />
+              </Box>
+            ) : null}
+            {loadState === "ready" && repairs.length === 0 ? (
+              <Text className="text-base text-grey">No open repairs.</Text>
+            ) : null}
+            {loadState === "ready" && repairs.length > 0 ? (
+              <Box className="space-y-4">
+                {repairs.map((repair) => (
+                  <OpenRepairCard
+                    key={repair._id}
+                    href={`/repairs/${repair._id}`}
+                    title={repair.title}
+                    subtitle={`Reported ${formatRepairDate(repair.reportedAt)}`}
+                    status={repair.status}
+                  />
+                ))}
+              </Box>
+            ) : null}
           </Box>
-        ) : null}
-        <Box component="section">
-          <Heading
-            variant="section"
-            className="mb-4 text-[14px] font-bold uppercase tracking-wider text-grey"
-          >
-            Open repairs
-          </Heading>
-          {repairs.length === 0 ? (
-            <Text className="text-base text-grey">No open repairs.</Text>
-          ) : (
-            <Box className="space-y-4">
-              {repairs.map((repair) => (
-                <OpenRepairCard
-                  key={repair._id}
-                  href={`/repairs/${repair._id}`}
-                  title={repair.title}
-                  subtitle={`Reported ${formatRepairDate(repair.reportedAt)}`}
-                  status={repair.status}
-                />
-              ))}
-            </Box>
-          )}
         </Box>
-      </Box>
+      )}
     </Box>
   );
 };

@@ -45,4 +45,25 @@ describe("TenantRentPage", () => {
     await user.click(screen.getByRole("button", { name: "I have paid" }));
     expect(onReport).toHaveBeenCalledWith("rent-1");
   });
+
+  it("keeps the rent heading and invoices section while rent loads", () => {
+    render(
+      <TenantRentPage
+        loadState="loading"
+        buildingName="Ridge Court"
+        unitLabel="B12"
+        serverNow={0}
+        onReport={() => undefined}
+        periods={[]}
+      />
+    );
+
+    expect(screen.getByRole("heading", { name: "Rent" })).toBeInTheDocument();
+    expect(screen.getByText("Ridge Court · B12")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Invoices" })
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading invoices")).toBeInTheDocument();
+    expect(screen.queryByText("No open rent.")).not.toBeInTheDocument();
+  });
 });

@@ -1,55 +1,66 @@
 "use client";
 
 import { api } from "@convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react";
+import { firstQueryError, screenLoadState } from "shared";
 
 import {
-  LoadingScreen,
+  NotPermittedGate,
   OwnerBuildingsPage,
   StaffBuildingsPage,
 } from "@/components";
 import { useStaffSession } from "@/hooks";
+import { reloadWindow } from "@/utils";
 
 const BuildingsRoute = () => {
   const session = useStaffSession();
-  const buildings = useQuery(api.buildings.listForViewer, {});
+  const buildings = useQuery(
+    api.buildings.listForViewer,
+    session.isStaff || session.isOwner ? {} : "skip"
+  );
   const ownerSummary = useQuery(
     api.rent.summaryForOwner,
     session.isOwner ? {} : "skip"
   );
 
-  if (session.isSessionLoading || buildings === undefined) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
   if (session.isOwner) {
-    if (ownerSummary === undefined) {
-      return <LoadingScreen fillViewport={false} />;
-    }
     const moneyByBuilding = new Map(
-      ownerSummary.buildings.map((row) => [row.buildingId, row])
+      (ownerSummary.data?.buildings ?? []).map((row) => [row.buildingId, row])
     );
+
     return (
-      <OwnerBuildingsPage
-        buildings={buildings.map((row) => {
-          const money = moneyByBuilding.get(row._id);
-          return {
-            _id: row._id,
-            name: row.name,
-            address: row.address,
-            occupiedCount: row.unitCount - row.emptyUnitCount,
-            unitCount: row.unitCount,
-            openRepairCount: row.openRepairCount,
-            collected: money?.collected ?? 0,
-            outstanding: money?.outstanding ?? 0,
-            currency: ownerSummary.currency,
-          };
-        })}
-      />
+      <NotPermittedGate error={firstQueryError([buildings, ownerSummary])}>
+        <OwnerBuildingsPage
+          loadState={screenLoadState([buildings, ownerSummary])}
+          onRetry={reloadWindow}
+          buildings={(buildings.data ?? []).map((row) => {
+            const money = moneyByBuilding.get(row._id);
+            return {
+              _id: row._id,
+              name: row.name,
+              address: row.address,
+              occupiedCount: row.unitCount - row.emptyUnitCount,
+              unitCount: row.unitCount,
+              openRepairCount: row.openRepairCount,
+              collected: money?.collected ?? 0,
+              outstanding: money?.outstanding ?? 0,
+              currency: ownerSummary.data?.currency ?? "GHS",
+            };
+          })}
+        />
+      </NotPermittedGate>
     );
   }
 
-  return <StaffBuildingsPage buildings={buildings} />;
+  return (
+    <NotPermittedGate error={firstQueryError([buildings])}>
+      <StaffBuildingsPage
+        buildings={buildings.data ?? []}
+        loadState={screenLoadState([buildings])}
+        onRetry={reloadWindow}
+      />
+    </NotPermittedGate>
+  );
 };
 
 export default BuildingsRoute;

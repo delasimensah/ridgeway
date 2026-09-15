@@ -2,11 +2,13 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { firstQueryError, screenLoadState } from "shared";
 
-import { AddUnitPage, LoadingScreen } from "@/components";
+import { AddUnitPage, NotPermittedGate, QueryPageStatus } from "@/components";
+import { reloadWindow } from "@/utils";
 
 const EditUnitRoute = () => {
   const params = useParams<{ buildingId: string; unitId: string }>();
@@ -17,38 +19,39 @@ const EditUnitRoute = () => {
   const unit = useQuery(api.units.get, { unitId });
 
   useEffect(() => {
-    if (building === null) {
-      router.replace("/buildings");
+    if (unit.isSuccess && unit.data === null) {
+      router.replace(`/buildings/${buildingId}`);
       return;
     }
     if (
-      unit === null ||
-      (unit !== undefined && unit.buildingId !== buildingId)
+      unit.data !== undefined &&
+      unit.data !== null &&
+      unit.data.buildingId !== buildingId
     ) {
       router.replace(`/buildings/${buildingId}`);
     }
-  }, [building, buildingId, router, unit]);
-
-  if (
-    building === undefined ||
-    building === null ||
-    unit === undefined ||
-    unit === null ||
-    unit.buildingId !== buildingId
-  ) {
-    return <LoadingScreen fillViewport={false} />;
-  }
+  }, [buildingId, router, unit.data, unit.isSuccess]);
 
   return (
-    <AddUnitPage
-      buildingId={building._id}
-      buildingName={building.name}
-      unitId={unit._id}
-      initialValues={{
-        label: unit.label,
-        kind: unit.kind,
-      }}
-    />
+    <NotPermittedGate error={firstQueryError([building, unit])}>
+      <QueryPageStatus
+        loadState={screenLoadState([building, unit])}
+        onRetry={reloadWindow}
+        failedTitle="Couldn't load this unit."
+      >
+        {building.data && unit.data && unit.data.buildingId === buildingId ? (
+          <AddUnitPage
+            buildingId={building.data._id}
+            buildingName={building.data.name}
+            unitId={unit.data._id}
+            initialValues={{
+              label: unit.data.label,
+              kind: unit.data.kind,
+            }}
+          />
+        ) : null}
+      </QueryPageStatus>
+    </NotPermittedGate>
   );
 };
 

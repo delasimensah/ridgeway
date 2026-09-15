@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import JobsScreen from "./JobsScreen";
 
@@ -30,5 +30,25 @@ describe("JobsScreen", () => {
     expect(screen.getByLabelText("Loading jobs")).toBeTruthy();
     expect(screen.queryByText("Today's jobs")).toBeNull();
     expect(screen.queryByText("No jobs assigned today.")).toBeNull();
+  });
+
+  it("shows a short error and retries", () => {
+    const onRetry = jest.fn();
+    render(
+      <JobsScreen
+        headingDate="Sunday, 13 Sep"
+        jobs={[]}
+        loadError
+        onRetry={onRetry}
+        refreshing={false}
+        onRefresh={() => undefined}
+        onOpenJob={() => undefined}
+      />
+    );
+
+    expect(screen.getByText("Couldn't load jobs.")).toBeTruthy();
+    expect(screen.queryByText("No jobs assigned today.")).toBeNull();
+    fireEvent.press(screen.getByText("Try again"));
+    expect(onRetry).toHaveBeenCalledTimes(1);
   });
 });

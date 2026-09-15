@@ -37,7 +37,6 @@ const NotAllowedScreen: React.FC<NotAllowedScreenProps> = ({
       </VStack>
       <Button
         text="Sign out"
-        variant="danger"
         fullWidth
         loading={isSigningOut}
         onPress={onSignOut}

@@ -31,7 +31,9 @@ export { default as TenantNextRentCard } from "./rent/TenantNextRentCard/TenantN
 export { default as TenantRentHistoryCard } from "./rent/TenantRentHistoryCard/TenantRentHistoryCard";
 export { default as TenantRentInvoiceCard } from "./rent/TenantRentInvoiceCard/TenantRentInvoiceCard";
 export { default as AppProviders } from "./shared/AppProviders/AppProviders";
-export { default as LoadingScreen } from "./shared/LoadingScreen/LoadingScreen";
+export { default as LoadFailed } from "./shared/LoadFailed/LoadFailed";
+export { default as NotPermittedGate } from "./shared/NotPermittedGate/NotPermittedGate";
+export { default as QueryPageStatus } from "./shared/QueryPageStatus/QueryPageStatus";
 
 export {
   ActiveToast,

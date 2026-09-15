@@ -2,96 +2,102 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useQuery } from "convex-helpers/react";
+import { useParams } from "next/navigation";
+import { firstQueryError, screenLoadState } from "shared";
 
 import {
   BuildingDetailPage,
-  LoadingScreen,
+  NotPermittedGate,
   OwnerBuildingSnapshotPage,
+  QueryPageStatus,
 } from "@/components";
 import { useStaffSession } from "@/hooks";
+import { reloadWindow } from "@/utils";
 
 const BuildingDetailRoute = () => {
   const params = useParams<{ buildingId: string }>();
-  const router = useRouter();
   const session = useStaffSession();
   const buildingId = params.buildingId as Id<"buildings">;
   const building = useQuery(api.buildings.get, { buildingId });
   const units = useQuery(
     api.units.listByBuilding,
-    building ? { buildingId } : "skip"
+    building.data ? { buildingId } : "skip"
   );
   const openRepairs = useQuery(
     api.workOrders.listForBuilding,
-    building ? { buildingId } : "skip"
+    building.data ? { buildingId } : "skip"
   );
   const ownerRent = useQuery(
     api.rent.listByBuilding,
-    session.isOwner && building
+    session.isOwner && building.data
       ? { buildingId, paginationOpts: { numItems: 50, cursor: null } }
       : "skip"
   );
 
-  useEffect(() => {
-    if (building === null) {
-      router.replace("/buildings");
-    }
-  }, [building, router]);
+  const error = firstQueryError([building, units, openRepairs, ownerRent]);
 
-  if (
-    session.isSessionLoading ||
-    building === undefined ||
-    building === null ||
-    units === undefined ||
-    openRepairs === undefined
-  ) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
-  if (session.isOwner) {
-    if (ownerRent === undefined) {
-      return <LoadingScreen fillViewport={false} />;
-    }
+  if (session.isOwner && building.data) {
     return (
-      <OwnerBuildingSnapshotPage
-        name={building.name}
-        address={building.address}
-        occupiedCount={units.filter((unit) => unit.leaseId !== null).length}
-        unitCount={units.length}
-        openRepairCount={openRepairs.length}
-        collected={ownerRent.collected}
-        currency={ownerRent.currency}
-        issues={openRepairs.map((repair) => ({
-          _id: repair._id,
-          title: repair.title,
-          status: repair.status,
-          tenantName: repair.tenantName,
-          unitKind: repair.unitKind,
-        }))}
-        periods={ownerRent.page.map((period) => ({
-          _id: period._id,
-          unitLabel: period.unitLabel,
-          tenantName: period.tenantName,
-          amount: period.amount,
-          currency: period.currency,
-          confirmedStatus: period.confirmedStatus,
-        }))}
-      />
+      <NotPermittedGate error={error}>
+        <QueryPageStatus
+          loadState={screenLoadState([building, units, openRepairs, ownerRent])}
+          onRetry={reloadWindow}
+          failedTitle="Couldn't load this building."
+        >
+          <OwnerBuildingSnapshotPage
+            name={building.data.name}
+            address={building.data.address}
+            occupiedCount={
+              (units.data ?? []).filter((unit) => unit.leaseId !== null).length
+            }
+            unitCount={units.data?.length ?? 0}
+            openRepairCount={openRepairs.data?.length ?? 0}
+            collected={ownerRent.data?.collected ?? 0}
+            currency={ownerRent.data?.currency ?? "GHS"}
+            issues={(openRepairs.data ?? []).map((repair) => ({
+              _id: repair._id,
+              title: repair.title,
+              status: repair.status,
+              tenantName: repair.tenantName,
+              unitKind: repair.unitKind,
+            }))}
+            periods={(ownerRent.data?.page ?? []).map((period) => ({
+              _id: period._id,
+              unitLabel: period.unitLabel,
+              tenantName: period.tenantName,
+              amount: period.amount,
+              currency: period.currency,
+              confirmedStatus: period.confirmedStatus,
+            }))}
+          />
+        </QueryPageStatus>
+      </NotPermittedGate>
     );
   }
 
   return (
-    <BuildingDetailPage
-      buildingId={building._id}
-      name={building.name}
-      address={building.address}
-      ownerId={building.ownerId}
-      ownerName={building.ownerName}
-      units={units}
-      openRepairs={openRepairs}
-    />
+    <NotPermittedGate error={error}>
+      <QueryPageStatus
+        loadState={screenLoadState([building])}
+        onRetry={reloadWindow}
+        failedTitle="Couldn't load this building."
+      >
+        {building.data ? (
+          <BuildingDetailPage
+            buildingId={building.data._id}
+            name={building.data.name}
+            address={building.data.address}
+            ownerId={building.data.ownerId}
+            ownerName={building.data.ownerName}
+            units={units.data ?? []}
+            openRepairs={openRepairs.data ?? []}
+            loadState={screenLoadState([units, openRepairs])}
+            onRetry={reloadWindow}
+          />
+        ) : null}
+      </QueryPageStatus>
+    </NotPermittedGate>
   );
 };
 

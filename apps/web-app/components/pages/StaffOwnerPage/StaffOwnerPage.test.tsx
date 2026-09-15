@@ -58,7 +58,9 @@ describe("StaffOwnerPage", () => {
       />
     );
 
-    expect(screen.getByText("No buildings yet.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "No buildings yet." })
+    ).toBeInTheDocument();
     expect(screen.getByText(/No email/)).toBeInTheDocument();
     expect(screen.getByText(/Cannot sign in/)).toBeInTheDocument();
   });

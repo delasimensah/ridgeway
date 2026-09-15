@@ -1,18 +1,24 @@
 "use client";
 
 import { api } from "@convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react";
+import { firstQueryError, screenLoadState } from "shared";
 
-import { LoadingScreen, StaffOwnersPage } from "@/components";
+import { NotPermittedGate, StaffOwnersPage } from "@/components";
+import { reloadWindow } from "@/utils";
 
 const OwnersRoute = () => {
   const owners = useQuery(api.owners.listForStaff, {});
 
-  if (owners === undefined) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
-  return <StaffOwnersPage owners={owners} />;
+  return (
+    <NotPermittedGate error={firstQueryError([owners])}>
+      <StaffOwnersPage
+        owners={owners.data ?? []}
+        loadState={screenLoadState([owners])}
+        onRetry={reloadWindow}
+      />
+    </NotPermittedGate>
+  );
 };
 
 export default OwnersRoute;

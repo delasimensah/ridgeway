@@ -16,22 +16,29 @@ const NotAllowedPage: React.FC<NotAllowedPageProps> = ({
   isSigningOut = false,
 }) => {
   return (
-    <Box className="flex min-h-screen flex-col items-center justify-center bg-white p-4 sm:p-6">
-      <Box className="max-w-md text-center">
+    <Box className="flex min-h-screen flex-col items-center justify-center bg-white p-6 text-center">
+      <Box className="max-w-[480px]">
         <Heading
           variant="page"
-          className="text-[24px] font-bold text-darkGrey sm:text-[28px] md:text-[32px]"
+          className="mb-16 text-[32px] font-bold tracking-tight text-darkGrey"
         >
-          You cannot open the office
+          Ridgeway
         </Heading>
-        <Text className="mb-8 text-base text-grey">
-          This screen is for Ridgeway staff. Sign out and use the account the
-          office gave you.
+        <Heading
+          variant="section"
+          className="mb-6 text-[24px] font-bold leading-tight text-darkGrey sm:text-[28px]"
+        >
+          You don’t have permission to see this page.
+        </Heading>
+        <Text className="text-base leading-relaxed text-grey">
+          Your account doesn&apos;t have the required access level for this
+          area. If you believe this is an error, please reach out to your
+          property manager.
         </Text>
         <Button
           onClick={onSignOut}
           loading={isSigningOut}
-          className="h-auto w-full rounded-[8px] bg-danger px-6 py-3 text-base font-semibold text-white hover:bg-dangerHover sm:w-auto"
+          className="mt-12 h-auto rounded-[8px] bg-primary px-10 py-3.5 text-base font-semibold text-white hover:bg-primaryHover"
         >
           Sign out
         </Button>

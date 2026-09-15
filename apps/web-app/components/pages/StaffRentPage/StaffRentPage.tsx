@@ -9,6 +9,7 @@ import {
   getRentDisplayStatus,
   periodLabelForYear,
   type RentConfirmedStatus,
+  type ScreenLoadState,
   shiftPeriodLabel,
   yearsInPeriodRange,
 } from "shared";
@@ -20,6 +21,8 @@ import StaffRentTable, {
   type StaffRentItem,
 } from "../../rent/StaffRentTable/StaffRentTable";
 import StaffRentTableSkeleton from "../../rent/StaffRentTable/StaffRentTableSkeleton";
+import ListEmpty from "../../shared/ListEmpty/ListEmpty";
+import LoadFailed from "../../shared/LoadFailed/LoadFailed";
 import Heading from "../../ui/Heading/Heading";
 import Skeleton from "../../ui/Skeleton/Skeleton";
 import Text from "../../ui/Text/Text";
@@ -32,7 +35,8 @@ export interface StaffRentBuildingOption {
 }
 
 interface StaffRentPageProps {
-  isLoading?: boolean;
+  loadState?: ScreenLoadState;
+  onRetry?: () => void;
   periodLabel: string;
   earliestPeriodLabel: string | null;
   onPeriodLabelChange: (periodLabel: string) => void;
@@ -69,7 +73,8 @@ function isAwaitingConfirmation(period: StaffRentItem): boolean {
 }
 
 const StaffRentPage: React.FC<StaffRentPageProps> = ({
-  isLoading = false,
+  loadState = "ready",
+  onRetry,
   periodLabel,
   earliestPeriodLabel,
   onPeriodLabelChange,
@@ -85,6 +90,8 @@ const StaffRentPage: React.FC<StaffRentPageProps> = ({
   onStatusFilterChange,
   onSetStatus,
 }) => {
+  const controlsEnabled = loadState === "ready";
+  const isLoading = loadState === "loading";
   const [partialPeriodId, setPartialPeriodId] = useState<string | null>(null);
   const partialPeriod =
     periods.find((period) => period._id === partialPeriodId) ?? null;
@@ -92,12 +99,12 @@ const StaffRentPage: React.FC<StaffRentPageProps> = ({
   const currentMonth =
     serverNow > 0 ? new Date(serverNow).toISOString().slice(0, 7) : periodLabel;
   const canGoEarlier =
-    !isLoading &&
+    controlsEnabled &&
     earliestPeriodLabel !== null &&
     periodLabel !== "" &&
     periodLabel > earliestPeriodLabel;
   const canGoLater =
-    !isLoading && periodLabel !== "" && periodLabel < currentMonth;
+    controlsEnabled && periodLabel !== "" && periodLabel < currentMonth;
   const rangeStart = earliestPeriodLabel ?? periodLabel;
   const rangeEnd = currentMonth !== "" ? currentMonth : periodLabel;
   const yearOptions =
@@ -105,7 +112,7 @@ const StaffRentPage: React.FC<StaffRentPageProps> = ({
       ? []
       : yearsInPeriodRange(rangeStart, rangeEnd);
   const selectedYear = periodLabel.slice(0, 4);
-  const canPickYear = !isLoading && yearOptions.length > 1;
+  const canPickYear = controlsEnabled && yearOptions.length > 1;
 
   const visible = periods.filter((period) => {
     if (statusFilter === "late") {
@@ -248,7 +255,7 @@ const StaffRentPage: React.FC<StaffRentPageProps> = ({
             <Button
               key={filter.value}
               variant="subtle"
-              disabled={isLoading}
+              disabled={!controlsEnabled}
               className={
                 statusFilter === filter.value ? FILTER_ACTIVE : FILTER_IDLE
               }
@@ -284,12 +291,15 @@ const StaffRentPage: React.FC<StaffRentPageProps> = ({
           />
         ) : null}
       </Group>
-      {isLoading ? (
+      {loadState === "failed" ? (
+        <LoadFailed title="Couldn't load rent." onRetry={onRetry} />
+      ) : isLoading ? (
         <StaffRentTableSkeleton />
       ) : visible.length === 0 ? (
-        <Text className="text-base text-grey">
-          {EMPTY_MESSAGE[statusFilter]}
-        </Text>
+        <ListEmpty
+          title={EMPTY_MESSAGE[statusFilter]}
+          description="Rent rows appear here after a lease is charged for this month."
+        />
       ) : (
         <StaffRentTable
           periods={visible}

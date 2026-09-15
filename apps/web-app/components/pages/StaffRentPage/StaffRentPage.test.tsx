@@ -82,7 +82,7 @@ describe("StaffRentPage", () => {
   });
 
   it("keeps the rent chrome and shows skeletons while rent data loads", () => {
-    renderPage({ isLoading: true, periods: [] });
+    renderPage({ loadState: "loading", periods: [] });
 
     expect(screen.getByRole("heading", { name: "Rent" })).toBeInTheDocument();
     expect(screen.getByText("September")).toBeInTheDocument();

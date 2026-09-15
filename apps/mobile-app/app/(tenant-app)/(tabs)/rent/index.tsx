@@ -1,13 +1,24 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
+import { useQuery } from "convex-helpers/react";
 import { useState } from "react";
+import { firstQueryError, screenLoadState } from "shared";
 
-import { LoadingScreen, TenantRentScreen } from "@/components";
-import { useFieldSession } from "@/hooks";
+import {
+  NotPermittedGate,
+  QueryPageStatus,
+  TenantRentScreen,
+} from "@/components";
+import { useFieldSession, useRetryKey } from "@/hooks";
 import { getConvexErrorMessage, showErrorToast } from "@/utils";
 
 const TenantRentRoute = () => {
+  const { retryKey, onRetry } = useRetryKey();
+  return <TenantRentRouteBody key={retryKey} onRetry={onRetry} />;
+};
+
+const TenantRentRouteBody = ({ onRetry }: { onRetry: () => void }) => {
   const { isViewerReady, currentLease } = useFieldSession();
   const rent = useQuery(
     api.rent.listForCurrentTenant,
@@ -17,29 +28,34 @@ const TenantRentRoute = () => {
   const [reportingPeriodId, setReportingPeriodId] = useState<string | null>(
     null
   );
-
-  if (rent === undefined) {
-    return <LoadingScreen />;
-  }
+  const queries = isViewerReady && currentLease !== null ? [rent] : [];
 
   return (
-    <TenantRentScreen
-      periods={rent.periods}
-      serverNow={rent.serverNow}
-      reportingPeriodId={reportingPeriodId}
-      onReport={(rentPeriodId) => {
-        setReportingPeriodId(rentPeriodId);
-        void reportPayment({
-          rentPeriodId: rentPeriodId as Id<"rentPeriods">,
-        })
-          .catch((error: unknown) => {
-            showErrorToast(getConvexErrorMessage(error));
-          })
-          .finally(() => {
-            setReportingPeriodId(null);
-          });
-      }}
-    />
+    <NotPermittedGate error={firstQueryError(queries)}>
+      <QueryPageStatus
+        loadState={queries.length === 0 ? "loading" : screenLoadState(queries)}
+        onRetry={onRetry}
+        failedTitle="Couldn't load rent."
+      >
+        <TenantRentScreen
+          periods={rent.data?.periods ?? []}
+          serverNow={rent.data?.serverNow ?? 0}
+          reportingPeriodId={reportingPeriodId}
+          onReport={(rentPeriodId) => {
+            setReportingPeriodId(rentPeriodId);
+            void reportPayment({
+              rentPeriodId: rentPeriodId as Id<"rentPeriods">,
+            })
+              .catch((error: unknown) => {
+                showErrorToast(getConvexErrorMessage(error));
+              })
+              .finally(() => {
+                setReportingPeriodId(null);
+              });
+          }}
+        />
+      </QueryPageStatus>
+    </NotPermittedGate>
   );
 };
 

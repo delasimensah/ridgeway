@@ -59,4 +59,29 @@ describe("TenantHomePage", () => {
 
     expect(screen.getByText("No open repairs.")).toBeInTheDocument();
   });
+
+  it("keeps unit chrome and section headings while home loads", () => {
+    render(
+      <TenantHomePage
+        loadState="loading"
+        unitLabel="B12"
+        buildingName="Ridge Court"
+        address="14 Ridge Road, Cantonments, Accra"
+        repairs={[]}
+      />
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Unit B12 · Ridge Court" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Next rent" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Open repairs" })
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading next rent")).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading repairs")).toBeInTheDocument();
+    expect(screen.queryByText("No open repairs.")).not.toBeInTheDocument();
+  });
 });

@@ -2,21 +2,22 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useQuery } from "convex-helpers/react";
+import { useParams } from "next/navigation";
+import { firstQueryError, screenLoadState } from "shared";
 
 import {
-  LoadingScreen,
   NotAllowedPage,
+  NotPermittedGate,
+  QueryPageStatus,
   StaffRepairDetailPage,
   TenantRepairTimelinePage,
 } from "@/components";
 import { useStaffSession } from "@/hooks";
+import { reloadWindow } from "@/utils";
 
 const RepairDetailRoute = () => {
   const params = useParams<{ workOrderId: string }>();
-  const router = useRouter();
   const session = useStaffSession();
   const workOrderId = params.workOrderId as Id<"workOrders">;
   const ticket = useQuery(
@@ -28,62 +29,64 @@ const RepairDetailRoute = () => {
     session.isStaff ? {} : "skip"
   );
 
-  useEffect(() => {
-    if (ticket === null) {
-      router.replace(session.isStaff ? "/repairs" : "/");
-    }
-  }, [router, session.isStaff, ticket]);
-
-  if (
-    session.isSessionLoading ||
-    ticket === undefined ||
-    ticket === null ||
-    (session.isStaff && fieldWorkers === undefined)
-  ) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
   if (session.isStaff) {
     return (
-      <StaffRepairDetailPage
-        workOrderId={ticket._id}
-        title={ticket.title}
-        description={ticket.description}
-        status={ticket.status}
-        category={ticket.category}
-        unitLabel={ticket.unitLabel}
-        buildingName={ticket.buildingName}
-        buildingId={ticket.buildingId}
-        tenantName={ticket.tenantName}
-        assigneeName={ticket.assigneeName}
-        scheduledFor={ticket.scheduledFor}
-        reportedAt={ticket.reportedAt}
-        canAssign={ticket.canAssign}
-        canSchedule={ticket.canSchedule}
-        fieldWorkers={fieldWorkers ?? []}
-        photoUrls={ticket.photoUrls}
-        completionPhotoUrls={ticket.completionPhotoUrls}
-        events={ticket.events}
-      />
+      <NotPermittedGate error={firstQueryError([ticket, fieldWorkers])}>
+        <QueryPageStatus
+          loadState={screenLoadState([ticket, fieldWorkers])}
+          onRetry={reloadWindow}
+          failedTitle="Couldn't load this repair."
+        >
+          {ticket.data ? (
+            <StaffRepairDetailPage
+              workOrderId={ticket.data._id}
+              title={ticket.data.title}
+              description={ticket.data.description}
+              status={ticket.data.status}
+              category={ticket.data.category}
+              unitLabel={ticket.data.unitLabel}
+              buildingName={ticket.data.buildingName}
+              buildingId={ticket.data.buildingId}
+              tenantName={ticket.data.tenantName}
+              assigneeName={ticket.data.assigneeName}
+              scheduledFor={ticket.data.scheduledFor}
+              reportedAt={ticket.data.reportedAt}
+              canAssign={ticket.data.canAssign}
+              canSchedule={ticket.data.canSchedule}
+              fieldWorkers={fieldWorkers.data ?? []}
+              photoUrls={ticket.data.photoUrls}
+              completionPhotoUrls={ticket.data.completionPhotoUrls}
+              events={ticket.data.events}
+            />
+          ) : null}
+        </QueryPageStatus>
+      </NotPermittedGate>
     );
   }
 
   if (session.isTenant) {
+    const loadState = screenLoadState([ticket]);
     return (
-      <TenantRepairTimelinePage
-        workOrderId={ticket._id}
-        title={ticket.title}
-        description={ticket.description}
-        status={ticket.status}
-        category={ticket.category}
-        unitLabel={ticket.unitLabel}
-        buildingName={ticket.buildingName}
-        reportedAt={ticket.reportedAt}
-        canEditDescription={ticket.canEditDescription}
-        photoUrls={ticket.photoUrls}
-        completionPhotoUrls={ticket.completionPhotoUrls}
-        events={ticket.events}
-      />
+      <NotPermittedGate error={firstQueryError([ticket])}>
+        {loadState === "ready" && ticket.data === null ? null : (
+          <TenantRepairTimelinePage
+            loadState={loadState}
+            onRetry={reloadWindow}
+            workOrderId={ticket.data?._id ?? workOrderId}
+            title={ticket.data?.title ?? ""}
+            description={ticket.data?.description ?? ""}
+            status={ticket.data?.status ?? "received"}
+            category={ticket.data?.category ?? null}
+            unitLabel={ticket.data?.unitLabel ?? ""}
+            buildingName={ticket.data?.buildingName ?? ""}
+            reportedAt={ticket.data?.reportedAt ?? 0}
+            canEditDescription={ticket.data?.canEditDescription ?? false}
+            photoUrls={ticket.data?.photoUrls ?? []}
+            completionPhotoUrls={ticket.data?.completionPhotoUrls ?? []}
+            events={ticket.data?.events ?? []}
+          />
+        )}
+      </NotPermittedGate>
     );
   }
 

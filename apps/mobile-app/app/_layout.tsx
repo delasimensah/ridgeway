@@ -52,7 +52,7 @@ const RootNavigator = () => {
     if (!isSessionLoading && !isCheckingUpdate) {
       void SplashScreen.hideAsync();
     }
-  }, [isSessionLoading, isCheckingUpdate]);
+  }, [isCheckingUpdate, isSessionLoading]);
 
   if (isSessionLoading || isCheckingUpdate) {
     return null;

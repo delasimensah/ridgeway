@@ -8,6 +8,7 @@ import React from "react";
 import OwnerBuildingListTable, {
   type OwnerBuildingListItem,
 } from "../../owners/OwnerBuildingListTable/OwnerBuildingListTable";
+import ListEmpty from "../../shared/ListEmpty/ListEmpty";
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
@@ -68,7 +69,10 @@ const StaffOwnerPage: React.FC<StaffOwnerPageProps> = ({
         </Text>
       </Box>
       {buildings.length === 0 ? (
-        <Text className="text-base text-grey">No buildings yet.</Text>
+        <ListEmpty
+          title="No buildings yet."
+          description="This owner has no buildings attached."
+        />
       ) : (
         <OwnerBuildingListTable buildings={buildings} />
       )}

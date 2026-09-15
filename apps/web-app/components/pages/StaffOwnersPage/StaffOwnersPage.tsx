@@ -1,33 +1,42 @@
 "use client";
 
-import { Box } from "@mantine/core";
 import React from "react";
+import type { ScreenLoadState } from "shared";
 
 import OwnerListTable, {
   type OwnerListItem,
 } from "../../owners/OwnerListTable/OwnerListTable";
-import Heading from "../../ui/Heading/Heading";
-import Text from "../../ui/Text/Text";
+import ListEmpty from "../../shared/ListEmpty/ListEmpty";
+import ListPageFrame from "../../shared/ListPageFrame/ListPageFrame";
 
 interface StaffOwnersPageProps {
   owners: OwnerListItem[];
+  loadState?: ScreenLoadState;
+  onRetry?: () => void;
 }
 
-const StaffOwnersPage: React.FC<StaffOwnersPageProps> = ({ owners }) => {
+const StaffOwnersPage: React.FC<StaffOwnersPageProps> = ({
+  owners,
+  loadState = "ready",
+  onRetry,
+}) => {
   return (
-    <Box className="max-w-[1200px]">
-      <Heading
-        variant="page"
-        className="mb-6 text-[24px] font-bold text-darkGrey sm:mb-8 sm:text-[28px] md:text-[32px]"
-      >
-        Owners
-      </Heading>
-      {owners.length === 0 ? (
-        <Text className="text-base text-grey">No owners yet.</Text>
-      ) : (
-        <OwnerListTable owners={owners} />
-      )}
-    </Box>
+    <ListPageFrame
+      title="Owners"
+      loadState={loadState}
+      onRetry={onRetry}
+      failedTitle="Couldn't load owners."
+      skeletonLabel="Loading owners"
+      isEmpty={owners.length === 0}
+      empty={
+        <ListEmpty
+          title="No owners yet."
+          description="Add an owner when you add a building, or from a building you already saved."
+        />
+      }
+    >
+      <OwnerListTable owners={owners} />
+    </ListPageFrame>
   );
 };
 

@@ -48,6 +48,7 @@ export {
   type FieldWorkerFormValues,
 } from "./fieldWorkerSchema";
 export { getConvexErrorInfo, getConvexErrorMessage } from "./convexError";
+export { reloadWindow } from "./reloadWindow";
 export {
   fileRepairSchema,
   REPAIR_CATEGORIES,

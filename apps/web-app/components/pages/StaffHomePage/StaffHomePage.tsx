@@ -7,13 +7,18 @@ import {
   type Currency,
   getRentDisplayStatus,
   type RentConfirmedStatus,
+  type ScreenLoadState,
   type WorkOrderStatus,
 } from "shared";
 
 import BuildingListEmpty from "../../buildings/BuildingListEmpty/BuildingListEmpty";
 import StaffHomeMetricCard from "../../home/StaffHomeMetricCard/StaffHomeMetricCard";
+import StaffHomeMetricCardSkeleton from "../../home/StaffHomeMetricCard/StaffHomeMetricCardSkeleton";
 import StaffRentSummary from "../../rent/StaffRentSummary/StaffRentSummary";
+import StaffRentSummarySkeleton from "../../rent/StaffRentSummary/StaffRentSummarySkeleton";
 import OpenRepairCard from "../../repairs/OpenRepairCard/OpenRepairCard";
+import OpenRepairCardSkeleton from "../../repairs/OpenRepairCard/OpenRepairCardSkeleton";
+import LoadFailed from "../../shared/LoadFailed/LoadFailed";
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
@@ -32,6 +37,8 @@ interface StaffHomeRentPeriod {
 
 interface StaffHomePageProps {
   greeting: string;
+  loadState?: ScreenLoadState;
+  onRetry?: () => void;
   buildingCount: number;
   emptyUnitCount: number;
   repairs: StaffHomeRepair[];
@@ -56,6 +63,8 @@ function openRepairsHeading(repairs: StaffHomeRepair[]): string {
 
 const StaffHomePage: React.FC<StaffHomePageProps> = ({
   greeting,
+  loadState = "ready",
+  onRetry,
   buildingCount,
   emptyUnitCount,
   repairs,
@@ -68,6 +77,8 @@ const StaffHomePage: React.FC<StaffHomePageProps> = ({
   const lateCount = rentPeriods.filter(
     (period) => getRentDisplayStatus(period, serverNow) === "late"
   ).length;
+  const showPortfolio =
+    loadState === "loading" || (loadState === "ready" && buildingCount > 0);
 
   return (
     <Stack gap={0} className="max-w-[1200px]">
@@ -77,68 +88,104 @@ const StaffHomePage: React.FC<StaffHomePageProps> = ({
       >
         {greeting}
       </Heading>
-      {buildingCount === 0 ? (
+      {loadState === "failed" ? (
+        <LoadFailed title="Couldn't load home." onRetry={onRetry} />
+      ) : null}
+      {loadState === "loading" ? (
+        <SimpleGrid
+          cols={{ base: 1, sm: 2, lg: 4 }}
+          spacing="lg"
+          className="mb-8 md:mb-12"
+          aria-busy="true"
+          aria-label="Loading home"
+        >
+          <StaffHomeMetricCardSkeleton />
+          <StaffHomeMetricCardSkeleton />
+          <StaffHomeMetricCardSkeleton />
+          <StaffHomeMetricCardSkeleton />
+        </SimpleGrid>
+      ) : null}
+      {loadState === "ready" && buildingCount === 0 ? (
         <BuildingListEmpty />
-      ) : (
-        <>
-          <SimpleGrid
-            cols={{ base: 1, sm: 2, lg: 4 }}
-            spacing="lg"
-            className="mb-8 md:mb-12"
-          >
-            <StaffHomeMetricCard
-              label="Buildings"
-              value={buildingCount}
-              href="/buildings"
-            />
-            <StaffHomeMetricCard
-              label="Open repairs"
-              value={repairs.length}
-              href="/repairs"
-            />
-            <StaffHomeMetricCard
-              label="Rent late"
-              value={lateCount}
-              href="/rent"
-              valueClassName="text-overdue"
-            />
-            <StaffHomeMetricCard
-              label="Units empty"
-              value={emptyUnitCount}
-              href="/buildings"
-            />
-          </SimpleGrid>
-          <SimpleGrid cols={{ base: 1, lg: 2 }} spacing={{ base: 32, lg: 48 }}>
-            <Box component="section">
-              <Heading
-                variant="section"
-                className="mb-6 text-[20px] font-bold text-darkGrey"
+      ) : null}
+      {loadState === "ready" && buildingCount > 0 ? (
+        <SimpleGrid
+          cols={{ base: 1, sm: 2, lg: 4 }}
+          spacing="lg"
+          className="mb-8 md:mb-12"
+        >
+          <StaffHomeMetricCard
+            label="Buildings"
+            value={buildingCount}
+            href="/buildings"
+          />
+          <StaffHomeMetricCard
+            label="Open repairs"
+            value={repairs.length}
+            href="/repairs"
+          />
+          <StaffHomeMetricCard
+            label="Rent late"
+            value={lateCount}
+            href="/rent"
+            valueClassName="text-overdue"
+          />
+          <StaffHomeMetricCard
+            label="Units empty"
+            value={emptyUnitCount}
+            href="/buildings"
+          />
+        </SimpleGrid>
+      ) : null}
+      {showPortfolio ? (
+        <SimpleGrid cols={{ base: 1, lg: 2 }} spacing={{ base: 32, lg: 48 }}>
+          <Box component="section">
+            <Heading
+              variant="section"
+              className="mb-6 text-[20px] font-bold text-darkGrey"
+            >
+              {loadState === "loading"
+                ? "Open repairs"
+                : openRepairsHeading(repairs)}
+            </Heading>
+            {loadState === "loading" ? (
+              <Box
+                className="space-y-4"
+                aria-busy="true"
+                aria-label="Loading repairs"
               >
-                {openRepairsHeading(repairs)}
-              </Heading>
-              {repairs.length === 0 ? (
-                <Text className="text-base text-grey">No open repairs.</Text>
-              ) : (
-                <Box className="space-y-4">
-                  {repairs.map((repair) => (
-                    <OpenRepairCard
-                      key={repair._id}
-                      href={`/repairs/${repair._id}`}
-                      title={repair.title}
-                      subtitle={`${repair.buildingName} · ${repair.unitLabel}`}
-                      status={repair.status}
-                    />
-                  ))}
-                </Box>
-              )}
-            </Box>
-            <Box component="section">
-              <Heading
-                variant="section"
-                className="mb-6 text-[20px] font-bold text-darkGrey"
-              >
-                Rent status
-              </Heading>
+                <OpenRepairCardSkeleton />
+                <OpenRepairCardSkeleton />
+                <OpenRepairCardSkeleton />
+              </Box>
+            ) : null}
+            {loadState === "ready" && repairs.length === 0 ? (
+              <Text className="text-base text-grey">No open repairs.</Text>
+            ) : null}
+            {loadState === "ready" && repairs.length > 0 ? (
+              <Box className="space-y-4">
+                {repairs.map((repair) => (
+                  <OpenRepairCard
+                    key={repair._id}
+                    href={`/repairs/${repair._id}`}
+                    title={repair.title}
+                    subtitle={`${repair.buildingName} · ${repair.unitLabel}`}
+                    status={repair.status}
+                  />
+                ))}
+              </Box>
+            ) : null}
+          </Box>
+          <Box component="section">
+            <Heading
+              variant="section"
+              className="mb-6 text-[20px] font-bold text-darkGrey"
+            >
+              Rent status
+            </Heading>
+            {loadState === "loading" ? (
+              <StaffRentSummarySkeleton layout="stack" />
+            ) : (
               <Anchor
                 component={Link}
                 href="/rent"
@@ -153,10 +200,10 @@ const StaffHomePage: React.FC<StaffHomePageProps> = ({
                   currency={currency}
                 />
               </Anchor>
-            </Box>
-          </SimpleGrid>
-        </>
-      )}
+            )}
+          </Box>
+        </SimpleGrid>
+      ) : null}
     </Stack>
   );
 };

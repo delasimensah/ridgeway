@@ -7,6 +7,7 @@ import { COLORS } from "@/constants";
 import { useAppInsets } from "@/hooks";
 
 import JobStatusChip from "../../../jobs/JobStatusChip/JobStatusChip";
+import LoadFailed from "../../../shared/LoadFailed/LoadFailed";
 import Button from "../../../ui/Button/Button";
 import ScrollableStack from "../../../ui/ScrollableStack/ScrollableStack";
 import SkeletonCard from "../../../ui/SkeletonCard/SkeletonCard";
@@ -16,6 +17,8 @@ import JobDetailScreenSkeleton from "./JobDetailScreenSkeleton";
 
 interface JobDetailScreenProps {
   isLoading?: boolean;
+  loadError?: boolean;
+  onRetry?: () => void;
   title: string;
   buildingName: string;
   unitLabel: string;
@@ -29,6 +32,8 @@ interface JobDetailScreenProps {
 
 const JobDetailScreen: React.FC<JobDetailScreenProps> = ({
   isLoading = false,
+  loadError = false,
+  onRetry,
   title,
   buildingName,
   unitLabel,
@@ -72,6 +77,11 @@ const JobDetailScreen: React.FC<JobDetailScreenProps> = ({
       </HStack>
       {isLoading ? (
         <JobDetailScreenSkeleton />
+      ) : loadError ? (
+        <LoadFailed
+          message="Couldn't load this job."
+          onRetry={onRetry ?? (() => undefined)}
+        />
       ) : (
         <ScrollableStack padding="md">
           <VStack spacing="lg">
@@ -109,7 +119,7 @@ const JobDetailScreen: React.FC<JobDetailScreenProps> = ({
           </VStack>
         </ScrollableStack>
       )}
-      {!isLoading && canUpdateStatus ? (
+      {!isLoading && !loadError && canUpdateStatus ? (
         <VStack
           padding="md"
           className="border-t border-border bg-white"
