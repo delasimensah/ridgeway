@@ -86,7 +86,8 @@ Start [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-t
 - RIDGE-36 PR (merged): https://github.com/delasimensah/ridgeway/pull/21
 - RIDGE-37 PR (merged): https://github.com/delasimensah/ridgeway/pull/22
 - RIDGE-38 PR (merged): https://github.com/delasimensah/ridgeway/pull/23
-- RIDGE-10 PR: https://github.com/delasimensah/ridgeway/pull/24
+- RIDGE-10 PR (merged): https://github.com/delasimensah/ridgeway/pull/24
+- RIDGE-11 PR: https://github.com/delasimensah/ridgeway/pull/25
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
