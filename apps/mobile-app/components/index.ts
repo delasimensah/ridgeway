@@ -34,6 +34,7 @@ export { default as AppProviders } from "./shared/AppProviders/AppProviders";
 export { default as LoadFailed } from "./shared/LoadFailed/LoadFailed";
 export { default as NotPermittedGate } from "./shared/NotPermittedGate/NotPermittedGate";
 export { default as QueryPageStatus } from "./shared/QueryPageStatus/QueryPageStatus";
+export { default as RoleWaitScreen } from "./shared/RoleWaitScreen/RoleWaitScreen";
 
 export {
   ActiveToast,

@@ -1,6 +1,8 @@
 import { type Href, Redirect } from "expo-router";
 
+import { RoleWaitScreen } from "@/components";
 import { useFieldSession } from "@/hooks";
+import { signedInDestination } from "@/utils";
 
 const IndexRoute = () => {
   const { isAuthenticated, isViewerReady, isField, isTenant, currentLease } =
@@ -10,23 +12,19 @@ const IndexRoute = () => {
     return <Redirect href={"/(auth)/sign-in" as Href} />;
   }
 
-  if (isViewerReady && isField) {
-    return <Redirect href={"/(main-app)/(tabs)/jobs" as Href} />;
+  const href = signedInDestination({
+    isAuthenticated,
+    isViewerReady,
+    isField,
+    isTenant,
+    currentLease,
+  });
+
+  if (href === null) {
+    return <RoleWaitScreen />;
   }
 
-  if (isViewerReady && currentLease !== null) {
-    return <Redirect href={"/(tenant-app)/(tabs)/home" as Href} />;
-  }
-
-  if (isViewerReady && isTenant) {
-    return <Redirect href={"/lease-ended" as Href} />;
-  }
-
-  if (isViewerReady) {
-    return <Redirect href={"/not-allowed" as Href} />;
-  }
-
-  return <Redirect href={"/(main-app)/(tabs)/jobs" as Href} />;
+  return <Redirect href={href as Href} />;
 };
 
 export default IndexRoute;
