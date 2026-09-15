@@ -91,7 +91,8 @@ Start [RIDGE-42](https://linear.app/dm-studios/issue/RIDGE-42/tenant-phone-and-w
 - RIDGE-39 PR (merged): https://github.com/delasimensah/ridgeway/pull/26
 - RIDGE-13 PR (merged): https://github.com/delasimensah/ridgeway/pull/27
 - RIDGE-12 PR (merged): https://github.com/delasimensah/ridgeway/pull/28
-- RIDGE-40 PR: https://github.com/delasimensah/ridgeway/pull/29
+- RIDGE-40 PR (merged): https://github.com/delasimensah/ridgeway/pull/29
+- RIDGE-44 PR: https://github.com/delasimensah/ridgeway/pull/30
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
