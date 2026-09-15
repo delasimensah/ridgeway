@@ -2,11 +2,13 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { firstQueryError, screenLoadState } from "shared";
 
-import { AddTenantPage, LoadingScreen } from "@/components";
+import { AddTenantPage, NotPermittedGate, QueryPageStatus } from "@/components";
+import { reloadWindow } from "@/utils";
 
 const AddTenantRoute = () => {
   const params = useParams<{ buildingId: string }>();
@@ -15,34 +17,35 @@ const AddTenantRoute = () => {
   const building = useQuery(api.buildings.get, { buildingId });
   const units = useQuery(
     api.units.listByBuilding,
-    building ? { buildingId } : "skip"
+    building.data ? { buildingId } : "skip"
   );
 
   useEffect(() => {
-    if (building === null) {
-      router.replace("/buildings");
-      return;
-    }
-    if (units !== undefined && units.every((unit) => unit.leaseId !== null)) {
+    if (units.isSuccess && units.data.every((unit) => unit.leaseId !== null)) {
       router.replace(`/buildings/${buildingId}`);
     }
-  }, [building, buildingId, router, units]);
+  }, [buildingId, router, units.data, units.isSuccess]);
 
-  if (building === undefined || building === null || units === undefined) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
-  const vacantUnits = units.filter((unit) => unit.leaseId === null);
-  if (vacantUnits.length === 0) {
-    return <LoadingScreen fillViewport={false} />;
-  }
+  const vacantUnits = (units.data ?? []).filter(
+    (unit) => unit.leaseId === null
+  );
 
   return (
-    <AddTenantPage
-      buildingId={building._id}
-      buildingName={building.name}
-      units={vacantUnits}
-    />
+    <NotPermittedGate error={firstQueryError([building, units])}>
+      <QueryPageStatus
+        loadState={screenLoadState([building, units])}
+        onRetry={reloadWindow}
+        failedTitle="Couldn't load this building."
+      >
+        {building.data && vacantUnits.length > 0 ? (
+          <AddTenantPage
+            buildingId={building.data._id}
+            buildingName={building.data.name}
+            units={vacantUnits}
+          />
+        ) : null}
+      </QueryPageStatus>
+    </NotPermittedGate>
   );
 };
 

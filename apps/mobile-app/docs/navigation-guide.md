@@ -27,7 +27,7 @@ app/
 - Signed out → `(auth)`
 - Root stack animation is off so sign-in does not slide onto Jobs. Nested job screens still slide.
 
-Sign-in does not call `router.push`. After `signIn` succeeds, the guard shows Jobs. Jobs and job detail stay on screen and show skeleton placeholders until their queries return. Do not replace either screen with `LoadingScreen`.
+Sign-in does not call `router.push`. After `signIn` succeeds, the guard shows Jobs. Jobs and job detail stay on screen and show skeleton placeholders until their queries return. Do not replace either screen with a full-page wait.
 
 `app/index.tsx` is the fallback for `/`. It sends the same people to sign-in, jobs, or not-allowed. It does not show a loading screen.
 

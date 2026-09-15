@@ -1,18 +1,24 @@
 "use client";
 
 import { api } from "@convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react";
+import { firstQueryError, screenLoadState } from "shared";
 
-import { LoadingScreen, StaffTenantsPage } from "@/components";
+import { NotPermittedGate, StaffTenantsPage } from "@/components";
+import { reloadWindow } from "@/utils";
 
 const TenantsRoute = () => {
   const tenants = useQuery(api.leases.listForStaff, {});
 
-  if (tenants === undefined) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
-  return <StaffTenantsPage tenants={tenants} />;
+  return (
+    <NotPermittedGate error={firstQueryError([tenants])}>
+      <StaffTenantsPage
+        tenants={tenants.data ?? []}
+        loadState={screenLoadState([tenants])}
+        onRetry={reloadWindow}
+      />
+    </NotPermittedGate>
+  );
 };
 
 export default TenantsRoute;

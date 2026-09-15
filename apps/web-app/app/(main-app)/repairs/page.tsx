@@ -1,17 +1,19 @@
 "use client";
 
 import { api } from "@convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { firstQueryError, screenLoadState } from "shared";
 
 import {
-  LoadingScreen,
-  NotAllowedPage,
+  NotPermittedGate,
   OwnerIssuesPage,
+  QueryPageStatus,
   StaffRepairsPage,
 } from "@/components";
 import { useStaffSession } from "@/hooks";
+import { reloadWindow } from "@/utils";
 
 const StaffRepairsRoute = () => {
   const session = useStaffSession();
@@ -26,40 +28,38 @@ const StaffRepairsRoute = () => {
   );
 
   useEffect(() => {
-    if (!session.isSessionLoading && session.isTenant) {
+    if (session.isTenant) {
       router.replace("/");
     }
-  }, [router, session.isSessionLoading, session.isTenant]);
-
-  if (session.isSessionLoading) {
-    return <LoadingScreen fillViewport={false} />;
-  }
+  }, [router, session.isTenant]);
 
   if (session.isTenant) {
-    return <LoadingScreen fillViewport={false} />;
+    return null;
   }
 
   if (session.isOwner) {
-    if (ownerIssues === undefined) {
-      return <LoadingScreen fillViewport={false} />;
-    }
-    return <OwnerIssuesPage issues={ownerIssues} />;
-  }
-
-  if (!session.isStaff) {
     return (
-      <NotAllowedPage
-        onSignOut={session.handleSignOut}
-        isSigningOut={session.isSigningOut}
-      />
+      <NotPermittedGate error={firstQueryError([ownerIssues])}>
+        <QueryPageStatus
+          loadState={screenLoadState([ownerIssues])}
+          onRetry={reloadWindow}
+          failedTitle="Couldn't load issues."
+        >
+          <OwnerIssuesPage issues={ownerIssues.data ?? []} />
+        </QueryPageStatus>
+      </NotPermittedGate>
     );
   }
 
-  if (staffRepairs === undefined) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
-  return <StaffRepairsPage repairs={staffRepairs} />;
+  return (
+    <NotPermittedGate error={firstQueryError([staffRepairs])}>
+      <StaffRepairsPage
+        repairs={staffRepairs.data ?? []}
+        loadState={screenLoadState([staffRepairs])}
+        onRetry={reloadWindow}
+      />
+    </NotPermittedGate>
+  );
 };
 
 export default StaffRepairsRoute;

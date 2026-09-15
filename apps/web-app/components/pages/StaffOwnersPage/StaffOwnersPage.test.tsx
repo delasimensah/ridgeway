@@ -27,8 +27,10 @@ describe("StaffOwnersPage", () => {
     expect(screen.queryByText("No owners yet.")).not.toBeInTheDocument();
   });
 
-  it("shows an empty line when there are none", () => {
+  it("shows an empty state when there are none", () => {
     render(<StaffOwnersPage owners={[]} />);
-    expect(screen.getByText("No owners yet.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "No owners yet." })
+    ).toBeInTheDocument();
   });
 });

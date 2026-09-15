@@ -2,29 +2,34 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useQuery } from "convex-helpers/react";
+import { useParams } from "next/navigation";
+import { firstQueryError, screenLoadState } from "shared";
 
-import { AddUnitPage, LoadingScreen } from "@/components";
+import { AddUnitPage, NotPermittedGate, QueryPageStatus } from "@/components";
+import { reloadWindow } from "@/utils";
 
 const AddUnitRoute = () => {
   const params = useParams<{ buildingId: string }>();
-  const router = useRouter();
   const buildingId = params.buildingId as Id<"buildings">;
   const building = useQuery(api.buildings.get, { buildingId });
 
-  useEffect(() => {
-    if (building === null) {
-      router.replace("/buildings");
-    }
-  }, [building, router]);
-
-  if (building === undefined || building === null) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
-  return <AddUnitPage buildingId={building._id} buildingName={building.name} />;
+  return (
+    <NotPermittedGate error={firstQueryError([building])}>
+      <QueryPageStatus
+        loadState={screenLoadState([building])}
+        onRetry={reloadWindow}
+        failedTitle="Couldn't load this building."
+      >
+        {building.data ? (
+          <AddUnitPage
+            buildingId={building.data._id}
+            buildingName={building.data.name}
+          />
+        ) : null}
+      </QueryPageStatus>
+    </NotPermittedGate>
+  );
 };
 
 export default AddUnitRoute;

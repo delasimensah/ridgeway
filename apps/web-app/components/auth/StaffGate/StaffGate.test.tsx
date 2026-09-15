@@ -26,7 +26,9 @@ describe("StaffGate", () => {
 
     render(<StaffGate>{() => <p>Office</p>}</StaffGate>);
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Ridgeway" })
+    ).toBeInTheDocument();
     expect(screen.queryByText("Office")).not.toBeInTheDocument();
   });
 
@@ -42,7 +44,9 @@ describe("StaffGate", () => {
     render(<StaffGate>{() => <p>Office</p>}</StaffGate>);
 
     expect(
-      screen.getByRole("heading", { name: "You cannot open the office" })
+      screen.getByRole("heading", {
+        name: "You don’t have permission to see this page.",
+      })
     ).toBeInTheDocument();
   });
 

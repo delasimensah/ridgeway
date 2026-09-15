@@ -48,4 +48,15 @@ describe("StaffBuildingsPage", () => {
       screen.queryByRole("link", { name: "Add owner" })
     ).not.toBeInTheDocument();
   });
+
+  it("keeps the buildings chrome and shows a skeleton while the list loads", () => {
+    render(<StaffBuildingsPage buildings={[]} loadState="loading" />);
+
+    expect(
+      screen.getByRole("heading", { name: "Buildings" })
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading buildings")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add building" })).toBeDisabled();
+    expect(screen.queryByText("No buildings yet.")).not.toBeInTheDocument();
+  });
 });

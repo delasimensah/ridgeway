@@ -1,16 +1,17 @@
 "use client";
 
 import { api } from "@convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react";
+import { firstQueryError, screenLoadState } from "shared";
 
 import {
-  LoadingScreen,
+  NotPermittedGate,
   OwnerHomePage,
   StaffHomePage,
   TenantHomePage,
 } from "@/components";
 import { useStaffSession } from "@/hooks";
-import { staffGreeting } from "@/utils";
+import { reloadWindow, staffGreeting } from "@/utils";
 
 const HomeRoute = () => {
   const session = useStaffSession();
@@ -40,91 +41,87 @@ const HomeRoute = () => {
     session.isTenant && session.currentLease !== null ? {} : "skip"
   );
 
-  if (session.isSessionLoading) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
   if (session.isStaff) {
-    if (
-      home === undefined ||
-      buildings === undefined ||
-      staffRepairs === undefined ||
-      staffRent === undefined
-    ) {
-      return <LoadingScreen fillViewport={false} />;
-    }
+    const queries = [home, buildings, staffRepairs, staffRent];
     return (
-      <StaffHomePage
-        greeting={staffGreeting(home.displayName)}
-        buildingCount={buildings.length}
-        emptyUnitCount={buildings.reduce(
-          (sum, row) => sum + row.emptyUnitCount,
-          0
-        )}
-        repairs={staffRepairs}
-        collected={staffRent.collected}
-        outstanding={staffRent.outstanding}
-        currency={staffRent.currency}
-        rentPeriods={staffRent.periods}
-        serverNow={staffRent.serverNow}
-      />
+      <NotPermittedGate error={firstQueryError(queries)}>
+        <StaffHomePage
+          greeting={staffGreeting(
+            home.data?.displayName ?? session.displayName
+          )}
+          loadState={screenLoadState(queries)}
+          onRetry={reloadWindow}
+          buildingCount={buildings.data?.length ?? 0}
+          emptyUnitCount={(buildings.data ?? []).reduce(
+            (sum, row) => sum + row.emptyUnitCount,
+            0
+          )}
+          repairs={staffRepairs.data ?? []}
+          collected={staffRent.data?.collected ?? 0}
+          outstanding={staffRent.data?.outstanding ?? 0}
+          currency={staffRent.data?.currency ?? "GHS"}
+          rentPeriods={staffRent.data?.periods ?? []}
+          serverNow={staffRent.data?.serverNow ?? 0}
+        />
+      </NotPermittedGate>
     );
   }
 
   if (session.isOwner) {
-    if (buildings === undefined || ownerSummary === undefined) {
-      return <LoadingScreen fillViewport={false} />;
-    }
+    const queries = [buildings, ownerSummary];
     const moneyByBuilding = new Map(
-      ownerSummary.buildings.map((row) => [row.buildingId, row])
+      (ownerSummary.data?.buildings ?? []).map((row) => [row.buildingId, row])
     );
     return (
-      <OwnerHomePage
-        greeting={staffGreeting(session.displayName)}
-        collected={ownerSummary.collected}
-        outstanding={ownerSummary.outstanding}
-        currency={ownerSummary.currency}
-        buildings={buildings.map((row) => {
-          const money = moneyByBuilding.get(row._id);
-          return {
-            _id: row._id,
-            name: row.name,
-            address: row.address,
-            occupiedCount: row.unitCount - row.emptyUnitCount,
-            unitCount: row.unitCount,
-            openRepairCount: row.openRepairCount,
-            collected: money?.collected ?? 0,
-            outstanding: money?.outstanding ?? 0,
-            currency: ownerSummary.currency,
-          };
-        })}
-      />
+      <NotPermittedGate error={firstQueryError(queries)}>
+        <OwnerHomePage
+          greeting={staffGreeting(session.displayName)}
+          loadState={screenLoadState(queries)}
+          onRetry={reloadWindow}
+          collected={ownerSummary.data?.collected ?? 0}
+          outstanding={ownerSummary.data?.outstanding ?? 0}
+          currency={ownerSummary.data?.currency ?? "GHS"}
+          buildings={(buildings.data ?? []).map((row) => {
+            const money = moneyByBuilding.get(row._id);
+            return {
+              _id: row._id,
+              name: row.name,
+              address: row.address,
+              occupiedCount: row.unitCount - row.emptyUnitCount,
+              unitCount: row.unitCount,
+              openRepairCount: row.openRepairCount,
+              collected: money?.collected ?? 0,
+              outstanding: money?.outstanding ?? 0,
+              currency: ownerSummary.data?.currency ?? "GHS",
+            };
+          })}
+        />
+      </NotPermittedGate>
     );
   }
 
-  if (session.isTenant) {
-    if (
-      repairs === undefined ||
-      rent === undefined ||
-      session.currentLease === null
-    ) {
-      return <LoadingScreen fillViewport={false} />;
-    }
+  if (session.isTenant && session.currentLease !== null) {
+    const queries = [repairs, rent];
     const nextRent =
-      rent.periods.find((period) => period.confirmedStatus !== "paid") ?? null;
+      rent.data?.periods.find((period) => period.confirmedStatus !== "paid") ??
+      null;
     return (
-      <TenantHomePage
-        unitLabel={session.currentLease.unitLabel}
-        buildingName={session.currentLease.buildingName}
-        address={session.currentLease.address}
-        repairs={repairs}
-        nextRent={nextRent}
-        serverNow={rent.serverNow}
-      />
+      <NotPermittedGate error={firstQueryError(queries)}>
+        <TenantHomePage
+          loadState={screenLoadState(queries)}
+          onRetry={reloadWindow}
+          unitLabel={session.currentLease.unitLabel}
+          buildingName={session.currentLease.buildingName}
+          address={session.currentLease.address}
+          repairs={repairs.data ?? []}
+          nextRent={nextRent}
+          serverNow={rent.data?.serverNow ?? 0}
+        />
+      </NotPermittedGate>
     );
   }
 
-  return <LoadingScreen fillViewport={false} />;
+  return null;
 };
 
 export default HomeRoute;

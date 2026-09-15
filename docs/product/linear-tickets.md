@@ -41,10 +41,11 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) is **Done**.
 - [RIDGE-11](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus) is **Done**.
 - [RIDGE-39](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the) is **Done**.
+- [RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) is **Done**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
-- Next slice is [RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) (empty, loading, error, and no-permission states). Skip [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) for now.
-- RIDGE-12 through RIDGE-15, and the epics are **Todo**.
-- RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** until RIDGE-1 through RIDGE-13 are done.
+- Next slice is [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) (TestFlight submit of the tenant and field app). Skip [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) for now.
+- RIDGE-12, RIDGE-14, RIDGE-15, and the epics are **Todo**.
+- RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** (after TestFlight / Play).
 
 When a slice is started, move that issue to In Progress immediately. Do not use Backlog for queued first-version work. Linear stays In Progress until merge to `main`. In the feature PR, write this Status now block as that post-merge board.
 
@@ -677,7 +678,7 @@ Rebuild with this repo's components. Do not paste UX Pilot markup into the app. 
 20. [RIDGE-11 Owner home](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus) — Design: `exports/web/owner/home.html`.
 21. [RIDGE-39 Tenant can file a repair on the phone](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the) — Design: `exports/mobile/tenant/file-repair.html`, `repair-timeline.html`, `home.html`.
 22. [RIDGE-12 Seed Accra world](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) — Ten buildings, three owners, no user named "test user".
-23. [RIDGE-13 Empty, loading, error, and no-permission states](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) — Design: `exports/web/staff/empty-list.html`, `loading.html`, `failed-to-load.html`, `not-allowed.html`. Full-page wait shows Ridgeway on `#208AEF`, not the word Loading. Lists use skeletons in chrome.
+23. [RIDGE-13 Empty, loading, error, and no-permission states](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) — Design: `exports/web/staff/empty-list.html`, `loading.html`, `failed-to-load.html`, `not-allowed.html`. On the website, a full-page wait shows Ridgeway in the main green on the light gold (`#D6BD98`), not the word Loading. The phone keeps the native splash. Lists use skeletons in chrome.
 24. [RIDGE-14 TestFlight submit](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) — Launch project.
 25. [RIDGE-15 Play internal or closed test](https://linear.app/dm-studios/issue/RIDGE-15/play-internal-or-closed-test-upload-of-the-tenant-and-field-app) — Launch project.
 

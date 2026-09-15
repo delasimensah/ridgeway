@@ -2,11 +2,13 @@
 
 import { SimpleGrid, Stack } from "@mantine/core";
 import React from "react";
-import type { Currency } from "shared";
+import type { Currency, ScreenLoadState } from "shared";
 
 import OwnerBuildingCard from "../../owner/OwnerBuildingCard/OwnerBuildingCard";
 import OwnerBuildingListEmpty from "../../owner/OwnerBuildingListEmpty/OwnerBuildingListEmpty";
 import OwnerPortfolioStatus from "../../owner/OwnerPortfolioStatus/OwnerPortfolioStatus";
+import ListTableSkeleton from "../../shared/ListTableSkeleton/ListTableSkeleton";
+import LoadFailed from "../../shared/LoadFailed/LoadFailed";
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
@@ -24,6 +26,8 @@ export interface OwnerHomeBuilding {
 
 interface OwnerHomePageProps {
   greeting: string;
+  loadState?: ScreenLoadState;
+  onRetry?: () => void;
   buildings: OwnerHomeBuilding[];
   collected: number;
   outstanding: number;
@@ -32,6 +36,8 @@ interface OwnerHomePageProps {
 
 const OwnerHomePage: React.FC<OwnerHomePageProps> = ({
   greeting,
+  loadState = "ready",
+  onRetry,
   buildings,
   collected,
   outstanding,
@@ -48,9 +54,16 @@ const OwnerHomePage: React.FC<OwnerHomePageProps> = ({
       <Text className="mb-8 text-base text-grey md:mb-12">
         Your buildings with Ridgeway
       </Text>
-      {buildings.length === 0 ? (
+      {loadState === "loading" ? (
+        <ListTableSkeleton label="Loading buildings" />
+      ) : null}
+      {loadState === "failed" ? (
+        <LoadFailed title="Couldn't load buildings." onRetry={onRetry} />
+      ) : null}
+      {loadState === "ready" && buildings.length === 0 ? (
         <OwnerBuildingListEmpty />
-      ) : (
+      ) : null}
+      {loadState === "ready" && buildings.length > 0 ? (
         <>
           <SimpleGrid
             cols={{ base: 1, sm: 2, lg: 3 }}
@@ -79,7 +92,7 @@ const OwnerHomePage: React.FC<OwnerHomePageProps> = ({
             buildingCount={buildings.length}
           />
         </>
-      )}
+      ) : null}
     </Stack>
   );
 };

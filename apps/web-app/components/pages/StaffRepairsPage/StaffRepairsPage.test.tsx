@@ -29,8 +29,10 @@ describe("StaffRepairsPage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows an empty line when there are none", () => {
+  it("shows an empty state when there are none", () => {
     render(<StaffRepairsPage repairs={[]} />);
-    expect(screen.getByText("No open repairs.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "No open repairs." })
+    ).toBeInTheDocument();
   });
 });

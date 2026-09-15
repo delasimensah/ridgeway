@@ -1,33 +1,42 @@
 "use client";
 
-import { Box } from "@mantine/core";
 import React from "react";
+import type { ScreenLoadState } from "shared";
 
+import ListEmpty from "../../shared/ListEmpty/ListEmpty";
+import ListPageFrame from "../../shared/ListPageFrame/ListPageFrame";
 import TenantListTable, {
   type TenantListItem,
 } from "../../tenants/TenantListTable/TenantListTable";
-import Heading from "../../ui/Heading/Heading";
-import Text from "../../ui/Text/Text";
 
 interface StaffTenantsPageProps {
   tenants: TenantListItem[];
+  loadState?: ScreenLoadState;
+  onRetry?: () => void;
 }
 
-const StaffTenantsPage: React.FC<StaffTenantsPageProps> = ({ tenants }) => {
+const StaffTenantsPage: React.FC<StaffTenantsPageProps> = ({
+  tenants,
+  loadState = "ready",
+  onRetry,
+}) => {
   return (
-    <Box className="max-w-[1200px]">
-      <Heading
-        variant="page"
-        className="mb-6 text-[24px] font-bold text-darkGrey sm:mb-8 sm:text-[28px] md:text-[32px]"
-      >
-        Tenants
-      </Heading>
-      {tenants.length === 0 ? (
-        <Text className="text-base text-grey">No tenants yet.</Text>
-      ) : (
-        <TenantListTable tenants={tenants} />
-      )}
-    </Box>
+    <ListPageFrame
+      title="Tenants"
+      loadState={loadState}
+      onRetry={onRetry}
+      failedTitle="Couldn't load tenants."
+      skeletonLabel="Loading tenants"
+      isEmpty={tenants.length === 0}
+      empty={
+        <ListEmpty
+          title="No tenants yet."
+          description="Add a tenant from a building when you put someone on a unit."
+        />
+      }
+    >
+      <TenantListTable tenants={tenants} />
+    </ListPageFrame>
   );
 };
 

@@ -31,8 +31,10 @@ describe("StaffTenantsPage", () => {
     expect(screen.queryByText("No tenants yet.")).not.toBeInTheDocument();
   });
 
-  it("shows an empty line when there are none", () => {
+  it("shows an empty state when there are none", () => {
     render(<StaffTenantsPage tenants={[]} />);
-    expect(screen.getByText("No tenants yet.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "No tenants yet." })
+    ).toBeInTheDocument();
   });
 });

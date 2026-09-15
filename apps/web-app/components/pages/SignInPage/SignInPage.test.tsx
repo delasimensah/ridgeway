@@ -19,14 +19,14 @@ jest.mock("@convex-dev/auth/react", () => ({
 }));
 
 describe("SignInPage", () => {
-  it("shows the Ridgeway wordmark and office note", () => {
+  it("shows the Ridgeway wordmark and staff note", () => {
     render(<SignInPage />);
 
     expect(
       screen.getByRole("heading", { name: "Ridgeway" })
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Office, owners, and tenants use this site.")
+      screen.getByText("Staff, owners, and tenants use this site.")
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /sign in/i })

@@ -1,33 +1,42 @@
 "use client";
 
-import { Box } from "@mantine/core";
 import React from "react";
+import type { ScreenLoadState } from "shared";
 
 import RepairListTable, {
   type RepairListItem,
 } from "../../repairs/RepairListTable/RepairListTable";
-import Heading from "../../ui/Heading/Heading";
-import Text from "../../ui/Text/Text";
+import ListEmpty from "../../shared/ListEmpty/ListEmpty";
+import ListPageFrame from "../../shared/ListPageFrame/ListPageFrame";
 
 interface StaffRepairsPageProps {
   repairs: RepairListItem[];
+  loadState?: ScreenLoadState;
+  onRetry?: () => void;
 }
 
-const StaffRepairsPage: React.FC<StaffRepairsPageProps> = ({ repairs }) => {
+const StaffRepairsPage: React.FC<StaffRepairsPageProps> = ({
+  repairs,
+  loadState = "ready",
+  onRetry,
+}) => {
   return (
-    <Box className="max-w-[1200px]">
-      <Heading
-        variant="page"
-        className="mb-6 text-[24px] font-bold text-darkGrey sm:mb-8 sm:text-[28px] md:text-[32px]"
-      >
-        Repairs
-      </Heading>
-      {repairs.length === 0 ? (
-        <Text className="text-base text-grey">No open repairs.</Text>
-      ) : (
-        <RepairListTable repairs={repairs} />
-      )}
-    </Box>
+    <ListPageFrame
+      title="Repairs"
+      loadState={loadState}
+      onRetry={onRetry}
+      failedTitle="Couldn't load repairs."
+      skeletonLabel="Loading repairs"
+      isEmpty={repairs.length === 0}
+      empty={
+        <ListEmpty
+          title="No open repairs."
+          description="When a tenant files a ticket, it will show here."
+        />
+      }
+    >
+      <RepairListTable repairs={repairs} />
+    </ListPageFrame>
   );
 };
 

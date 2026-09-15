@@ -1,18 +1,24 @@
 "use client";
 
 import { api } from "@convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react";
+import { firstQueryError, screenLoadState } from "shared";
 
-import { LoadingScreen, StaffOfficePage } from "@/components";
+import { NotPermittedGate, StaffOfficePage } from "@/components";
+import { reloadWindow } from "@/utils";
 
 const OfficeRoute = () => {
   const people = useQuery(api.staff.listForStaff, {});
 
-  if (people === undefined) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
-  return <StaffOfficePage people={people} />;
+  return (
+    <NotPermittedGate error={firstQueryError([people])}>
+      <StaffOfficePage
+        people={people.data ?? []}
+        loadState={screenLoadState([people])}
+        onRetry={reloadWindow}
+      />
+    </NotPermittedGate>
+  );
 };
 
 export default OfficeRoute;

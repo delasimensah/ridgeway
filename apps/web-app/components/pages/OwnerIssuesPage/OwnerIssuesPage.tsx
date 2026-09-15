@@ -5,6 +5,7 @@ import React from "react";
 import type { WorkOrderStatus } from "shared";
 
 import OwnerPortfolioIssueRow from "../../owner/OwnerPortfolioIssueRow/OwnerPortfolioIssueRow";
+import ListEmpty from "../../shared/ListEmpty/ListEmpty";
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
@@ -43,7 +44,10 @@ const OwnerIssuesPage: React.FC<OwnerIssuesPageProps> = ({ issues }) => {
           Active Portfolio Tasks
         </Heading>
         {issues.length === 0 ? (
-          <Text className="text-base text-grey">No open issues.</Text>
+          <ListEmpty
+            title="No open issues."
+            description="Repairs on your buildings will show here."
+          />
         ) : (
           <Box className="overflow-hidden rounded-[8px] border border-border bg-white shadow-sm">
             <Box className="divide-y divide-border">

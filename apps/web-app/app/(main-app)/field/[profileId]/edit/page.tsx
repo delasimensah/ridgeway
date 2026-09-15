@@ -2,11 +2,17 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { firstQueryError, screenLoadState } from "shared";
 
-import { AddFieldWorkerPage, LoadingScreen } from "@/components";
+import {
+  AddFieldWorkerPage,
+  NotPermittedGate,
+  QueryPageStatus,
+} from "@/components";
+import { reloadWindow } from "@/utils";
 
 const EditFieldWorkerRoute = () => {
   const params = useParams<{ profileId: string }>();
@@ -15,24 +21,30 @@ const EditFieldWorkerRoute = () => {
   const person = useQuery(api.field.get, { profileId });
 
   useEffect(() => {
-    if (person === null) {
+    if (person.isSuccess && person.data === null) {
       router.replace("/field");
     }
-  }, [person, router]);
-
-  if (person === undefined || person === null) {
-    return <LoadingScreen fillViewport={false} />;
-  }
+  }, [person.data, person.isSuccess, router]);
 
   return (
-    <AddFieldWorkerPage
-      profileId={person._id}
-      initialValues={{
-        displayName: person.displayName,
-        email: person.email ?? "",
-        password: "",
-      }}
-    />
+    <NotPermittedGate error={firstQueryError([person])}>
+      <QueryPageStatus
+        loadState={screenLoadState([person])}
+        onRetry={reloadWindow}
+        failedTitle="Couldn't load this field worker."
+      >
+        {person.data ? (
+          <AddFieldWorkerPage
+            profileId={person.data._id}
+            initialValues={{
+              displayName: person.data.displayName,
+              email: person.data.email ?? "",
+              password: "",
+            }}
+          />
+        ) : null}
+      </QueryPageStatus>
+    </NotPermittedGate>
   );
 };
 

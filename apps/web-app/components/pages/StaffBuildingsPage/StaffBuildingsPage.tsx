@@ -1,56 +1,39 @@
 "use client";
 
-import { Box, Button, Group } from "@mantine/core";
-import Link from "next/link";
 import React from "react";
+import type { ScreenLoadState } from "shared";
 
 import BuildingListEmpty from "../../buildings/BuildingListEmpty/BuildingListEmpty";
 import BuildingListTable, {
   type BuildingListItem,
 } from "../../buildings/BuildingListTable/BuildingListTable";
-import Heading from "../../ui/Heading/Heading";
+import ListPageFrame from "../../shared/ListPageFrame/ListPageFrame";
 
 interface StaffBuildingsPageProps {
   buildings: BuildingListItem[];
+  loadState?: ScreenLoadState;
+  onRetry?: () => void;
 }
-
-const PRIMARY_BUTTON =
-  "h-auto rounded-[8px] bg-primary px-6 py-2.5 text-[15px] font-semibold text-white hover:bg-primaryHover";
 
 const StaffBuildingsPage: React.FC<StaffBuildingsPageProps> = ({
   buildings,
+  loadState = "ready",
+  onRetry,
 }) => {
-  const isEmpty = buildings.length === 0;
-
   return (
-    <Box className="max-w-[1200px]">
-      <Group
-        justify="space-between"
-        align="center"
-        gap="md"
-        wrap="wrap"
-        className="mb-6 md:mb-8"
-      >
-        <Heading
-          variant="page"
-          className="mb-0 text-[24px] font-bold text-darkGrey sm:text-[28px] md:text-[32px]"
-        >
-          Buildings
-        </Heading>
-        <Button
-          component={Link}
-          href="/buildings/new"
-          className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
-        >
-          Add building
-        </Button>
-      </Group>
-      {isEmpty ? (
-        <BuildingListEmpty />
-      ) : (
-        <BuildingListTable buildings={buildings} />
-      )}
-    </Box>
+    <ListPageFrame
+      title="Buildings"
+      loadState={loadState}
+      onRetry={onRetry}
+      failedTitle="Couldn't load buildings."
+      skeletonLabel="Loading buildings"
+      actionHref="/buildings/new"
+      actionLabel="Add building"
+      isEmpty={buildings.length === 0}
+      empty={<BuildingListEmpty />}
+    >
+      <BuildingListTable buildings={buildings} />
+    </ListPageFrame>
   );
 };
 

@@ -73,7 +73,7 @@ components/
 │   ├── field/                    # Jobs, JobDetail, UpdateStatus, CompletionPhoto, Account, NotAllowed
 │   └── tenant/                   # Home, Rent, Repairs, LeaseEnded
 ├── rent/                         # RentStatusChip, TenantNextRentCard, invoice and history cards
-├── shared/                       # AppProviders, LoadingScreen
+├── shared/                       # AppProviders
 ├── feedback/
 └── bottom-sheets/
 ```

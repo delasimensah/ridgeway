@@ -90,4 +90,32 @@ describe("StaffHomePage", () => {
     );
     expect(screen.queryByText("Open repairs")).not.toBeInTheDocument();
   });
+
+  it("keeps rent and repair headings and shows skeletons while home loads", () => {
+    render(
+      <StaffHomePage
+        greeting="Good afternoon, Ama"
+        loadState="loading"
+        buildingCount={0}
+        emptyUnitCount={0}
+        repairs={[]}
+        collected={0}
+        outstanding={0}
+        currency="GHS"
+        serverNow={0}
+        rentPeriods={[]}
+      />
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Open repairs" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Rent status" })
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading repairs")).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading rent summary")).toBeInTheDocument();
+    expect(screen.queryByText("No open repairs.")).not.toBeInTheDocument();
+    expect(screen.queryByText("GH₵ 0")).not.toBeInTheDocument();
+  });
 });

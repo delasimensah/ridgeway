@@ -2,11 +2,13 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { firstQueryError, screenLoadState } from "shared";
 
-import { AddTenantPage, LoadingScreen } from "@/components";
+import { AddTenantPage, NotPermittedGate, QueryPageStatus } from "@/components";
+import { reloadWindow } from "@/utils";
 
 const EditTenantRoute = () => {
   const params = useParams<{ buildingId: string; leaseId: string }>();
@@ -17,57 +19,57 @@ const EditTenantRoute = () => {
   const lease = useQuery(api.leases.get, { leaseId });
   const units = useQuery(
     api.units.listByBuilding,
-    building ? { buildingId } : "skip"
+    building.data ? { buildingId } : "skip"
   );
 
   useEffect(() => {
-    if (building === null) {
-      router.replace("/buildings");
-      return;
-    }
     if (
-      lease === null ||
-      (lease !== undefined && lease.buildingId !== buildingId)
+      lease.isSuccess &&
+      (lease.data === null || lease.data.buildingId !== buildingId)
     ) {
       router.replace(`/buildings/${buildingId}`);
     }
-  }, [building, buildingId, lease, router]);
+  }, [buildingId, lease.data, lease.isSuccess, router]);
 
-  if (
-    building === undefined ||
-    building === null ||
-    lease === undefined ||
-    lease === null ||
-    units === undefined ||
-    lease.buildingId !== buildingId
-  ) {
-    return <LoadingScreen fillViewport={false} />;
-  }
-
-  const unit = units.find((row) => row._id === lease.unitId);
+  const unit = (units.data ?? []).find((row) => row._id === lease.data?.unitId);
 
   return (
-    <AddTenantPage
-      buildingId={building._id}
-      buildingName={building.name}
-      units={[{ _id: lease.unitId, label: unit?.label ?? "" }]}
-      unitLabel={unit?.label}
-      leaseId={lease._id}
-      lockUnit
-      hasLogin={lease.hasLogin}
-      initialValues={{
-        unitId: lease.unitId,
-        displayName: lease.displayName,
-        phone: lease.phone ?? "",
-        email: lease.email,
-        rentAmount:
-          lease.rentAmount === null ? "" : String(lease.rentAmount / 100),
-        rentDueDay: lease.rentDueDay === null ? "" : String(lease.rentDueDay),
-        startedOn: lease.startedOn,
-        endedOn: lease.endedOn ?? "",
-        password: "",
-      }}
-    />
+    <NotPermittedGate error={firstQueryError([building, lease, units])}>
+      <QueryPageStatus
+        loadState={screenLoadState([building, lease, units])}
+        onRetry={reloadWindow}
+        failedTitle="Couldn't load this tenant."
+      >
+        {building.data && lease.data && lease.data.buildingId === buildingId ? (
+          <AddTenantPage
+            buildingId={building.data._id}
+            buildingName={building.data.name}
+            units={[{ _id: lease.data.unitId, label: unit?.label ?? "" }]}
+            unitLabel={unit?.label}
+            leaseId={lease.data._id}
+            lockUnit
+            hasLogin={lease.data.hasLogin}
+            initialValues={{
+              unitId: lease.data.unitId,
+              displayName: lease.data.displayName,
+              phone: lease.data.phone ?? "",
+              email: lease.data.email,
+              rentAmount:
+                lease.data.rentAmount === null
+                  ? ""
+                  : String(lease.data.rentAmount / 100),
+              rentDueDay:
+                lease.data.rentDueDay === null
+                  ? ""
+                  : String(lease.data.rentDueDay),
+              startedOn: lease.data.startedOn,
+              endedOn: lease.data.endedOn ?? "",
+              password: "",
+            }}
+          />
+        ) : null}
+      </QueryPageStatus>
+    </NotPermittedGate>
   );
 };
 

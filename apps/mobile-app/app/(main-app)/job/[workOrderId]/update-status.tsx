@@ -1,14 +1,25 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
+import { useQuery } from "convex-helpers/react";
 import { type Href, router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
-import type { WorkOrderStatus } from "shared";
+import { useEffect, useState } from "react";
+import { firstQueryError, screenLoadState, type WorkOrderStatus } from "shared";
 
-import { LoadingScreen, UpdateStatusScreen } from "@/components";
+import {
+  NotPermittedGate,
+  QueryPageStatus,
+  UpdateStatusScreen,
+} from "@/components";
+import { useRetryKey } from "@/hooks";
 import { getConvexErrorMessage, showErrorToast } from "@/utils";
 
 const UpdateStatusRoute = () => {
+  const { retryKey, onRetry } = useRetryKey();
+  return <UpdateStatusRouteBody key={retryKey} onRetry={onRetry} />;
+};
+
+const UpdateStatusRouteBody = ({ onRetry }: { onRetry: () => void }) => {
   const { workOrderId } = useLocalSearchParams<{ workOrderId: string }>();
   const ticket = useQuery(api.workOrders.get, {
     workOrderId: workOrderId as Id<"workOrders">,
@@ -17,18 +28,27 @@ const UpdateStatusRoute = () => {
   const [selected, setSelected] = useState<WorkOrderStatus | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  if (ticket === undefined || ticket === null) {
-    return <LoadingScreen />;
-  }
+  useEffect(() => {
+    if (ticket.isSuccess && ticket.data === null) {
+      router.back();
+    }
+  }, [ticket.data, ticket.isSuccess]);
 
-  const options: WorkOrderStatus[] = [
-    ticket.status,
-    ...ticket.allowedNextStatuses.filter((status) => status !== ticket.status),
-  ];
-  const chosen = selected ?? ticket.status;
+  const row = ticket.data;
+  const options: WorkOrderStatus[] = row
+    ? [
+        row.status,
+        ...row.allowedNextStatuses.filter((status) => status !== row.status),
+      ]
+    : [];
+  const chosen = selected ?? row?.status ?? "assigned";
 
   const handleSave = async () => {
-    if (chosen === ticket.status) {
+    const current = ticket.data;
+    if (current === undefined || current === null) {
+      return;
+    }
+    if (chosen === current.status) {
       router.back();
       return;
     }
@@ -52,19 +72,29 @@ const UpdateStatusRoute = () => {
   };
 
   return (
-    <UpdateStatusScreen
-      currentStatus={ticket.status}
-      options={options}
-      selected={chosen}
-      isSaving={isSaving}
-      onSelect={setSelected}
-      onSave={() => {
-        void handleSave();
-      }}
-      onClose={() => {
-        router.back();
-      }}
-    />
+    <NotPermittedGate error={firstQueryError([ticket])}>
+      <QueryPageStatus
+        loadState={screenLoadState([ticket])}
+        onRetry={onRetry}
+        failedTitle="Couldn't load this job."
+      >
+        {ticket.data ? (
+          <UpdateStatusScreen
+            currentStatus={ticket.data.status}
+            options={options}
+            selected={chosen}
+            isSaving={isSaving}
+            onSelect={setSelected}
+            onSave={() => {
+              void handleSave();
+            }}
+            onClose={() => {
+              router.back();
+            }}
+          />
+        ) : null}
+      </QueryPageStatus>
+    </NotPermittedGate>
   );
 };
 
