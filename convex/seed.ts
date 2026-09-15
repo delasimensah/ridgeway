@@ -3,72 +3,94 @@ import type { GenericActionCtx } from "convex/server";
 import { v } from "convex/values";
 
 import { internal } from "./_generated/api";
-import type { DataModel } from "./_generated/dataModel";
+import type { DataModel, Id } from "./_generated/dataModel";
 import {
   internalAction,
   internalMutation,
   internalQuery,
+  type MutationCtx,
 } from "./_generated/server";
 import { formatAccraAddress } from "./buildings";
-import { isLeaseCurrent, previousCalendarDate, utcToday } from "./lib/viewer";
+import { dueOnForPeriod } from "./rent";
+import {
+  BUILDINGS,
+  FIELD_PEOPLE,
+  ORGANIZATION_NAME,
+  OWNER_PEOPLE,
+  STAFF_PEOPLE,
+  TICKETS,
+  loginEmails,
+  ownerCurrency,
+  rentRowsForLease,
+  toSmallestUnit,
+  type SeedTenant,
+} from "./seedWorld";
 
-export const ORGANIZATION_NAME = "Ridgeway Property Group";
+const WIPE_TAKE = 64;
 
-export const STAFF_SEED = {
-  email: "ama.boateng@ridgeway.gh",
-  displayName: "Ama Boateng",
-} as const;
+const PRODUCT_TABLES = [
+  "files",
+  "workOrderEvents",
+  "workOrders",
+  "rentPeriods",
+  "leases",
+  "units",
+  "buildings",
+  "memberships",
+  "owners",
+  "profiles",
+  "organizations",
+] as const;
 
-export const FIELD_SEED = {
-  email: "yaw.darko@ridgeway.gh",
-  displayName: "Yaw Darko",
-} as const;
+const AUTH_TABLES = [
+  "authVerificationCodes",
+  "authRefreshTokens",
+  "authSessions",
+  "authAccounts",
+  "authVerifiers",
+  "authRateLimits",
+  "users",
+] as const;
 
-export const OWNER_A_SEED = {
-  email: "kwesi.mensah@ridgeway.gh",
-  displayName: "Kwesi Mensah",
-  buildingName: "Ridge Court",
-  street: "14 Ridge Road",
-  area: "Cantonments",
-} as const;
+async function deleteTaken(
+  ctx: MutationCtx,
+  table: (typeof PRODUCT_TABLES)[number] | (typeof AUTH_TABLES)[number]
+): Promise<number> {
+  const rows = await ctx.db.query(table).take(WIPE_TAKE);
+  for (const row of rows) {
+    if (table === "files" && "storageId" in row) {
+      await ctx.storage.delete(row.storageId);
+    }
+    await ctx.db.delete(row._id);
+  }
+  return rows.length;
+}
 
-export const OWNER_B_SEED = {
-  email: "adwoa.owusu@ridgeway.gh",
-  displayName: "Adwoa Owusu",
-  buildingName: "Labone walk-up",
-  street: "32 Labone Crescent",
-  area: "Labone",
-} as const;
-
-export const TENANT_SEED = {
-  email: "akosua.darko@ridgeway.gh",
-  displayName: "Akosua Darko",
-  unitLabel: "B12",
-  startedOn: "2025-01-01",
-} as const;
-
-export const TENANT_RENT_SEED = {
-  amount: 450000,
-  currency: "GHS" as const,
-  dueDay: 5,
-  periods: [
-    {
-      periodLabel: "2026-07",
-      dueOn: "2026-07-05",
-      confirmedStatus: "paid" as const,
-    },
-    {
-      periodLabel: "2026-08",
-      dueOn: "2026-08-05",
-      confirmedStatus: "paid" as const,
-    },
-    {
-      periodLabel: "2026-09",
-      dueOn: "2026-09-05",
-      confirmedStatus: "unpaid" as const,
-    },
-  ],
-} as const;
+export const wipeChunk = internalMutation({
+  args: {},
+  returns: v.number(),
+  handler: async (ctx) => {
+    let deleted = 0;
+    for (const table of PRODUCT_TABLES) {
+      deleted += await deleteTaken(ctx, table);
+      if (deleted > 0) {
+        return deleted;
+      }
+    }
+    for (const table of AUTH_TABLES) {
+      deleted += await deleteTaken(ctx, table);
+      if (deleted > 0) {
+        return deleted;
+      }
+    }
+    const stored = await ctx.db.system.query("_storage").take(WIPE_TAKE);
+    for (const file of stored) {
+      await ctx.storage.delete(file._id);
+      deleted += 1;
+    }
+    return deleted;
+  },
+});
 
 export const findUserByEmail = internalQuery({
   args: { email: v.string() },
@@ -82,258 +104,297 @@ export const findUserByEmail = internalQuery({
   },
 });
 
-export const attachIdentity = internalMutation({
-  args: {
-    userId: v.id("users"),
-    displayName: v.string(),
-    role: v.union(v.literal("staff"), v.literal("field"), v.literal("owner")),
-    organizationName: v.string(),
-    ownerId: v.optional(v.id("owners")),
-  },
-  returns: v.object({
-    organizationId: v.id("organizations"),
-    profileId: v.id("profiles"),
-  }),
-  handler: async (ctx, args) => {
-    if (args.role === "owner" && args.ownerId === undefined) {
-      throw new Error("Owner identity needs an owner id");
-    }
+async function userIdByEmail(
+  ctx: MutationCtx,
+  email: string
+): Promise<Id<"users"> | null> {
+  const user = await ctx.db
+    .query("users")
+    .withIndex("email", (q) => q.eq("email", email))
+    .unique();
+  return user?._id ?? null;
+}
 
-    const existingOrgs = await ctx.db.query("organizations").take(1);
-    const organizationId =
-      existingOrgs[0]?._id ??
-      (await ctx.db.insert("organizations", { name: args.organizationName }));
+async function ensureUser(
+  ctx: MutationCtx,
+  email: string,
+  displayName: string
+): Promise<Id<"users">> {
+  const existing = await userIdByEmail(ctx, email);
+  if (existing !== null) {
+    await ctx.db.patch(existing, { name: displayName, email });
+    return existing;
+  }
+  return await ctx.db.insert("users", { email, name: displayName });
+}
 
-    const existingProfile = await ctx.db
-      .query("profiles")
-      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .unique();
-    const profileId =
-      existingProfile?._id ??
-      (await ctx.db.insert("profiles", {
-        userId: args.userId,
-        displayName: args.displayName,
-      }));
+async function ensureProfile(
+  ctx: MutationCtx,
+  userId: Id<"users">,
+  displayName: string,
+  phone: string | undefined
+): Promise<Id<"profiles">> {
+  const existing = await ctx.db
+    .query("profiles")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .unique();
+  const fields = {
+    displayName,
+    ...(phone !== undefined ? { phone } : {}),
+  };
+  if (existing !== null) {
+    await ctx.db.patch(existing._id, fields);
+    return existing._id;
+  }
+  return await ctx.db.insert("profiles", { userId, ...fields });
+}
 
-    if (existingProfile && existingProfile.displayName !== args.displayName) {
-      await ctx.db.patch(profileId, { displayName: args.displayName });
-    }
+function titleFromDescription(description: string): string {
+  const firstLine = description.split("\n")[0]?.trim() ?? "";
+  if (firstLine.length <= 80) {
+    return firstLine;
+  }
+  return `${firstLine.slice(0, 77).trimEnd()}...`;
+}
 
-    const memberships = await ctx.db
-      .query("memberships")
-      .withIndex("by_profileId", (q) => q.eq("profileId", profileId))
-      .take(8);
-    const hasRole = memberships.some((row) => row.role === args.role);
-    if (!hasRole) {
+async function insertLeaseAndRent(
+  ctx: MutationCtx,
+  unitId: Id<"units">,
+  tenant: SeedTenant,
+  currency: "GHS" | "USD"
+): Promise<Id<"leases">> {
+  const userId = await ensureUser(ctx, tenant.email, tenant.displayName);
+  const profileId = await ensureProfile(
+    ctx,
+    userId,
+    tenant.displayName,
+    tenant.phone
+  );
+  const leaseId = await ctx.db.insert("leases", {
+    unitId,
+    tenantProfileId: profileId,
+    startedOn: tenant.startedOn,
+    ...(tenant.endedOn !== undefined ? { endedOn: tenant.endedOn } : {}),
+    rentAmount: toSmallestUnit(tenant.rentMajor),
+    rentCurrency: currency,
+    rentDueDay: tenant.dueDay,
+  });
+  const now = Date.now();
+  for (const row of rentRowsForLease(tenant)) {
+    await ctx.db.insert("rentPeriods", {
+      leaseId,
+      periodLabel: row.periodLabel,
+      amount: toSmallestUnit(tenant.rentMajor),
+      currency,
+      dueOn: dueOnForPeriod(row.periodLabel, tenant.dueDay),
+      confirmedStatus: row.confirmedStatus,
+      ...(row.confirmedAmount !== undefined
+        ? { confirmedAmount: row.confirmedAmount }
+        : {}),
+      ...(row.tenantReported === true ? { tenantReportedAt: now } : {}),
+    });
+  }
+  return leaseId;
+}
+
+export const insertWorld = internalMutation({
+  args: {},
+  returns: v.null(),
+  handler: async (ctx) => {
+    const organizationId = await ctx.db.insert("organizations", {
+      name: ORGANIZATION_NAME,
+    });
+
+    const staffProfileIds: Id<"profiles">[] = [];
+    for (const person of STAFF_PEOPLE) {
+      const userId = await ensureUser(ctx, person.email, person.displayName);
+      const profileId = await ensureProfile(
+        ctx,
+        userId,
+        person.displayName,
+        person.phone
+      );
       await ctx.db.insert("memberships", {
         organizationId,
         profileId,
-        role: args.role,
-        ...(args.ownerId !== undefined ? { ownerId: args.ownerId } : {}),
+        role: "staff",
       });
+      staffProfileIds.push(profileId);
     }
 
-    return { organizationId, profileId };
-  },
-});
-
-export const ensureOwner = internalMutation({
-  args: {
-    displayName: v.string(),
-    contactEmail: v.string(),
-    organizationName: v.string(),
-  },
-  returns: v.id("owners"),
-  handler: async (ctx, args) => {
-    const existingOrgs = await ctx.db.query("organizations").take(1);
-    const organizationId =
-      existingOrgs[0]?._id ??
-      (await ctx.db.insert("organizations", { name: args.organizationName }));
-
-    const owners = await ctx.db
-      .query("owners")
-      .withIndex("by_organizationId", (q) =>
-        q.eq("organizationId", organizationId)
-      )
-      .collect();
-    const existing = owners.find(
-      (row) => row.contactEmail === args.contactEmail
-    );
-    if (existing !== undefined) {
-      return existing._id;
+    const fieldByEmail = new Map<string, Id<"profiles">>();
+    for (const person of FIELD_PEOPLE) {
+      const userId = await ensureUser(ctx, person.email, person.displayName);
+      const profileId = await ensureProfile(
+        ctx,
+        userId,
+        person.displayName,
+        person.phone
+      );
+      await ctx.db.insert("memberships", {
+        organizationId,
+        profileId,
+        role: "field",
+      });
+      fieldByEmail.set(person.email, profileId);
     }
 
-    return await ctx.db.insert("owners", {
-      organizationId,
-      displayName: args.displayName,
-      contactEmail: args.contactEmail,
-    });
-  },
-});
-
-export const ensureBuildingForOwner = internalMutation({
-  args: {
-    ownerId: v.id("owners"),
-    name: v.string(),
-    street: v.string(),
-    area: v.string(),
-  },
-  returns: v.id("buildings"),
-  handler: async (ctx, args) => {
-    const owner = await ctx.db.get(args.ownerId);
-    if (owner === null) {
-      throw new Error("Owner does not exist");
+    const ownerByEmail = new Map<string, Id<"owners">>();
+    for (const person of OWNER_PEOPLE) {
+      const ownerId = await ctx.db.insert("owners", {
+        organizationId,
+        displayName: person.displayName,
+        contactEmail: person.email,
+        contactPhone: person.phone,
+      });
+      const userId = await ensureUser(ctx, person.email, person.displayName);
+      const profileId = await ensureProfile(
+        ctx,
+        userId,
+        person.displayName,
+        person.phone
+      );
+      await ctx.db.insert("memberships", {
+        organizationId,
+        profileId,
+        role: "owner",
+        ownerId,
+      });
+      ownerByEmail.set(person.email, ownerId);
     }
 
-    const buildings = await ctx.db
-      .query("buildings")
-      .withIndex("by_ownerId", (q) => q.eq("ownerId", args.ownerId))
-      .collect();
-    const existing = buildings.find((row) => row.name === args.name);
-    if (existing !== undefined) {
-      return existing._id;
+    const staffActor = staffProfileIds[0];
+    if (staffActor === undefined) {
+      throw new Error("Seed needs a staff person");
     }
 
-    return await ctx.db.insert("buildings", {
-      organizationId: owner.organizationId,
-      ownerId: args.ownerId,
-      name: args.name,
-      address: formatAccraAddress(args.street, args.area),
-    });
-  },
-});
+    const unitByKey = new Map<
+      string,
+      {
+        unitId: Id<"units">;
+        buildingId: Id<"buildings">;
+        leaseId: Id<"leases"> | null;
+      }
+    >();
 
-export const ensureTenantOnBuilding = internalMutation({
-  args: {
-    userId: v.id("users"),
-    displayName: v.string(),
-    buildingName: v.string(),
-    unitLabel: v.string(),
-    startedOn: v.string(),
-  },
-  returns: v.id("leases"),
-  handler: async (ctx, args) => {
-    const existingProfile = await ctx.db
-      .query("profiles")
-      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .unique();
-    const profileId =
-      existingProfile?._id ??
-      (await ctx.db.insert("profiles", {
-        userId: args.userId,
-        displayName: args.displayName,
-      }));
-    if (
-      existingProfile !== null &&
-      existingProfile.displayName !== args.displayName
-    ) {
-      await ctx.db.patch(profileId, { displayName: args.displayName });
-    }
-
-    const buildings = await ctx.db.query("buildings").collect();
-    const building = buildings.find((row) => row.name === args.buildingName);
-    if (building === undefined) {
-      throw new Error("Building does not exist");
-    }
-
-    const units = await ctx.db
-      .query("units")
-      .withIndex("by_buildingId", (q) => q.eq("buildingId", building._id))
-      .collect();
-    const existingUnit = units.find((row) => row.label === args.unitLabel);
-    const unitId =
-      existingUnit?._id ??
-      (await ctx.db.insert("units", {
-        buildingId: building._id,
-        label: args.unitLabel,
-        kind: "apartment",
-      }));
-
-    const today = utcToday();
-    const profileLeases = await ctx.db
-      .query("leases")
-      .withIndex("by_tenantProfileId", (q) =>
-        q.eq("tenantProfileId", profileId)
-      )
-      .collect();
-    const currentForPerson = profileLeases.filter((row) =>
-      isLeaseCurrent(row, today)
-    );
-    if (currentForPerson.length > 0) {
-      const onSeedUnit = currentForPerson.find((row) => row.unitId === unitId);
-      const kept =
-        onSeedUnit ??
-        currentForPerson.reduce((oldest, row) =>
-          row._creationTime < oldest._creationTime ? row : oldest
-        );
-      const endedOn = previousCalendarDate(today);
-      for (const extra of currentForPerson) {
-        if (extra._id !== kept._id) {
-          await ctx.db.patch(extra._id, { endedOn });
+    for (const building of BUILDINGS) {
+      const ownerId = ownerByEmail.get(building.ownerEmail);
+      if (ownerId === undefined) {
+        throw new Error(`Seed owner missing for ${building.name}`);
+      }
+      const currency = ownerCurrency(building.ownerEmail);
+      const buildingId = await ctx.db.insert("buildings", {
+        organizationId,
+        ownerId,
+        name: building.name,
+        address: formatAccraAddress(building.street, building.area),
+        houseRules: building.houseRules,
+      });
+      for (const unit of building.units) {
+        const unitId = await ctx.db.insert("units", {
+          buildingId,
+          label: unit.label,
+          kind: unit.kind,
+        });
+        let currentLeaseId: Id<"leases"> | null = null;
+        let latestLeaseId: Id<"leases"> | null = null;
+        for (const lease of unit.leases) {
+          const leaseId = await insertLeaseAndRent(
+            ctx,
+            unitId,
+            lease,
+            currency
+          );
+          latestLeaseId = leaseId;
+          if (lease.endedOn === undefined) {
+            currentLeaseId = leaseId;
+          }
         }
-      }
-      if (kept.rentAmount === undefined) {
-        await ctx.db.patch(kept._id, {
-          rentAmount: TENANT_RENT_SEED.amount,
-          rentCurrency: TENANT_RENT_SEED.currency,
-          rentDueDay: TENANT_RENT_SEED.dueDay,
+        unitByKey.set(`${building.name}::${unit.label}`, {
+          unitId,
+          buildingId,
+          leaseId: currentLeaseId ?? latestLeaseId,
         });
       }
-      return kept._id;
     }
 
-    const unitLeases = await ctx.db
-      .query("leases")
-      .withIndex("by_unitId", (q) => q.eq("unitId", unitId))
-      .collect();
-    const currentOnUnit = unitLeases.find((row) => isLeaseCurrent(row, today));
-    if (currentOnUnit !== undefined) {
-      if (currentOnUnit.rentAmount === undefined) {
-        await ctx.db.patch(currentOnUnit._id, {
-          rentAmount: TENANT_RENT_SEED.amount,
-          rentCurrency: TENANT_RENT_SEED.currency,
-          rentDueDay: TENANT_RENT_SEED.dueDay,
-        });
+    for (const ticket of TICKETS) {
+      const placed = unitByKey.get(
+        `${ticket.buildingName}::${ticket.unitLabel}`
+      );
+      if (placed === undefined) {
+        throw new Error(
+          `Seed ticket unit missing: ${ticket.buildingName} ${ticket.unitLabel}`
+        );
       }
-      return currentOnUnit._id;
-    }
+      const assigneeProfileId =
+        ticket.assigneeEmail === undefined
+          ? undefined
+          : fieldByEmail.get(ticket.assigneeEmail);
+      if (
+        ticket.assigneeEmail !== undefined &&
+        assigneeProfileId === undefined
+      ) {
+        throw new Error(`Seed field worker missing: ${ticket.assigneeEmail}`);
+      }
 
-    return await ctx.db.insert("leases", {
-      unitId,
-      tenantProfileId: profileId,
-      startedOn: args.startedOn,
-      rentAmount: TENANT_RENT_SEED.amount,
-      rentCurrency: TENANT_RENT_SEED.currency,
-      rentDueDay: TENANT_RENT_SEED.dueDay,
-    });
-  },
-});
+      const tenantActor =
+        placed.leaseId === null
+          ? staffActor
+          : ((await ctx.db.get(placed.leaseId))?.tenantProfileId ?? staffActor);
 
-export const ensureRentPeriods = internalMutation({
-  args: {
-    leaseId: v.id("leases"),
-  },
-  returns: v.null(),
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("rentPeriods")
-      .withIndex("by_leaseId_and_dueOn", (q) => q.eq("leaseId", args.leaseId))
-      .collect();
-    const labels = new Set(existing.map((row) => row.periodLabel));
+      const workOrderId = await ctx.db.insert("workOrders", {
+        organizationId,
+        buildingId: placed.buildingId,
+        unitId: placed.unitId,
+        ...(placed.leaseId !== null ? { leaseId: placed.leaseId } : {}),
+        status: ticket.status,
+        title: titleFromDescription(ticket.description),
+        description: ticket.description,
+        category: ticket.category,
+        urgency: ticket.urgency,
+        createdByProfileId: tenantActor,
+        ...(assigneeProfileId !== undefined ? { assigneeProfileId } : {}),
+        ...(ticket.scheduledFor !== undefined
+          ? { scheduledFor: ticket.scheduledFor }
+          : {}),
+      });
 
-    for (const period of TENANT_RENT_SEED.periods) {
-      if (labels.has(period.periodLabel)) {
+      await ctx.db.insert("workOrderEvents", {
+        workOrderId,
+        actorProfileId: tenantActor,
+        toStatus: "received",
+      });
+      if (ticket.status === "received") {
         continue;
       }
-      await ctx.db.insert("rentPeriods", {
-        leaseId: args.leaseId,
-        periodLabel: period.periodLabel,
-        amount: TENANT_RENT_SEED.amount,
-        currency: TENANT_RENT_SEED.currency,
-        dueOn: period.dueOn,
-        confirmedStatus: period.confirmedStatus,
+      await ctx.db.insert("workOrderEvents", {
+        workOrderId,
+        actorProfileId: staffActor,
+        fromStatus: "received",
+        toStatus: "assigned",
+      });
+      if (ticket.status === "assigned") {
+        continue;
+      }
+      await ctx.db.insert("workOrderEvents", {
+        workOrderId,
+        actorProfileId: assigneeProfileId ?? staffActor,
+        fromStatus: "assigned",
+        toStatus: "scheduled",
+      });
+      if (ticket.status === "scheduled") {
+        continue;
+      }
+      await ctx.db.insert("workOrderEvents", {
+        workOrderId,
+        actorProfileId: assigneeProfileId ?? staffActor,
+        fromStatus: "scheduled",
+        toStatus: "done",
+        ...(ticket.note !== undefined ? { note: ticket.note } : {}),
       });
     }
+
     return null;
   },
 });
@@ -344,13 +405,6 @@ async function ensureAccount(
   password: string,
   displayName: string
 ) {
-  const existingUserId = await ctx.runQuery(internal.seed.findUserByEmail, {
-    email,
-  });
-  if (existingUserId !== null) {
-    return existingUserId;
-  }
-
   const created = await createAccount(ctx as never, {
     provider: "password",
     account: { id: email, secret: password },
@@ -359,123 +413,89 @@ async function ensureAccount(
   return created.user._id;
 }
 
+async function wipeAll(ctx: GenericActionCtx<DataModel>) {
+  for (;;) {
+    const deleted = await ctx.runMutation(internal.seed.wipeChunk, {});
+    if (deleted === 0) {
+      return;
+    }
+  }
+}
+
 export const run = internalAction({
   args: {
     staffPassword: v.string(),
     fieldPassword: v.string(),
-    ownerAPassword: v.string(),
-    ownerBPassword: v.string(),
+    ownerPassword: v.string(),
     tenantPassword: v.string(),
   },
   returns: v.object({
-    staffEmail: v.string(),
-    fieldEmail: v.string(),
-    ownerAEmail: v.string(),
-    ownerBEmail: v.string(),
-    tenantEmail: v.string(),
+    staffEmails: v.array(v.string()),
+    fieldEmails: v.array(v.string()),
+    ownerEmails: v.array(v.string()),
+    tenantEmails: v.array(v.string()),
   }),
   handler: async (ctx, args) => {
-    const staffUserId = await ensureAccount(
-      ctx,
-      STAFF_SEED.email,
-      args.staffPassword,
-      STAFF_SEED.displayName
-    );
-    const fieldUserId = await ensureAccount(
-      ctx,
-      FIELD_SEED.email,
-      args.fieldPassword,
-      FIELD_SEED.displayName
-    );
-    const ownerAUserId = await ensureAccount(
-      ctx,
-      OWNER_A_SEED.email,
-      args.ownerAPassword,
-      OWNER_A_SEED.displayName
-    );
-    const ownerBUserId = await ensureAccount(
-      ctx,
-      OWNER_B_SEED.email,
-      args.ownerBPassword,
-      OWNER_B_SEED.displayName
-    );
-    const tenantUserId = await ensureAccount(
-      ctx,
-      TENANT_SEED.email,
-      args.tenantPassword,
-      TENANT_SEED.displayName
-    );
+    await wipeAll(ctx);
 
-    await ctx.runMutation(internal.seed.attachIdentity, {
-      userId: staffUserId,
-      displayName: STAFF_SEED.displayName,
-      role: "staff",
-      organizationName: ORGANIZATION_NAME,
-    });
-    await ctx.runMutation(internal.seed.attachIdentity, {
-      userId: fieldUserId,
-      displayName: FIELD_SEED.displayName,
-      role: "field",
-      organizationName: ORGANIZATION_NAME,
-    });
-
-    const ownerAId = await ctx.runMutation(internal.seed.ensureOwner, {
-      displayName: OWNER_A_SEED.displayName,
-      contactEmail: OWNER_A_SEED.email,
-      organizationName: ORGANIZATION_NAME,
-    });
-    const ownerBId = await ctx.runMutation(internal.seed.ensureOwner, {
-      displayName: OWNER_B_SEED.displayName,
-      contactEmail: OWNER_B_SEED.email,
-      organizationName: ORGANIZATION_NAME,
-    });
-
-    await ctx.runMutation(internal.seed.attachIdentity, {
-      userId: ownerAUserId,
-      displayName: OWNER_A_SEED.displayName,
-      role: "owner",
-      organizationName: ORGANIZATION_NAME,
-      ownerId: ownerAId,
-    });
-    await ctx.runMutation(internal.seed.attachIdentity, {
-      userId: ownerBUserId,
-      displayName: OWNER_B_SEED.displayName,
-      role: "owner",
-      organizationName: ORGANIZATION_NAME,
-      ownerId: ownerBId,
-    });
-
-    await ctx.runMutation(internal.seed.ensureBuildingForOwner, {
-      ownerId: ownerAId,
-      name: OWNER_A_SEED.buildingName,
-      street: OWNER_A_SEED.street,
-      area: OWNER_A_SEED.area,
-    });
-    await ctx.runMutation(internal.seed.ensureBuildingForOwner, {
-      ownerId: ownerBId,
-      name: OWNER_B_SEED.buildingName,
-      street: OWNER_B_SEED.street,
-      area: OWNER_B_SEED.area,
-    });
-
-    const leaseId = await ctx.runMutation(
-      internal.seed.ensureTenantOnBuilding,
-      {
-        userId: tenantUserId,
-        displayName: TENANT_SEED.displayName,
-        buildingName: OWNER_A_SEED.buildingName,
-        unitLabel: TENANT_SEED.unitLabel,
-        startedOn: TENANT_SEED.startedOn,
+    const logins = loginEmails();
+    const names = new Map<string, string>();
+    for (const person of STAFF_PEOPLE) {
+      names.set(person.email, person.displayName);
+    }
+    for (const person of FIELD_PEOPLE) {
+      names.set(person.email, person.displayName);
+    }
+    for (const person of OWNER_PEOPLE) {
+      names.set(person.email, person.displayName);
+    }
+    for (const building of BUILDINGS) {
+      for (const unit of building.units) {
+        for (const lease of unit.leases) {
+          names.set(lease.email, lease.displayName);
+        }
       }
-    );
-    await ctx.runMutation(internal.seed.ensureRentPeriods, { leaseId });
+    }
 
+    for (const email of logins.staff) {
+      await ensureAccount(
+        ctx,
+        email,
+        args.staffPassword,
+        names.get(email) ?? email
+      );
+    }
+    for (const email of logins.field) {
+      await ensureAccount(
+        ctx,
+        email,
+        args.fieldPassword,
+        names.get(email) ?? email
+      );
+    }
+    for (const email of logins.owners) {
+      await ensureAccount(
+        ctx,
+        email,
+        args.ownerPassword,
+        names.get(email) ?? email
+      );
+    }
+    for (const email of logins.tenants) {
+      await ensureAccount(
+        ctx,
+        email,
+        args.tenantPassword,
+        names.get(email) ?? email
+      );
+    }
+
+    await ctx.runMutation(internal.seed.insertWorld, {});
     return {
-      staffEmail: STAFF_SEED.email,
-      fieldEmail: FIELD_SEED.email,
-      ownerAEmail: OWNER_A_SEED.email,
-      ownerBEmail: OWNER_B_SEED.email,
-      tenantEmail: TENANT_SEED.email,
+      staffEmails: logins.staff,
+      fieldEmails: logins.field,
+      ownerEmails: logins.owners,
+      tenantEmails: logins.tenants,
     };
   },
 });

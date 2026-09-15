@@ -42,7 +42,7 @@ This project’s Vercel preview uses the same Convex **dev** URL as local (`NEXT
 
 There is no forgot-password email. Staff set a new password on an owner or tenant from those forms ([RIDGE-30](https://linear.app/dm-studios/issue/RIDGE-30/staff-can-set-a-new-password-on-an-existing-owner-or-tenant-login)). Another office person can set a password after [RIDGE-31](https://linear.app/dm-studios/issue/RIDGE-31/staff-can-add-another-office-person).
 
-If the last remaining staff cannot sign in, do not edit `authAccounts` in the Convex dashboard. The stored secret is hashed; typing a plaintext password there will not work. Re-running `seed:run` also leaves an existing password alone.
+If the last remaining staff cannot sign in, do not edit `authAccounts` in the Convex dashboard. The stored secret is hashed; typing a plaintext password there will not work. Re-running `seed:run` wipes the development database and writes the seed passwords again.
 
 From the `ridgeway` repo root, after Convex has pushed:
 

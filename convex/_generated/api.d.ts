@@ -23,6 +23,7 @@ import type * as owners from "../owners.js";
 import type * as profiles from "../profiles.js";
 import type * as rent from "../rent.js";
 import type * as seed from "../seed.js";
+import type * as seedWorld from "../seedWorld.js";
 import type * as staff from "../staff.js";
 import type * as units from "../units.js";
 import type * as workOrders from "../workOrders.js";
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   profiles: typeof profiles;
   rent: typeof rent;
   seed: typeof seed;
+  seedWorld: typeof seedWorld;
   staff: typeof staff;
   units: typeof units;
   workOrders: typeof workOrders;

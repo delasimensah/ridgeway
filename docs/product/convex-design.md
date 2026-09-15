@@ -31,7 +31,7 @@ One file per area of the product, named after the thing it deals with, plus a sm
 - `convex/profiles.ts`, `convex/owners.ts`, `convex/buildings.ts`, `convex/units.ts`, `convex/leases.ts`, `convex/workOrders.ts`, `convex/rent.ts`, `convex/files.ts` hold the queries and mutations for each area.
 - `convex/staff.ts` holds staff home today. Office-staff list, create, and password actions are added on RIDGE-31.
 - `convex/field.ts` holds field-worker list, create, and password actions.
-- `convex/seed.ts` holds the internal mutation that creates the demonstration world.
+- `convex/seed.ts` and `convex/seedWorld.ts` hold the internal action that wipes the development database and inserts the demonstration world.
 - `convex/ai.ts` holds the actions for the three optional language-model features, and is not written until those features are started.
 
 Anything the client is not allowed to call directly is written as an `internalQuery`, `internalMutation`, or `internalAction`. Those are not reachable from the website or the phone at all, which is a stronger guarantee than a permission check, so anything that does not need to be public is internal.
@@ -385,13 +385,15 @@ The three optional language-model features go in `convex/ai.ts` as actions, beca
 
 ## 9. The seeded world
 
-The seed is an `internalMutation` in `convex/seed.ts`, so it cannot be triggered from the website or the phone. It is run from the Convex dashboard or the command line against a development deployment.
+The seed is an `internalAction` in `convex/seed.ts`, so it cannot be triggered from the website or the phone. It is run from the Convex dashboard or the command line against a development deployment. The Accra people, buildings, leases, rent, and tickets live in `convex/seedWorld.ts`.
 
-It creates Ridgeway Property Group, three owners, about ten buildings with real-looking Accra addresses, mostly apartments with a few small shops, leases that already started before this product existed, roughly a month of rent periods in a believable mixture of paid, partly paid, and unpaid, repair tickets spread across all four statuses including finished ones, house-rules text that differs enough between buildings to demonstrate the chat, and sign-ins for staff, each owner, several tenants, and two caretakers.
+It first deletes product rows, auth users and accounts, and stored files, then inserts a fresh world. Re-running it replaces the old demo rather than stacking on it.
 
-The seed is part of the product, not a scratch script. The requirements are explicit that the screens must look expensive and that nobody is called "test user". A demonstration to Ridgeway is only as convincing as this data, so one building is deliberately busy and the rest are calm, which is what a real portfolio looks like.
+It creates Ridgeway Property Group, three owners, about ten buildings with real-looking Accra addresses, mostly apartments with a few small shops, three or more units on every building, mixed occupancy including vacant units and at least one ended lease, two years of rent periods (October 2024 through September 2026) in a believable mixture of paid, partly paid, unpaid, and tenant-reported, repair tickets spread across all four statuses including finished ones and units with more than one open ticket, house-rules text that differs enough between buildings to demonstrate the chat, and sign-ins for staff, each owner, several tenants, and two caretakers. Amounts are Ghana cedis except one owner whose buildings are US dollars, so owner totals stay in one currency.
 
-Because the seed creates sign-ins, it also creates the profile and membership rows those logins need, and it must create them in the same run so that no login exists without a profile.
+The seed is part of the product, not a scratch script. The requirements are explicit that the screens must look expensive and that nobody is called "test user". A demonstration to Ridgeway is only as convincing as this data, so one building is deliberately busy (Ridge Court) and the rest are calmer, which is what a real portfolio looks like.
+
+Because the seed creates sign-ins, it also creates the profile and membership rows those logins need, and it must create them in the same run so that no login exists without a profile. Passwords are one per role.
 
 ---
 

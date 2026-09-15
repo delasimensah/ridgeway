@@ -10,9 +10,9 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-13 done** (empty, loading, error, and no-permission states on shipped screens). Next is [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app). Skip [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) for now. [RIDGE-39](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the) is **Done**. [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Canceled.
+- **Current phase:** Build slices — **RIDGE-12 done** (Accra world seed: wipe, ten buildings, two years of rent, USD on one owner). Next is [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app). [RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) is **Done**. [RIDGE-39](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the) is **Done**. [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Canceled.
 - **Last updated:** 15 Sep 2026
-- **Blocked / open:** None for TestFlight after empty/loading/error.
+- **Blocked / open:** None for TestFlight after the Accra world seed.
 
 ---
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, RIDGE-29, RIDGE-30, RIDGE-32, RIDGE-33, RIDGE-31, RIDGE-34, RIDGE-7, RIDGE-35, RIDGE-8, RIDGE-9, RIDGE-36, RIDGE-37, RIDGE-38, RIDGE-10, RIDGE-11, RIDGE-39, and RIDGE-13 Done; skip RIDGE-12 for now; next is RIDGE-14 (TestFlight); RIDGE-28 Canceled; RIDGE-19 through RIDGE-23 Done; RIDGE-24 Todo; RIDGE-15 Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, RIDGE-29, RIDGE-30, RIDGE-32, RIDGE-33, RIDGE-31, RIDGE-34, RIDGE-7, RIDGE-35, RIDGE-8, RIDGE-9, RIDGE-36, RIDGE-37, RIDGE-38, RIDGE-10, RIDGE-11, RIDGE-39, RIDGE-13, and RIDGE-12 Done; next is RIDGE-14 (TestFlight); RIDGE-28 Canceled; RIDGE-19 through RIDGE-23 Done; RIDGE-24 Todo; RIDGE-15 Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -89,7 +89,7 @@ Start [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-
 - RIDGE-10 PR (merged): https://github.com/delasimensah/ridgeway/pull/24
 - RIDGE-11 PR (merged): https://github.com/delasimensah/ridgeway/pull/25
 - RIDGE-39 PR (merged): https://github.com/delasimensah/ridgeway/pull/26
-- RIDGE-13 PR: https://github.com/delasimensah/ridgeway/pull/27
+- RIDGE-13 PR (merged): https://github.com/delasimensah/ridgeway/pull/27
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`

@@ -42,11 +42,12 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-11](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus) is **Done**.
 - [RIDGE-39](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the) is **Done**.
 - [RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) is **Done**.
+- [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-two-years-of-rent-and) is **Done**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
-- Next slice is [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) (TestFlight submit of the tenant and field app). Skip [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) for now.
+- Next slice is [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) (TestFlight submit of the tenant and field app).
 - [RIDGE-19](https://linear.app/dm-studios/issue/RIDGE-19/epic-auth), [RIDGE-20](https://linear.app/dm-studios/issue/RIDGE-20/epic-staff-portfolio), [RIDGE-21](https://linear.app/dm-studios/issue/RIDGE-21/epic-owner-isolation), [RIDGE-22](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders), and [RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status) are **Done**.
-- [RIDGE-24](https://linear.app/dm-studios/issue/RIDGE-24/epic-launch) stays **Todo** (RIDGE-12, RIDGE-13, RIDGE-14, RIDGE-15).
-- RIDGE-12, RIDGE-14, and RIDGE-15 are **Todo**.
+- [RIDGE-24](https://linear.app/dm-studios/issue/RIDGE-24/epic-launch) stays **Todo** (RIDGE-14, RIDGE-15).
+- RIDGE-14 and RIDGE-15 are **Todo**.
 - RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** (after TestFlight / Play).
 
 When a slice is started, move that issue to In Progress immediately. Do not use Backlog for queued first-version work. Linear stays In Progress until merge to `main`. In the feature PR, write this Status now block as that post-merge board.
@@ -522,7 +523,7 @@ A tenant on a current lease sees rent for their period and can mark a payment as
 - Full accounts ledger, payroll, or bank connection.
 - Owner collected versus outstanding ([RIDGE-11](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus)).
 - Staff command center ([RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across)).
-- Accra world seed of thirty days of rent ([RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and)).
+- Accra world seed of two years of rent ([RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-two-years-of-rent-and)).
 - Rent stored on the lease ([RIDGE-36](https://linear.app/dm-studios/issue/RIDGE-36/rent-amount-and-due-day-live-on-the-lease)), monthly charging ([RIDGE-37](https://linear.app/dm-studios/issue/RIDGE-37/every-current-lease-is-charged-rent-each-month)), and past months with arrears ([RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes)).
 
 ---
@@ -672,7 +673,49 @@ Rebuild with this repo's components. Do not paste UX Pilot markup into the app. 
 - House-rules chat ([RIDGE-16](https://linear.app/dm-studios/issue/RIDGE-16/tenant-or-staff-can-ask-a-house-rules-question-and-get-an-answer-from)).
 - Model-suggested category or urgency ([RIDGE-17](https://linear.app/dm-studios/issue/RIDGE-17/filing-a-repair-may-suggest-a-category-and-urgency-that-a-person-can)).
 - Empty, loading, error, and no-permission polish ([RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens)).
-- Accra world seed ([RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and)).
+- Accra world seed ([RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-two-years-of-rent-and)).
+
+---
+
+## RIDGE-12. Seed Accra world
+
+**Epic:** Launch ([RIDGE-24](https://linear.app/dm-studios/issue/RIDGE-24/epic-launch))
+**Apps:** convex
+**Branch:** `feature/RIDGE-12`
+
+The shipped screens must look like a working Accra portfolio, not a tutorial with two buildings. Seed wipes the development database first, then inserts ten buildings, three owners, mixed occupancy, two years of rent, and a busy Ridge Court. Nobody is named test user.
+
+**Design:**
+
+- Busy staff home: `docs/ui-design/ridgeway/exports/web/staff/home.html`
+- Owner home: `docs/ui-design/ridgeway/exports/web/owner/home.html`
+- Tenant home: `docs/ui-design/ridgeway/exports/web/tenant/home.html`
+- No separate seed screen.
+
+**What seed creates**
+
+- Wipe product rows, auth users and accounts, and stored files, then insert. Re-running replaces the world.
+- Three owners with logins. Kojo Asante’s buildings are USD. The other owners are GHS.
+- About ten Accra buildings, three or more units each, some vacant, some occupied, at least one ended lease with a login.
+- Rent periods from October 2024 through September 2026, mixed paid, partial, unpaid, and tenant-reported.
+- Repair tickets in received, assigned, scheduled, and done, including units with more than one open ticket.
+- House-rules text that differs by building.
+- Sign-ins for staff, two caretakers, each owner, and several tenants. One password per role.
+
+**Acceptance (yes or no)**
+
+- After wipe-and-seed, staff home, owner home, and tenant home look like a portfolio that has been running for two years.
+- One owner’s totals are USD. The others are GHS.
+- Buildings have three or more units. Some units are vacant. Some units have more than one open repair.
+- No user is named test user.
+- Seed is an internal action. It is not callable from the website or the phone.
+
+**Out of scope**
+
+- Live dollar-to-cedi conversion.
+- One-click Excel import.
+
+**Where code lives:** `convex/seed.ts`, `convex/seedWorld.ts`.
 
 ---
 
@@ -681,7 +724,7 @@ Rebuild with this repo's components. Do not paste UX Pilot markup into the app. 
 19. [RIDGE-10 Staff command center](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) — Design: `exports/web/staff/home.html`.
 20. [RIDGE-11 Owner home](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus) — Design: `exports/web/owner/home.html`.
 21. [RIDGE-39 Tenant can file a repair on the phone](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the) — Design: `exports/mobile/tenant/file-repair.html`, `repair-timeline.html`, `home.html`.
-22. [RIDGE-12 Seed Accra world](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) — Ten buildings, three owners, no user named "test user".
+22. [RIDGE-12 Seed Accra world](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-two-years-of-rent-and) — Ten buildings, three owners, two years of rent, no user named "test user".
 23. [RIDGE-13 Empty, loading, error, and no-permission states](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) — Design: `exports/web/staff/empty-list.html`, `loading.html`, `failed-to-load.html`, `not-allowed.html`. On the website, a full-page wait shows Ridgeway in the main green on the light gold (`#D6BD98`), not the word Loading. The phone keeps the native splash. Lists use skeletons in chrome.
 24. [RIDGE-14 TestFlight submit](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) — Launch project.
 25. [RIDGE-15 Play internal or closed test](https://linear.app/dm-studios/issue/RIDGE-15/play-internal-or-closed-test-upload-of-the-tenant-and-field-app) — Launch project.
