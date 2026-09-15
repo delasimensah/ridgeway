@@ -35,6 +35,12 @@ const TenantHomeRoute = () => {
       onManageRent={() => {
         router.push("/(tenant-app)/(tabs)/rent" as Href);
       }}
+      onFileRepair={() => {
+        router.push("/(tenant-app)/file-repair" as Href);
+      }}
+      onOpenRepair={(workOrderId) => {
+        router.push(`/(tenant-app)/repair/${workOrderId}` as Href);
+      }}
     />
   );
 };

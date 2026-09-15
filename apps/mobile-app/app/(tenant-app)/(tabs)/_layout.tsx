@@ -11,7 +11,7 @@ const TenantTabsLayout = () => {
 
   return (
     <Tabs
-      initialRouteName="rent"
+      initialRouteName="home"
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: COLORS.darkGrey,
@@ -53,6 +53,15 @@ const TenantTabsLayout = () => {
           title: "Rent",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="receipt" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="account"
+        options={{
+          title: "Account",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />

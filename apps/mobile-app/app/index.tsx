@@ -15,7 +15,7 @@ const IndexRoute = () => {
   }
 
   if (isViewerReady && currentLease !== null) {
-    return <Redirect href={"/(tenant-app)/(tabs)/rent" as Href} />;
+    return <Redirect href={"/(tenant-app)/(tabs)/home" as Href} />;
   }
 
   if (isViewerReady && isTenant) {

@@ -97,6 +97,20 @@ describe("workOrders", () => {
     );
     expect(orgList.map((row) => row._id)).toEqual([workOrderId]);
 
+    const tenantList = await asUser(t, tenantUserId).query(
+      api.workOrders.listForCurrentTenant,
+      {}
+    );
+    expect(tenantList).toEqual([
+      expect.objectContaining({
+        _id: workOrderId,
+        title: "Kitchen tap leak",
+        status: "received",
+        category: "plumbing",
+        urgency: "normal",
+      }),
+    ]);
+
     const buildings = await asUser(t, staff.userId).query(
       api.buildings.listForViewer,
       {}

@@ -1,18 +1,15 @@
 import React from "react";
+import { Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { Currency, RentConfirmedStatus, WorkOrderStatus } from "shared";
+import type { Currency, RentConfirmedStatus } from "shared";
 
 import TenantNextRentCard from "../../../rent/TenantNextRentCard/TenantNextRentCard";
+import type { TenantRepairCardItem } from "../../../repairs/TenantRepairCard/TenantRepairCard";
+import TenantRepairCard from "../../../repairs/TenantRepairCard/TenantRepairCard";
 import PersonAvatar from "../../../ui/PersonAvatar/PersonAvatar";
 import ScrollableStack from "../../../ui/ScrollableStack/ScrollableStack";
 import { HStack, VStack } from "../../../ui/Stack/Stack";
 import Text from "../../../ui/Text/Text";
-
-interface TenantHomeRepair {
-  _id: string;
-  title: string;
-  status: WorkOrderStatus;
-}
 
 interface TenantHomeNextRent {
   amount: number;
@@ -28,8 +25,10 @@ interface TenantHomeScreenProps {
   address: string;
   nextRent: TenantHomeNextRent | null;
   serverNow: number;
-  repairs: TenantHomeRepair[];
+  repairs: TenantRepairCardItem[];
   onManageRent: () => void;
+  onFileRepair: () => void;
+  onOpenRepair: (workOrderId: string) => void;
 }
 
 const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
@@ -41,6 +40,8 @@ const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
   serverNow,
   repairs,
   onManageRent,
+  onFileRepair,
+  onOpenRepair,
 }) => {
   const insets = useSafeAreaInsets();
 
@@ -80,20 +81,25 @@ const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
             <Text className="font-app-bold text-sm uppercase tracking-wider text-darkGrey">
               Active Repairs
             </Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="File a repair"
+              onPress={onFileRepair}
+            >
+              <Text className="font-app-medium text-sm text-darkGrey">
+                + File a repair
+              </Text>
+            </Pressable>
           </HStack>
           {repairs.length === 0 ? (
             <Text className="text-base text-grey">No open repairs.</Text>
           ) : (
             repairs.map((repair) => (
-              <VStack
+              <TenantRepairCard
                 key={repair._id}
-                spacing="none"
-                className="rounded-lg border border-border bg-white p-4"
-              >
-                <Text className="font-app-bold text-base text-darkGrey">
-                  {repair.title}
-                </Text>
-              </VStack>
+                repair={repair}
+                onPress={() => onOpenRepair(repair._id)}
+              />
             ))
           )}
         </VStack>
