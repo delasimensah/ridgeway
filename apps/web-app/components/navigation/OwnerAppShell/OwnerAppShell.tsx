@@ -8,13 +8,26 @@ import React, { useEffect } from "react";
 import { COLORS } from "@/constants";
 
 import Heading from "../../ui/Heading/Heading";
-import OwnerSidebar from "../OwnerSidebar/OwnerSidebar";
+import OwnerSidebar, { type OwnerNavId } from "../OwnerSidebar/OwnerSidebar";
 
 interface OwnerAppShellProps {
   displayName: string;
   onSignOut: () => void;
   isSigningOut?: boolean;
   children: React.ReactNode;
+}
+
+function navFromPath(pathname: string): OwnerNavId {
+  if (pathname.startsWith("/buildings")) {
+    return "buildings";
+  }
+  if (pathname.startsWith("/repairs")) {
+    return "issues";
+  }
+  if (pathname.startsWith("/rent")) {
+    return "rent";
+  }
+  return "home";
 }
 
 const OwnerAppShell: React.FC<OwnerAppShellProps> = ({
@@ -67,7 +80,7 @@ const OwnerAppShell: React.FC<OwnerAppShellProps> = ({
           displayName={displayName}
           onSignOut={onSignOut}
           isSigningOut={isSigningOut}
-          activeNav="home"
+          activeNav={navFromPath(pathname)}
           onNavigate={close}
         />
       </AppShell.Navbar>

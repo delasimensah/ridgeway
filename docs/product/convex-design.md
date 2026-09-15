@@ -307,8 +307,9 @@ Where a function is described as staff-only, that means it is declared with `sta
 
 ### Work orders
 
-- `workOrders.listForBuilding` is a query, guarded by `requireBuildingAccess`, returning tickets for that building newest first. It defaults to everything that is not done and offers done as an explicit filter (`includeDone`).
+- `workOrders.listForBuilding` is a query, guarded by `requireBuildingAccess`, returning tickets for that building newest first. It defaults to everything that is not done and offers done as an explicit filter (`includeDone`). Each row includes the tenant name when the ticket has a lease, and the unit kind.
 - `workOrders.listForStaff` is a staff-only query returning tickets in the caller's organization, newest first, with the same not-done default.
+- `workOrders.listForOwner` is a query for the caller's own buildings only, returning open tickets newest first. It refuses a field worker, a tenant, and staff.
 - `workOrders.listForCurrentTenant` is a query returning the open tickets filed under the caller's current lease. Each row includes status, category, and urgency so the phone home and repairs list can show them.
 - `workOrders.listForCurrentField` is a field-only query returning the open tickets assigned to the caller, newest first. It is a list, not a paginated query, because a caretaker's open jobs are a small set.
 - `workOrders.get` is a query, guarded by `requireWorkOrderAccess` for reading, that returns the ticket, its history rows, permission-checked URLs for repair and completion photos, and which moves the caller may make (`canAssign`, `canSchedule`, `canComplete`, `allowedNextStatuses`).
@@ -325,9 +326,9 @@ There is one mutation per move rather than one that takes a target status, becau
 ### Rent
 
 - `rent.listForCurrentTenant` is a query returning the caller's own periods for their current leases, together with `serverNow`.
-- `rent.listByBuilding` is a paginated staff query. It takes an optional `periodLabel` (defaults to the current UTC month), returns that month's rows and Collected / Outstanding totals, `earliestPeriodLabel` for navigation, and per-row `arrears` from unpaid earlier months. Requested months after the current month or before the earliest charge are clamped.
+- `rent.listByBuilding` is a paginated query for staff and for that building's owner. It takes an optional `periodLabel` (defaults to the current UTC month), returns that month's rows and Collected / Outstanding totals, `earliestPeriodLabel` for navigation, and per-row `arrears` from unpaid earlier months. Requested months after the current month or before the earliest charge are clamped. A tenant or field worker is refused even when they can otherwise see the building.
 - `rent.listForStaff` is a staff-only query for the current UTC month across every building in the caller's organization. It returns Collected / Outstanding totals and each period's confirmed status and due date so the staff home can derive late, paid, and partial. It uses the same lease and period reads as `listByBuilding`.
-- `rent.summaryForOwner` is a query for the caller's own buildings only, returning collected against outstanding as whole numbers in the same unit the periods are stored in. It reads the periods for the leases under those buildings and adds them up at read time. At ten buildings that is a small number of documents. If the portfolio grew, this is the function that would change first, into a maintained total.
+- `rent.summaryForOwner` is a query for the caller's own buildings only, returning collected against outstanding as whole numbers in the same unit the periods are stored in, plus the same totals per building. It reads the periods for the leases under those buildings and adds them up at read time. At ten buildings that is a small number of documents. If the portfolio grew, this is the function that would change first, into a maintained total.
 
 - `rent.chargeMonth` is an internal mutation that, for a given `YYYY-MM` month (or the current UTC month when omitted), inserts one unpaid `rentPeriods` row for every lease that covers that month, has rent set, and does not already have a row. Amount, currency, and due day come from the lease. Running it twice does not double-charge. Creating a lease calls the same helper for the current month so a new tenant appears on the rent page without waiting for the cron.
 - `rent.setConfirmedStatus` is a staff-only mutation, and it is the only function in the system that writes `confirmedStatus`.

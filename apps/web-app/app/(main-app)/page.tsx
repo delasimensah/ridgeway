@@ -19,6 +19,10 @@ const HomeRoute = () => {
     api.buildings.listForViewer,
     session.isStaff || session.isOwner ? {} : "skip"
   );
+  const ownerSummary = useQuery(
+    api.rent.summaryForOwner,
+    session.isOwner ? {} : "skip"
+  );
   const staffRepairs = useQuery(
     api.workOrders.listForStaff,
     session.isStaff ? {} : "skip"
@@ -68,13 +72,32 @@ const HomeRoute = () => {
   }
 
   if (session.isOwner) {
-    if (buildings === undefined) {
+    if (buildings === undefined || ownerSummary === undefined) {
       return <LoadingScreen fillViewport={false} />;
     }
+    const moneyByBuilding = new Map(
+      ownerSummary.buildings.map((row) => [row.buildingId, row])
+    );
     return (
       <OwnerHomePage
         greeting={staffGreeting(session.displayName)}
-        buildings={buildings}
+        collected={ownerSummary.collected}
+        outstanding={ownerSummary.outstanding}
+        currency={ownerSummary.currency}
+        buildings={buildings.map((row) => {
+          const money = moneyByBuilding.get(row._id);
+          return {
+            _id: row._id,
+            name: row.name,
+            address: row.address,
+            occupiedCount: row.unitCount - row.emptyUnitCount,
+            unitCount: row.unitCount,
+            openRepairCount: row.openRepairCount,
+            collected: money?.collected ?? 0,
+            outstanding: money?.outstanding ?? 0,
+            currency: ownerSummary.currency,
+          };
+        })}
       />
     );
   }
