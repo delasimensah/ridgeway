@@ -2,219 +2,152 @@ import { describe, expect, it } from "vitest";
 
 import { api, internal } from "./_generated/api";
 import {
-  FIELD_SEED,
-  ORGANIZATION_NAME,
-  OWNER_A_SEED,
-  STAFF_SEED,
-  TENANT_SEED,
-} from "./seed";
+  FIELD_PEOPLE,
+  OWNER_ASANTE,
+  OWNER_LAMPTEY,
+  SEED_RENT_END,
+  SEED_RENT_START,
+  STAFF_AMA,
+  TENANT_ABA,
+  TENANT_KOFI,
+} from "./seedWorld";
 import { asUser, errorCode, makeBackend } from "./test.setup";
 
-describe("seed.attachIdentity", () => {
-  it("is idempotent and grants staff membership", async () => {
-    const t = makeBackend();
-    const userId = await t.run(async (ctx) => {
-      return await ctx.db.insert("users", {
-        email: STAFF_SEED.email,
-        name: STAFF_SEED.displayName,
-      });
-    });
-
-    const first = await t.mutation(internal.seed.attachIdentity, {
-      userId,
-      displayName: STAFF_SEED.displayName,
-      role: "staff",
-      organizationName: ORGANIZATION_NAME,
-    });
-    const second = await t.mutation(internal.seed.attachIdentity, {
-      userId,
-      displayName: STAFF_SEED.displayName,
-      role: "staff",
-      organizationName: ORGANIZATION_NAME,
-    });
-
-    expect(second.profileId).toBe(first.profileId);
-    expect(second.organizationId).toBe(first.organizationId);
-
-    const viewer = await asUser(t, userId).query(api.profiles.getCurrent, {});
-    expect(viewer.isStaff).toBe(true);
+async function userIdByEmail(t: ReturnType<typeof makeBackend>, email: string) {
+  return await t.run(async (ctx) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", email))
+      .unique();
+    if (user === null) {
+      throw new Error(`missing user ${email}`);
+    }
+    return user._id;
   });
+}
 
-  it("lets owner A list only the building attached to owner A", async () => {
+describe("seed.insertWorld", () => {
+  it("creates a two-year Accra portfolio with mixed occupancy and USD on Asante", async () => {
     const t = makeBackend();
-    const userId = await t.run(async (ctx) => {
-      return await ctx.db.insert("users", {
-        email: OWNER_A_SEED.email,
-        name: OWNER_A_SEED.displayName,
-      });
-    });
-    const ownerId = await t.mutation(internal.seed.ensureOwner, {
-      displayName: OWNER_A_SEED.displayName,
-      contactEmail: OWNER_A_SEED.email,
-      organizationName: ORGANIZATION_NAME,
-    });
-    await t.mutation(internal.seed.attachIdentity, {
-      userId,
-      displayName: OWNER_A_SEED.displayName,
-      role: "owner",
-      organizationName: ORGANIZATION_NAME,
-      ownerId,
-    });
-    await t.mutation(internal.seed.ensureBuildingForOwner, {
-      ownerId,
-      name: OWNER_A_SEED.buildingName,
-      street: OWNER_A_SEED.street,
-      area: OWNER_A_SEED.area,
-    });
+    await t.mutation(internal.seed.insertWorld, {});
 
-    const list = await asUser(t, userId).query(api.buildings.listForViewer, {});
-    expect(list.map((row) => row.name)).toEqual([OWNER_A_SEED.buildingName]);
-  });
+    const staffId = await userIdByEmail(t, STAFF_AMA.email);
+    const buildings = await asUser(t, staffId).query(
+      api.buildings.listForViewer,
+      {}
+    );
+    expect(buildings).toHaveLength(10);
+    expect(buildings.every((row) => row.unitCount >= 3)).toBe(true);
+    expect(
+      buildings.some(
+        (row) => row.name === "Ridge Court" && row.emptyUnitCount > 0
+      )
+    ).toBe(true);
 
-  it("puts Akosua on Ridge Court B12 with a current lease", async () => {
-    const t = makeBackend();
-    const userId = await t.run(async (ctx) => {
-      return await ctx.db.insert("users", {
-        email: TENANT_SEED.email,
-        name: TENANT_SEED.displayName,
-      });
+    const names = await t.run(async (ctx) => {
+      const profiles = await ctx.db.query("profiles").collect();
+      return profiles.map((row) => row.displayName.toLowerCase());
     });
-    const ownerId = await t.mutation(internal.seed.ensureOwner, {
-      displayName: OWNER_A_SEED.displayName,
-      contactEmail: OWNER_A_SEED.email,
-      organizationName: ORGANIZATION_NAME,
-    });
-    await t.mutation(internal.seed.ensureBuildingForOwner, {
-      ownerId,
-      name: OWNER_A_SEED.buildingName,
-      street: OWNER_A_SEED.street,
-      area: OWNER_A_SEED.area,
-    });
-    const leaseId = await t.mutation(internal.seed.ensureTenantOnBuilding, {
-      userId,
-      displayName: TENANT_SEED.displayName,
-      buildingName: OWNER_A_SEED.buildingName,
-      unitLabel: TENANT_SEED.unitLabel,
-      startedOn: TENANT_SEED.startedOn,
-    });
-    await t.mutation(internal.seed.ensureRentPeriods, { leaseId });
+    expect(names.some((name) => name.includes("test user"))).toBe(false);
 
-    const viewer = await asUser(t, userId).query(api.profiles.getCurrent, {});
-    expect(viewer.currentLease).toMatchObject({
-      unitLabel: TENANT_SEED.unitLabel,
-      buildingName: OWNER_A_SEED.buildingName,
+    const ridge = buildings.find((row) => row.name === "Ridge Court");
+    if (ridge === undefined) {
+      throw new Error("Ridge Court missing");
+    }
+    const units = await asUser(t, staffId).query(api.units.listByBuilding, {
+      buildingId: ridge._id,
     });
+    const vacantA4 = units.find((row) => row.label === "A4");
+    expect(vacantA4?.tenantName).toBeNull();
+    const b12 = units.find((row) => row.label === "B12");
+    expect(b12?.tenantName).toBe(TENANT_ABA.displayName);
+    expect(b12?.rentCurrency).toBe("GHS");
 
-    const rent = await asUser(t, userId).query(
+    const tickets = await asUser(t, staffId).query(
+      api.workOrders.listForBuilding,
+      {
+        buildingId: ridge._id,
+      }
+    );
+    const openOnB12 = tickets.filter(
+      (row) => row.unitLabel === "B12" && row.status !== "done"
+    );
+    expect(openOnB12.length).toBeGreaterThan(1);
+
+    const abaId = await userIdByEmail(t, TENANT_ABA.email);
+    const rent = await asUser(t, abaId).query(
       api.rent.listForCurrentTenant,
       {}
     );
-    expect(rent.periods.map((row) => row.periodLabel).sort()).toEqual([
-      "2026-07",
-      "2026-08",
-      "2026-09",
-    ]);
+    const labels = rent.periods.map((row) => row.periodLabel).sort();
+    expect(labels[0]).toBe(SEED_RENT_START);
+    expect(labels[labels.length - 1]).toBe(SEED_RENT_END);
+    expect(labels).toHaveLength(24);
+
+    const asanteId = await userIdByEmail(t, OWNER_ASANTE.email);
+    const asanteRent = await asUser(t, asanteId).query(
+      api.rent.summaryForOwner,
+      {}
+    );
+    expect(asanteRent.currency).toBe("USD");
+    expect(asanteRent.collected + asanteRent.outstanding).toBeGreaterThan(0);
   });
 
-  it("does not give Akosua a second current lease", async () => {
+  it("keeps Lamptey from seeing Asante buildings", async () => {
     const t = makeBackend();
-    const userId = await t.run(async (ctx) => {
-      return await ctx.db.insert("users", {
-        email: TENANT_SEED.email,
-        name: TENANT_SEED.displayName,
-      });
-    });
-    const ownerId = await t.mutation(internal.seed.ensureOwner, {
-      displayName: OWNER_A_SEED.displayName,
-      contactEmail: OWNER_A_SEED.email,
-      organizationName: ORGANIZATION_NAME,
-    });
-    await t.mutation(internal.seed.ensureBuildingForOwner, {
-      ownerId,
-      name: OWNER_A_SEED.buildingName,
-      street: OWNER_A_SEED.street,
-      area: OWNER_A_SEED.area,
-    });
-    await t.mutation(internal.seed.ensureTenantOnBuilding, {
-      userId,
-      displayName: TENANT_SEED.displayName,
-      buildingName: OWNER_A_SEED.buildingName,
-      unitLabel: TENANT_SEED.unitLabel,
-      startedOn: TENANT_SEED.startedOn,
-    });
+    await t.mutation(internal.seed.insertWorld, {});
 
-    await t.run(async (ctx) => {
-      const profile = await ctx.db
-        .query("profiles")
-        .withIndex("by_userId", (q) => q.eq("userId", userId))
-        .unique();
-      if (profile === null) {
-        throw new Error("profile missing");
-      }
-      const buildings = await ctx.db.query("buildings").collect();
-      const building = buildings[0];
-      if (building === undefined) {
-        throw new Error("building missing");
-      }
-      const otherUnitId = await ctx.db.insert("units", {
-        buildingId: building._id,
-        label: "B16",
-        kind: "apartment",
-      });
-      await ctx.db.insert("leases", {
-        unitId: otherUnitId,
-        tenantProfileId: profile._id,
-        startedOn: "2026-09-07",
-      });
-    });
+    const lampteyId = await userIdByEmail(t, OWNER_LAMPTEY.email);
+    const list = await asUser(t, lampteyId).query(
+      api.buildings.listForViewer,
+      {}
+    );
+    expect(list.every((row) => row.name !== "Airport West Residences")).toBe(
+      true
+    );
+    expect(list.some((row) => row.name === "Ridge Court")).toBe(true);
+  });
 
-    await t.mutation(internal.seed.ensureTenantOnBuilding, {
-      userId,
-      displayName: TENANT_SEED.displayName,
-      buildingName: OWNER_A_SEED.buildingName,
-      unitLabel: TENANT_SEED.unitLabel,
-      startedOn: TENANT_SEED.startedOn,
-    });
+  it("leaves an ended tenant without a current unit", async () => {
+    const t = makeBackend();
+    await t.mutation(internal.seed.insertWorld, {});
 
-    const currentCount = await t.run(async (ctx) => {
-      const profile = await ctx.db
-        .query("profiles")
-        .withIndex("by_userId", (q) => q.eq("userId", userId))
-        .unique();
-      if (profile === null) {
-        throw new Error("profile missing");
-      }
-      const rows = await ctx.db
-        .query("leases")
-        .withIndex("by_tenantProfileId", (q) =>
-          q.eq("tenantProfileId", profile._id)
-        )
-        .collect();
-      return rows.filter((row) => row.endedOn === undefined).length;
+    const kofiId = await userIdByEmail(t, TENANT_KOFI.email);
+    const viewer = await asUser(t, kofiId).query(api.profiles.getCurrent, {});
+    expect(viewer.currentLease).toBeNull();
+    expect(viewer.endedLease).toMatchObject({
+      unitLabel: "A4",
+      buildingName: "Ridge Court",
     });
-    expect(currentCount).toBe(1);
   });
 
   it("does not give a field worker the staff home", async () => {
     const t = makeBackend();
-    const userId = await t.run(async (ctx) => {
-      return await ctx.db.insert("users", {
-        email: FIELD_SEED.email,
-        name: FIELD_SEED.displayName,
-      });
-    });
-    await t.mutation(internal.seed.attachIdentity, {
-      userId,
-      displayName: FIELD_SEED.displayName,
-      role: "field",
-      organizationName: ORGANIZATION_NAME,
-    });
+    await t.mutation(internal.seed.insertWorld, {});
 
+    const fieldId = await userIdByEmail(t, FIELD_PEOPLE[0].email);
     try {
-      await asUser(t, userId).query(api.staff.getHome, {});
+      await asUser(t, fieldId).query(api.staff.getHome, {});
       throw new Error("expected getHome to refuse");
     } catch (error) {
       expect(errorCode(error)).toBe("NOT_PERMITTED");
     }
+  });
+
+  it("wipeChunk clears the seeded world", async () => {
+    const t = makeBackend();
+    await t.mutation(internal.seed.insertWorld, {});
+    for (let step = 0; step < 400; step += 1) {
+      const deleted = await t.mutation(internal.seed.wipeChunk, {});
+      if (deleted === 0) {
+        break;
+      }
+    }
+    const leftover = await t.run(async (ctx) => {
+      const buildings = await ctx.db.query("buildings").collect();
+      const users = await ctx.db.query("users").collect();
+      return { buildings: buildings.length, users: users.length };
+    });
+    expect(leftover).toEqual({ buildings: 0, users: 0 });
   });
 });
