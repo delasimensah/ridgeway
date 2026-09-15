@@ -87,6 +87,7 @@ Start [RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-erro
 - RIDGE-37 PR (merged): https://github.com/delasimensah/ridgeway/pull/22
 - RIDGE-38 PR (merged): https://github.com/delasimensah/ridgeway/pull/23
 - RIDGE-10 PR (merged): https://github.com/delasimensah/ridgeway/pull/24
+- RIDGE-39 PR: https://github.com/delasimensah/ridgeway/pull/26
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
