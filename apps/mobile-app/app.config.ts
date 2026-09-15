@@ -71,9 +71,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "expo-image-picker",
       {
         photosPermission:
-          "Ridgeway uses your photos so you can attach a completion picture to a job.",
+          "Ridgeway uses your photos so you can attach a picture to a repair or a completed job.",
         cameraPermission:
-          "Ridgeway uses the camera so you can take a completion picture of a job.",
+          "Ridgeway uses the camera so you can take a picture of a repair or a completed job.",
         microphonePermission: false,
       },
     ],

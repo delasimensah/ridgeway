@@ -11,16 +11,18 @@ import Text from "../../ui/Text/Text";
 interface CompletionPhotoPickerProps {
   uri: string | null;
   onPress: () => void;
+  label?: string;
 }
 
 const CompletionPhotoPicker: React.FC<CompletionPhotoPickerProps> = ({
   uri,
   onPress,
+  label = "Add completion photo",
 }) => {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel="Add completion photo"
+      accessibilityLabel={label}
       onPress={onPress}
       className="aspect-[4/3] w-full items-center justify-center rounded-lg border-2 border-dashed border-border bg-sidebar"
     >
@@ -33,7 +35,7 @@ const CompletionPhotoPicker: React.FC<CompletionPhotoPickerProps> = ({
       ) : (
         <VStack spacing="sm" align="center">
           <Ionicons name="camera" size={32} color={COLORS.grey} />
-          <Text className="font-app-bold text-grey">Add completion photo</Text>
+          <Text className="font-app-bold text-grey">{label}</Text>
         </VStack>
       )}
     </Pressable>

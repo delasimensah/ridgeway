@@ -17,6 +17,7 @@ export type FieldSession = {
   isField: boolean;
   isTenant: boolean;
   currentLease: {
+    unitId: string;
     unitLabel: string;
     buildingName: string;
     address: string;
@@ -85,6 +86,7 @@ function useFieldSessionState(): FieldSession {
       (viewer?.endedLease !== null && viewer?.endedLease !== undefined),
     currentLease: viewer?.currentLease
       ? {
+          unitId: viewer.currentLease.unitId,
           unitLabel: viewer.currentLease.unitLabel,
           buildingName: viewer.currentLease.buildingName,
           address: viewer.currentLease.address,

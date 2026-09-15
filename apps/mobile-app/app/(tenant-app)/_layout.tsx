@@ -12,6 +12,8 @@ const TenantAppLayout = () => {
       }}
     >
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="file-repair" />
+      <Stack.Screen name="repair/[workOrderId]" />
     </Stack>
   );
 };

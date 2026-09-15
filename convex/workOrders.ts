@@ -53,6 +53,8 @@ const workOrderListItem = v.object({
   _id: v.id("workOrders"),
   title: v.string(),
   status: workOrderStatus,
+  category: v.union(workOrderCategory, v.null()),
+  urgency: workOrderUrgency,
   unitLabel: v.string(),
   unitKind,
   tenantName: v.union(v.string(), v.null()),
@@ -93,6 +95,15 @@ async function currentLeaseOnUnit(
   return lease;
 }
 
+function listCategory(
+  value: string | undefined
+): "plumbing" | "electrical" | "other" | null {
+  if (value === "plumbing" || value === "electrical" || value === "other") {
+    return value;
+  }
+  return null;
+}
+
 async function toListItem(
   ctx: { db: QueryCtx["db"] },
   ticket: Doc<"workOrders">
@@ -107,6 +118,8 @@ async function toListItem(
     _id: ticket._id,
     title: ticket.title,
     status: ticket.status,
+    category: listCategory(ticket.category),
+    urgency: ticket.urgency,
     unitLabel: unit?.label ?? "",
     unitKind: unit?.kind ?? "apartment",
     tenantName: tenant?.displayName ?? null,

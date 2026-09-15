@@ -40,8 +40,9 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-38](https://linear.app/dm-studios/issue/RIDGE-38/staff-can-open-an-earlier-month-and-see-what-a-tenant-still-owes) is **Done**.
 - [RIDGE-10](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) is **Done**.
 - [RIDGE-11](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus) is **Done**.
+- [RIDGE-39](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the) is **Done**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
-- Next slice is [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) (seed Accra world). Owner home already shows occupancy, open issues, and rent collected versus outstanding.
+- Next slice is [RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) (empty, loading, error, and no-permission states). Skip [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) for now.
 - RIDGE-12 through RIDGE-15, and the epics are **Todo**.
 - RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** until RIDGE-1 through RIDGE-13 are done.
 
@@ -207,7 +208,7 @@ A signed-in tenant on an active lease can submit a repair with an optional photo
 - Staff repair list: `docs/ui-design/ridgeway/exports/web/staff/repair-list.html`
 - Staff repair detail: `docs/ui-design/ridgeway/exports/web/staff/repair-detail.html`
 
-Phone file-repair is not this slice. Do not paste UX Pilot markup into the app.
+Phone file-repair is [RIDGE-39](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the). Do not paste UX Pilot markup into the app.
 
 **How it is built**
 
@@ -624,14 +625,61 @@ Rent periods only exist because `seed.ensureRentPeriods` inserts three hardcoded
 
 ---
 
+## RIDGE-39. Tenant can file a repair with a photo and see the timeline on the phone
+
+**Epic:** Work orders ([RIDGE-22](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders))
+**Apps:** mobile (tenant)
+**Branch:** `feature/RIDGE-39`
+
+Phone follow-up to [RIDGE-6](https://linear.app/dm-studios/issue/RIDGE-6/tenant-can-file-a-repair-with-a-photo-and-see-status-received). RIDGE-6 shipped file-a-repair and the timeline on the website only. Convex already has `workOrders.createByTenant`, `listForCurrentTenant`, and `get`.
+
+**Design**
+
+- File a repair: `docs/ui-design/ridgeway/exports/mobile/tenant/file-repair.html`
+- Repair timeline: `docs/ui-design/ridgeway/exports/mobile/tenant/repair-timeline.html`
+- Tenant home (File a repair + open repairs): `docs/ui-design/ridgeway/exports/mobile/tenant/home.html`
+
+Rebuild with this repo's components. Do not paste UX Pilot markup into the app. Match the HTML export for layout and copy.
+
+**What they do**
+
+- A signed-in tenant on a current lease taps File a repair on home or Repairs, describes the issue, picks category and urgency, optionally adds a photo, and submits.
+- After submit they land on that ticket's timeline (received → assigned → scheduled → done).
+- Home and Repairs show real status, category, and urgency. A repair row opens the timeline.
+- An ended lease still cannot file or read a ticket for that unit.
+
+**How it is built**
+
+- Reuse existing Convex create / list / get. Do not add a second work-order API.
+- Photo uses the same `files.createUploadUrl` then `files.attachToWorkOrder` (`kind: "repair"`) path as the website.
+- List rows include category and urgency so the phone cards can show them.
+
+**Acceptance (yes or no)**
+
+- A tenant on a current lease can submit a repair with optional photo from the phone.
+- That ticket starts at received and shows on the phone timeline.
+- Home and Repairs list open tickets with status and open the timeline.
+- An ended lease cannot file or open that unit's repairs.
+- Tests cover submit and timeline for a current lease, and refuse after the lease ends.
+
+**Out of scope**
+
+- House-rules chat ([RIDGE-16](https://linear.app/dm-studios/issue/RIDGE-16/tenant-or-staff-can-ask-a-house-rules-question-and-get-an-answer-from)).
+- Model-suggested category or urgency ([RIDGE-17](https://linear.app/dm-studios/issue/RIDGE-17/filing-a-repair-may-suggest-a-category-and-urgency-that-a-person-can)).
+- Empty, loading, error, and no-permission polish ([RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens)).
+- Accra world seed ([RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and)).
+
+---
+
 ## Next slices
 
 19. [RIDGE-10 Staff command center](https://linear.app/dm-studios/issue/RIDGE-10/staff-command-center-shows-open-work-orders-and-rent-status-across) — Design: `exports/web/staff/home.html`.
 20. [RIDGE-11 Owner home](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus) — Design: `exports/web/owner/home.html`.
-21. [RIDGE-12 Seed Accra world](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) — Ten buildings, three owners, no user named "test user".
-22. [RIDGE-13 Empty, loading, error, and no-permission states](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) — Design: `exports/web/staff/empty-list.html`, `loading.html`, `failed-to-load.html`, `not-allowed.html`.
-23. [RIDGE-14 TestFlight submit](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) — Launch project.
-24. [RIDGE-15 Play internal or closed test](https://linear.app/dm-studios/issue/RIDGE-15/play-internal-or-closed-test-upload-of-the-tenant-and-field-app) — Launch project.
+21. [RIDGE-39 Tenant can file a repair on the phone](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the) — Design: `exports/mobile/tenant/file-repair.html`, `repair-timeline.html`, `home.html`.
+22. [RIDGE-12 Seed Accra world](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) — Ten buildings, three owners, no user named "test user".
+23. [RIDGE-13 Empty, loading, error, and no-permission states](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) — Design: `exports/web/staff/empty-list.html`, `loading.html`, `failed-to-load.html`, `not-allowed.html`. Full-page wait shows Ridgeway on `#208AEF`, not the word Loading. Lists use skeletons in chrome.
+24. [RIDGE-14 TestFlight submit](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) — Launch project.
+25. [RIDGE-15 Play internal or closed test](https://linear.app/dm-studios/issue/RIDGE-15/play-internal-or-closed-test-upload-of-the-tenant-and-field-app) — Launch project.
 
 ---
 

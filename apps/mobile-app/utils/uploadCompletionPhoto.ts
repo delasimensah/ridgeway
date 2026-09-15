@@ -33,17 +33,12 @@ export function readCompletionPhotoAsset(asset: ImagePickerAsset): {
   };
 }
 
-export async function uploadCompletionPhoto(args: {
+async function uploadToStorage(args: {
   workOrderId: Id<"workOrders">;
   uri: string;
   mimeType?: string | null;
   createUploadUrl: (args: { workOrderId: Id<"workOrders"> }) => Promise<string>;
-  attachToWorkOrder: (args: {
-    workOrderId: Id<"workOrders">;
-    storageId: Id<"_storage">;
-    kind: "completion";
-  }) => Promise<unknown>;
-}): Promise<void> {
+}): Promise<Id<"_storage">> {
   const uploadUrl = await args.createUploadUrl({
     workOrderId: args.workOrderId,
   });
@@ -59,9 +54,43 @@ export async function uploadCompletionPhoto(args: {
   if (payload.storageId === undefined) {
     throw new Error("Could not upload the photo");
   }
+  return payload.storageId;
+}
+
+export async function uploadCompletionPhoto(args: {
+  workOrderId: Id<"workOrders">;
+  uri: string;
+  mimeType?: string | null;
+  createUploadUrl: (args: { workOrderId: Id<"workOrders"> }) => Promise<string>;
+  attachToWorkOrder: (args: {
+    workOrderId: Id<"workOrders">;
+    storageId: Id<"_storage">;
+    kind: "completion";
+  }) => Promise<unknown>;
+}): Promise<void> {
+  const storageId = await uploadToStorage(args);
   await args.attachToWorkOrder({
     workOrderId: args.workOrderId,
-    storageId: payload.storageId,
+    storageId,
     kind: "completion",
+  });
+}
+
+export async function uploadRepairPhoto(args: {
+  workOrderId: Id<"workOrders">;
+  uri: string;
+  mimeType?: string | null;
+  createUploadUrl: (args: { workOrderId: Id<"workOrders"> }) => Promise<string>;
+  attachToWorkOrder: (args: {
+    workOrderId: Id<"workOrders">;
+    storageId: Id<"_storage">;
+    kind: "repair";
+  }) => Promise<unknown>;
+}): Promise<void> {
+  const storageId = await uploadToStorage(args);
+  await args.attachToWorkOrder({
+    workOrderId: args.workOrderId,
+    storageId,
+    kind: "repair",
   });
 }

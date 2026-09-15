@@ -10,9 +10,9 @@
 
 - **Client / job:** Ridgeway Property Group (practice). Outcome B (apps on studio accounts).
 - **Backend:** Convex
-- **Current phase:** Build slices — **RIDGE-11 done** (owner home shows occupancy, open issues, and rent collected versus outstanding). Next is [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and). [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Canceled.
+- **Current phase:** Build slices — **RIDGE-39 done** (tenant can file a repair with a photo and see the timeline on the phone). Next is [RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens). Skip [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) for now. [RIDGE-11](https://linear.app/dm-studios/issue/RIDGE-11/owner-home-shows-occupancy-open-issues-and-rent-collected-versus) is **Done**. [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is Canceled.
 - **Last updated:** 15 Sep 2026
-- **Blocked / open:** None for the Accra world seed after owner home.
+- **Blocked / open:** None for empty/loading/error after tenant phone file-repair.
 
 ---
 
@@ -49,7 +49,7 @@
 
 - [x] System design (tables, permissions, risks) — `docs/product/system-design.md` and `docs/product/convex-design.md`. Product schema grows on the linked Convex project from here.
 - [x] Screen design / UX Pilot exports (07) — `docs/ui-design/ridgeway/` (design system, reference map, prompts, HTML exports)
-- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, RIDGE-29, RIDGE-30, RIDGE-32, RIDGE-33, RIDGE-31, RIDGE-34, RIDGE-7, RIDGE-35, RIDGE-8, RIDGE-9, RIDGE-36, RIDGE-37, RIDGE-38, RIDGE-10, and RIDGE-11 Done; next is RIDGE-12 (seed Accra world); RIDGE-28 Canceled; then RIDGE-13–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
+- [x] Linear build tickets with design links (08) — `docs/product/linear-tickets.md`. Team [RIDGE](https://linear.app/dm-studios/team/RIDGE). RIDGE-1, RIDGE-2, RIDGE-25, RIDGE-3, RIDGE-4, RIDGE-5, RIDGE-27, RIDGE-6, RIDGE-29, RIDGE-30, RIDGE-32, RIDGE-33, RIDGE-31, RIDGE-34, RIDGE-7, RIDGE-35, RIDGE-8, RIDGE-9, RIDGE-36, RIDGE-37, RIDGE-38, RIDGE-10, RIDGE-11, and RIDGE-39 Done; skip RIDGE-12 for now; next is RIDGE-13 (empty, loading, error); RIDGE-28 Canceled; then RIDGE-14–15 and epics Todo; RIDGE-16–18 and RIDGE-26 Backlog. Launch project for TestFlight / Play.
 - [ ] Build slices, demos, TestFlight / Play testing (09)
 - [ ] Launch / walk-away notes (10)
 - [ ] Evidence log paragraphs as phases lock
@@ -58,7 +58,7 @@
 
 ## Next action (one line)
 
-Start [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-thirty-days-of-rent-and) (seed Accra world: ten buildings, three owners, thirty days of rent).
+Start [RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) (empty, loading, error, and no-permission states: Ridgeway splash, skeletons in chrome).
 
 ---
 
@@ -87,7 +87,8 @@ Start [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-t
 - RIDGE-37 PR (merged): https://github.com/delasimensah/ridgeway/pull/22
 - RIDGE-38 PR (merged): https://github.com/delasimensah/ridgeway/pull/23
 - RIDGE-10 PR (merged): https://github.com/delasimensah/ridgeway/pull/24
-- RIDGE-11 PR: https://github.com/delasimensah/ridgeway/pull/25
+- RIDGE-11 PR (merged): https://github.com/delasimensah/ridgeway/pull/25
+- RIDGE-39 PR: https://github.com/delasimensah/ridgeway/pull/26
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`

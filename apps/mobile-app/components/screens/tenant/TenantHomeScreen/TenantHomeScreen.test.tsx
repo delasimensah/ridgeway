@@ -3,8 +3,10 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 import TenantHomeScreen from "./TenantHomeScreen";
 
 describe("TenantHomeScreen", () => {
-  it("shows the unit and next rent", () => {
+  it("shows the unit, next rent, and file a repair", () => {
     const onManageRent = jest.fn();
+    const onFileRepair = jest.fn();
+    const onOpenRepair = jest.fn();
     render(
       <TenantHomeScreen
         displayName="Akosua Darko"
@@ -19,9 +21,17 @@ describe("TenantHomeScreen", () => {
           confirmedStatus: "unpaid",
         }}
         repairs={[
-          { _id: "wo-1", title: "Kitchen tap leak", status: "received" },
+          {
+            _id: "wo-1",
+            title: "Kitchen tap leak",
+            status: "received",
+            category: "plumbing",
+            urgency: "high",
+          },
         ]}
         onManageRent={onManageRent}
+        onFileRepair={onFileRepair}
+        onOpenRepair={onOpenRepair}
       />
     );
 
@@ -30,5 +40,9 @@ describe("TenantHomeScreen", () => {
     expect(screen.getByText("Kitchen tap leak")).toBeTruthy();
     fireEvent.press(screen.getByText("Manage Rent"));
     expect(onManageRent).toHaveBeenCalledTimes(1);
+    fireEvent.press(screen.getByLabelText("File a repair"));
+    expect(onFileRepair).toHaveBeenCalledTimes(1);
+    fireEvent.press(screen.getByLabelText("Kitchen tap leak"));
+    expect(onOpenRepair).toHaveBeenCalledWith("wo-1");
   });
 });
