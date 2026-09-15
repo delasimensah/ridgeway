@@ -47,11 +47,15 @@ const workOrderCategory = v.union(
   v.literal("other")
 );
 
+const unitKind = v.union(v.literal("apartment"), v.literal("commercial"));
+
 const workOrderListItem = v.object({
   _id: v.id("workOrders"),
   title: v.string(),
   status: workOrderStatus,
   unitLabel: v.string(),
+  unitKind,
+  tenantName: v.union(v.string(), v.null()),
   buildingName: v.string(),
   address: v.string(),
   reportedAt: v.number(),
@@ -95,11 +99,17 @@ async function toListItem(
 ) {
   const unit = await ctx.db.get(ticket.unitId);
   const building = await ctx.db.get(ticket.buildingId);
+  const lease =
+    ticket.leaseId === undefined ? null : await ctx.db.get(ticket.leaseId);
+  const tenant =
+    lease === null ? null : await ctx.db.get(lease.tenantProfileId);
   return {
     _id: ticket._id,
     title: ticket.title,
     status: ticket.status,
     unitLabel: unit?.label ?? "",
+    unitKind: unit?.kind ?? "apartment",
+    tenantName: tenant?.displayName ?? null,
     buildingName: building?.name ?? "",
     address: building?.address ?? "",
     reportedAt: ticket._creationTime,
@@ -192,6 +202,34 @@ export const listForBuilding = authedQuery({
       : rows.filter((row) => row.status !== "done");
     open.sort((a, b) => b._creationTime - a._creationTime);
     return await Promise.all(open.map((row) => toListItem(ctx, row)));
+  },
+});
+
+export const listForOwner = authedQuery({
+  args: {},
+  returns: v.array(workOrderListItem),
+  handler: async (ctx) => {
+    const ownerId = ctx.viewer.ownerId;
+    if (ownerId === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const buildings = await ctx.db
+      .query("buildings")
+      .withIndex("by_ownerId", (q) => q.eq("ownerId", ownerId))
+      .collect();
+    const tickets: Doc<"workOrders">[] = [];
+    for (const building of buildings) {
+      const rows = await ctx.db
+        .query("workOrders")
+        .withIndex("by_buildingId_and_status", (q) =>
+          q.eq("buildingId", building._id)
+        )
+        .collect();
+      tickets.push(...rows.filter((row) => row.status !== "done"));
+    }
+    tickets.sort((a, b) => b._creationTime - a._creationTime);
+    return await Promise.all(tickets.map((row) => toListItem(ctx, row)));
   },
 });
 

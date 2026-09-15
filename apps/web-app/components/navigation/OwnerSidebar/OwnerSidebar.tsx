@@ -1,6 +1,13 @@
 "use client";
 
 import { Anchor, Box, Button } from "@mantine/core";
+import {
+  type Icon,
+  IconAlertCircle,
+  IconBuilding,
+  IconCashBanknote,
+  IconHome,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import React from "react";
 import { cn } from "shared";
@@ -9,7 +16,7 @@ import Heading from "../../ui/Heading/Heading";
 import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 import Text from "../../ui/Text/Text";
 
-export type OwnerNavId = "home";
+export type OwnerNavId = "home" | "buildings" | "issues" | "rent";
 
 interface OwnerSidebarProps {
   displayName: string;
@@ -19,10 +26,27 @@ interface OwnerSidebarProps {
   onNavigate?: () => void;
 }
 
+const NAV_ITEMS: {
+  id: OwnerNavId;
+  href: string;
+  label: string;
+  Icon: Icon;
+}[] = [
+  { id: "home", href: "/", label: "Home", Icon: IconHome },
+  {
+    id: "buildings",
+    href: "/buildings",
+    label: "Buildings",
+    Icon: IconBuilding,
+  },
+  { id: "issues", href: "/repairs", label: "Issues", Icon: IconAlertCircle },
+  { id: "rent", href: "/rent", label: "Rent", Icon: IconCashBanknote },
+];
+
 const NAV_LINK_CLASS =
-  "block rounded-[8px] px-4 py-2.5 no-underline hover:bg-lightGrey";
+  "flex items-center gap-3 rounded-[8px] px-4 py-2.5 no-underline hover:bg-lightGrey";
 const NAV_LINK_ACTIVE_CLASS =
-  "bg-primary font-semibold text-white hover:bg-primary";
+  "bg-primary font-semibold text-white hover:bg-primary hover:text-white";
 const NAV_LINK_IDLE_CLASS = "font-medium text-darkGrey";
 
 const OwnerSidebar: React.FC<OwnerSidebarProps> = ({
@@ -32,8 +56,6 @@ const OwnerSidebar: React.FC<OwnerSidebarProps> = ({
   activeNav = "home",
   onNavigate,
 }) => {
-  const isHomeActive = activeNav === "home";
-
   return (
     <Box className="flex h-full w-full flex-col border-r border-border bg-sidebar">
       <Box className="p-6">
@@ -45,18 +67,25 @@ const OwnerSidebar: React.FC<OwnerSidebarProps> = ({
         </Heading>
       </Box>
       <Box component="nav" className="flex-1 space-y-1 px-4">
-        <Anchor
-          component={Link}
-          href="/"
-          underline="never"
-          onClick={onNavigate}
-          className={cn(
-            NAV_LINK_CLASS,
-            isHomeActive ? NAV_LINK_ACTIVE_CLASS : NAV_LINK_IDLE_CLASS
-          )}
-        >
-          Home
-        </Anchor>
+        {NAV_ITEMS.map((item) => {
+          const isActive = item.id === activeNav;
+          return (
+            <Anchor
+              key={item.id}
+              component={Link}
+              href={item.href}
+              underline="never"
+              onClick={onNavigate}
+              className={cn(
+                NAV_LINK_CLASS,
+                isActive ? NAV_LINK_ACTIVE_CLASS : NAV_LINK_IDLE_CLASS
+              )}
+            >
+              <item.Icon size={20} stroke={1.75} aria-hidden />
+              <span>{item.label}</span>
+            </Anchor>
+          );
+        })}
       </Box>
       <Box className="border-t border-border p-4">
         <Box className="mb-3 flex items-center gap-3 px-4">

@@ -8,6 +8,7 @@ import { useState } from "react";
 import {
   LoadingScreen,
   NotAllowedPage,
+  OwnerRentPage,
   StaffRentPage,
   TenantRentPage,
 } from "@/components";
@@ -19,6 +20,10 @@ const RentRoute = () => {
   const buildings = useQuery(
     api.buildings.listForViewer,
     session.isStaff ? {} : "skip"
+  );
+  const ownerSummary = useQuery(
+    api.rent.summaryForOwner,
+    session.isOwner ? {} : "skip"
   );
   const [buildingId, setBuildingId] = useState<Id<"buildings"> | "">("");
   const [periodLabel, setPeriodLabel] = useState<string | null>(null);
@@ -90,6 +95,21 @@ const RentRoute = () => {
             showErrorNotification(getConvexErrorMessage(error));
           });
         }}
+      />
+    );
+  }
+
+  if (session.isOwner) {
+    if (ownerSummary === undefined) {
+      return <LoadingScreen fillViewport={false} />;
+    }
+
+    return (
+      <OwnerRentPage
+        collected={ownerSummary.collected}
+        outstanding={ownerSummary.outstanding}
+        currency={ownerSummary.currency}
+        buildings={ownerSummary.buildings}
       />
     );
   }

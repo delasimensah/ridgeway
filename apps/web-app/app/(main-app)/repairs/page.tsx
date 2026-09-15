@@ -5,15 +5,24 @@ import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { LoadingScreen, NotAllowedPage, StaffRepairsPage } from "@/components";
+import {
+  LoadingScreen,
+  NotAllowedPage,
+  OwnerIssuesPage,
+  StaffRepairsPage,
+} from "@/components";
 import { useStaffSession } from "@/hooks";
 
 const StaffRepairsRoute = () => {
   const session = useStaffSession();
   const router = useRouter();
-  const repairs = useQuery(
+  const staffRepairs = useQuery(
     api.workOrders.listForStaff,
     session.isStaff ? {} : "skip"
+  );
+  const ownerIssues = useQuery(
+    api.workOrders.listForOwner,
+    session.isOwner ? {} : "skip"
   );
 
   useEffect(() => {
@@ -30,6 +39,13 @@ const StaffRepairsRoute = () => {
     return <LoadingScreen fillViewport={false} />;
   }
 
+  if (session.isOwner) {
+    if (ownerIssues === undefined) {
+      return <LoadingScreen fillViewport={false} />;
+    }
+    return <OwnerIssuesPage issues={ownerIssues} />;
+  }
+
   if (!session.isStaff) {
     return (
       <NotAllowedPage
@@ -39,11 +55,11 @@ const StaffRepairsRoute = () => {
     );
   }
 
-  if (repairs === undefined) {
+  if (staffRepairs === undefined) {
     return <LoadingScreen fillViewport={false} />;
   }
 
-  return <StaffRepairsPage repairs={repairs} />;
+  return <StaffRepairsPage repairs={staffRepairs} />;
 };
 
 export default StaffRepairsRoute;

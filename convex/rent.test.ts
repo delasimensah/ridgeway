@@ -220,6 +220,13 @@ describe("rent", () => {
     }
 
     try {
+      await asUser(t, field.userId).query(api.rent.summaryForOwner, {});
+      throw new Error("expected summaryForOwner to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    try {
       await asUser(t, field.userId).mutation(api.rent.reportPaymentByTenant, {
         rentPeriodId: periodId,
       });
@@ -665,6 +672,173 @@ describe("rent", () => {
     try {
       await asUser(t, userId).query(api.rent.listForStaff, {});
       throw new Error("expected listForStaff to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
+
+  it("lets an owner see collected versus outstanding for their buildings only", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const ownerA = await insertPerson(t, {
+      email: "kwesi.mensah@ridgeway.gh",
+      displayName: "Kwesi Mensah",
+      role: "owner",
+    });
+    const ownerB = await insertPerson(t, {
+      email: "adwoa.owusu@ridgeway.gh",
+      displayName: "Adwoa Owusu",
+      role: "owner",
+    });
+    const ownerAId = ownerA.ownerId;
+    const ownerBId = ownerB.ownerId;
+    if (ownerAId === undefined || ownerBId === undefined) {
+      throw new Error("expected owner ids");
+    }
+
+    const ownerABuildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+        ownerId: ownerAId,
+      }
+    );
+    const ownerBBuildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Labone walk-up",
+        street: "32 Labone Crescent",
+        area: "Labone",
+        ownerId: ownerBId,
+      }
+    );
+    const ownerAUnitId = await asUser(t, staff.userId).mutation(
+      api.units.create,
+      {
+        buildingId: ownerABuildingId,
+        label: "B12",
+        kind: "apartment",
+      }
+    );
+    const ownerBUnitId = await asUser(t, staff.userId).mutation(
+      api.units.create,
+      {
+        buildingId: ownerBBuildingId,
+        label: "A1",
+        kind: "apartment",
+      }
+    );
+    await asUser(t, staff.userId).mutation(api.leases.createWithTenant, {
+      unitId: ownerAUnitId,
+      displayName: "Akosua Darko",
+      email: "akosua.darko@ridgeway.gh",
+      startedOn: "2025-01-01",
+      rentAmount: 450000,
+      rentCurrency: "GHS",
+      rentDueDay: 5,
+    });
+    await asUser(t, staff.userId).mutation(api.leases.createWithTenant, {
+      unitId: ownerBUnitId,
+      displayName: "Kojo Antwi",
+      email: "kojo.antwi@ridgeway.gh",
+      startedOn: "2025-01-01",
+      rentAmount: 300000,
+      rentCurrency: "GHS",
+      rentDueDay: 5,
+    });
+
+    const currentMonth = monthLabelFromMillis(Date.now());
+    await t.run(async (ctx) => {
+      const leases = await ctx.db.query("leases").collect();
+      for (const lease of leases) {
+        const rows = await ctx.db
+          .query("rentPeriods")
+          .withIndex("by_leaseId_and_dueOn", (q) => q.eq("leaseId", lease._id))
+          .collect();
+        const current = rows.find((row) => row.periodLabel === currentMonth);
+        if (current === undefined) {
+          throw new Error("current period missing");
+        }
+        if (lease.unitId === ownerAUnitId) {
+          await ctx.db.patch(current._id, { confirmedStatus: "paid" });
+        }
+      }
+    });
+
+    const summary = await asUser(t, ownerA.userId).query(
+      api.rent.summaryForOwner,
+      {}
+    );
+    expect(summary.collected).toBe(450000);
+    expect(summary.outstanding).toBe(0);
+    expect(summary.buildings).toEqual([
+      expect.objectContaining({
+        buildingId: ownerABuildingId,
+        name: "Ridge Court",
+        collected: 450000,
+        outstanding: 0,
+      }),
+    ]);
+    expect(summary.buildings.map((row) => row.name)).not.toContain(
+      "Labone walk-up"
+    );
+
+    const ownList = await asUser(t, ownerA.userId).query(
+      api.rent.listByBuilding,
+      {
+        buildingId: ownerABuildingId,
+        paginationOpts: { numItems: 20, cursor: null },
+      }
+    );
+    expect(ownList.collected).toBe(450000);
+    expect(ownList.page.map((row) => row.tenantName)).toEqual(["Akosua Darko"]);
+
+    try {
+      await asUser(t, ownerA.userId).query(api.rent.listByBuilding, {
+        buildingId: ownerBBuildingId,
+        paginationOpts: { numItems: 20, cursor: null },
+      });
+      throw new Error("expected listByBuilding to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    const ownerBSummary = await asUser(t, ownerB.userId).query(
+      api.rent.summaryForOwner,
+      {}
+    );
+    expect(ownerBSummary.collected).toBe(0);
+    expect(ownerBSummary.outstanding).toBe(300000);
+    expect(ownerBSummary.buildings.map((row) => row.name)).toEqual([
+      "Labone walk-up",
+    ]);
+  });
+
+  it("refuses summaryForOwner and listByBuilding for a tenant", async () => {
+    const t = makeBackend();
+    const { buildingId, tenantUserId } = await seedLeaseWithPeriod(t, {
+      startedOn: "2025-01-01",
+    });
+
+    try {
+      await asUser(t, tenantUserId).query(api.rent.summaryForOwner, {});
+      throw new Error("expected summaryForOwner to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    try {
+      await asUser(t, tenantUserId).query(api.rent.listByBuilding, {
+        buildingId,
+        paginationOpts: { numItems: 20, cursor: null },
+      });
+      throw new Error("expected listByBuilding to refuse");
     } catch (error) {
       expect(errorCode(error)).toBe("NOT_PERMITTED");
     }

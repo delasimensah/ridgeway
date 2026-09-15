@@ -387,4 +387,142 @@ describe("workOrders", () => {
       expect(errorCode(error)).toBe("INVALID");
     }
   });
+
+  it("lets an owner see open issues on their buildings only", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const ownerA = await insertPerson(t, {
+      email: "kwesi.mensah@ridgeway.gh",
+      displayName: "Kwesi Mensah",
+      role: "owner",
+    });
+    const ownerB = await insertPerson(t, {
+      email: "adwoa.owusu@ridgeway.gh",
+      displayName: "Adwoa Owusu",
+      role: "owner",
+    });
+    const ownerAId = ownerA.ownerId;
+    const ownerBId = ownerB.ownerId;
+    if (ownerAId === undefined || ownerBId === undefined) {
+      throw new Error("expected owner ids");
+    }
+
+    const ownerABuildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+        ownerId: ownerAId,
+      }
+    );
+    const ownerBBuildingId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Labone walk-up",
+        street: "32 Labone Crescent",
+        area: "Labone",
+        ownerId: ownerBId,
+      }
+    );
+    const ownerAUnitId = await asUser(t, staff.userId).mutation(
+      api.units.create,
+      {
+        buildingId: ownerABuildingId,
+        label: "B12",
+        kind: "apartment",
+        newTenant: {
+          displayName: "Akosua Darko",
+          email: "akosua.darko@ridgeway.gh",
+          startedOn: "2025-01-01",
+        },
+      }
+    );
+    const ownerBUnitId = await asUser(t, staff.userId).mutation(
+      api.units.create,
+      {
+        buildingId: ownerBBuildingId,
+        label: "A1",
+        kind: "apartment",
+        newTenant: {
+          displayName: "Kojo Antwi",
+          email: "kojo.antwi@ridgeway.gh",
+          startedOn: "2025-01-01",
+        },
+      }
+    );
+    const ownerATenantUserId = await tenantUserIdByEmail(
+      t,
+      "akosua.darko@ridgeway.gh"
+    );
+    const ownerBTenantUserId = await tenantUserIdByEmail(
+      t,
+      "kojo.antwi@ridgeway.gh"
+    );
+
+    const ownerATicketId = await asUser(t, ownerATenantUserId).mutation(
+      api.workOrders.createByTenant,
+      {
+        unitId: ownerAUnitId,
+        description: "B12 leak",
+        category: "plumbing",
+        urgency: "normal",
+      }
+    );
+    await asUser(t, ownerBTenantUserId).mutation(
+      api.workOrders.createByTenant,
+      {
+        unitId: ownerBUnitId,
+        description: "A1 lock",
+        category: "other",
+        urgency: "normal",
+      }
+    );
+
+    const listed = await asUser(t, ownerA.userId).query(
+      api.workOrders.listForOwner,
+      {}
+    );
+    expect(listed).toEqual([
+      expect.objectContaining({
+        _id: ownerATicketId,
+        title: "B12 leak",
+        status: "received",
+        unitLabel: "B12",
+        unitKind: "apartment",
+        tenantName: "Akosua Darko",
+        buildingName: "Ridge Court",
+      }),
+    ]);
+    expect(listed.map((row) => row.title)).not.toContain("A1 lock");
+
+    const buildingList = await asUser(t, ownerA.userId).query(
+      api.workOrders.listForBuilding,
+      { buildingId: ownerABuildingId }
+    );
+    expect(buildingList.map((row) => row._id)).toEqual([ownerATicketId]);
+
+    try {
+      await asUser(t, ownerA.userId).query(api.workOrders.listForBuilding, {
+        buildingId: ownerBBuildingId,
+      });
+      throw new Error("expected listForBuilding to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+
+    try {
+      await asUser(t, ownerATenantUserId).query(
+        api.workOrders.listForOwner,
+        {}
+      );
+      throw new Error("expected listForOwner to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
 });
