@@ -264,6 +264,112 @@ function totalsForMonth(
   return { collected, outstanding, currency };
 }
 
+type LeaseRentBundle = {
+  buildingId: Id<"buildings">;
+  buildingName: string;
+  unitLabel: string;
+  tenantName: string;
+  periods: Doc<"rentPeriods">[];
+};
+
+async function currentLeaseRentBundles(
+  ctx: { db: QueryCtx["db"] },
+  buildings: { _id: Id<"buildings">; name: string }[],
+  today: string
+): Promise<{
+  bundles: LeaseRentBundle[];
+  earliestPeriodLabel: string | null;
+}> {
+  const bundles: LeaseRentBundle[] = [];
+  let earliestPeriodLabel: string | null = null;
+
+  for (const building of buildings) {
+    const units = await ctx.db
+      .query("units")
+      .withIndex("by_buildingId", (q) => q.eq("buildingId", building._id))
+      .collect();
+    for (const unit of units) {
+      const leases = await ctx.db
+        .query("leases")
+        .withIndex("by_unitId", (q) => q.eq("unitId", unit._id))
+        .collect();
+      for (const lease of leases) {
+        if (!isLeaseCurrent(lease, today)) {
+          continue;
+        }
+        const tenant = await ctx.db.get(lease.tenantProfileId);
+        const rows = await periodsForLease(ctx, lease._id);
+        for (const row of rows) {
+          if (
+            earliestPeriodLabel === null ||
+            row.periodLabel < earliestPeriodLabel
+          ) {
+            earliestPeriodLabel = row.periodLabel;
+          }
+        }
+        bundles.push({
+          buildingId: building._id,
+          buildingName: building.name,
+          unitLabel: unit.label,
+          tenantName: tenant?.displayName ?? "",
+          periods: rows,
+        });
+      }
+    }
+  }
+
+  return { bundles, earliestPeriodLabel };
+}
+
+function clampPeriodLabel(
+  requested: string | undefined,
+  currentMonth: string,
+  earliestPeriodLabel: string | null
+): string {
+  let periodLabel =
+    requested !== undefined ? requirePeriodLabel(requested) : currentMonth;
+  if (periodLabel > currentMonth) {
+    periodLabel = currentMonth;
+  }
+  if (earliestPeriodLabel !== null && periodLabel < earliestPeriodLabel) {
+    periodLabel = earliestPeriodLabel;
+  }
+  return periodLabel;
+}
+
+function enrichBundlesForMonth(
+  bundles: LeaseRentBundle[],
+  periodLabel: string
+) {
+  const enriched: {
+    period: Doc<"rentPeriods">;
+    buildingId: Id<"buildings">;
+    buildingName: string;
+    unitLabel: string;
+    tenantName: string;
+    arrears: number;
+  }[] = [];
+
+  for (const lease of bundles) {
+    for (const period of lease.periods) {
+      if (period.periodLabel !== periodLabel) {
+        continue;
+      }
+      enriched.push({
+        period,
+        buildingId: lease.buildingId,
+        buildingName: lease.buildingName,
+        unitLabel: lease.unitLabel,
+        tenantName: lease.tenantName,
+        arrears: arrearsBeforeMonth(lease.periods, periodLabel),
+      });
+    }
+  }
+
+  enriched.sort((left, right) => left.unitLabel.localeCompare(right.unitLabel));
+  return enriched;
+}
+
 export const listForCurrentTenant = authedQuery({
   args: {},
   returns: v.object({
@@ -320,89 +426,25 @@ export const listByBuilding = staffQuery({
     earliestPeriodLabel: v.union(v.string(), v.null()),
   }),
   handler: async (ctx, args) => {
-    await requireBuildingAccess(ctx, ctx.viewer, args.buildingId);
-
-    const units = await ctx.db
-      .query("units")
-      .withIndex("by_buildingId", (q) => q.eq("buildingId", args.buildingId))
-      .collect();
+    const building = await requireBuildingAccess(
+      ctx,
+      ctx.viewer,
+      args.buildingId
+    );
 
     const serverNow = Date.now();
     const currentMonth = monthLabelFromMillis(serverNow);
-    const today = utcToday();
-
-    type LeaseBundle = {
-      unitLabel: string;
-      tenantName: string;
-      periods: Doc<"rentPeriods">[];
-    };
-    const leasesInBuilding: LeaseBundle[] = [];
-    let earliestPeriodLabel: string | null = null;
-
-    for (const unit of units) {
-      const leases = await ctx.db
-        .query("leases")
-        .withIndex("by_unitId", (q) => q.eq("unitId", unit._id))
-        .collect();
-      for (const lease of leases) {
-        if (!isLeaseCurrent(lease, today)) {
-          continue;
-        }
-        const tenant = await ctx.db.get(lease.tenantProfileId);
-        const tenantName = tenant?.displayName ?? "";
-        const rows = await periodsForLease(ctx, lease._id);
-        for (const row of rows) {
-          if (
-            earliestPeriodLabel === null ||
-            row.periodLabel < earliestPeriodLabel
-          ) {
-            earliestPeriodLabel = row.periodLabel;
-          }
-        }
-        leasesInBuilding.push({
-          unitLabel: unit.label,
-          tenantName,
-          periods: rows,
-        });
-      }
-    }
-
-    let periodLabel =
-      args.periodLabel !== undefined
-        ? requirePeriodLabel(args.periodLabel)
-        : currentMonth;
-    if (periodLabel > currentMonth) {
-      periodLabel = currentMonth;
-    }
-    if (earliestPeriodLabel !== null && periodLabel < earliestPeriodLabel) {
-      periodLabel = earliestPeriodLabel;
-    }
-
-    const enriched: {
-      period: Doc<"rentPeriods">;
-      unitLabel: string;
-      tenantName: string;
-      arrears: number;
-    }[] = [];
-
-    for (const lease of leasesInBuilding) {
-      for (const period of lease.periods) {
-        if (period.periodLabel !== periodLabel) {
-          continue;
-        }
-        enriched.push({
-          period,
-          unitLabel: lease.unitLabel,
-          tenantName: lease.tenantName,
-          arrears: arrearsBeforeMonth(lease.periods, periodLabel),
-        });
-      }
-    }
-
-    enriched.sort((left, right) =>
-      left.unitLabel.localeCompare(right.unitLabel)
+    const { bundles, earliestPeriodLabel } = await currentLeaseRentBundles(
+      ctx,
+      [{ _id: building._id, name: building.name }],
+      utcToday()
     );
-
+    const periodLabel = clampPeriodLabel(
+      args.periodLabel,
+      currentMonth,
+      earliestPeriodLabel
+    );
+    const enriched = enrichBundlesForMonth(bundles, periodLabel);
     const totals = totalsForMonth(
       enriched.map((row) => row.period),
       periodLabel
@@ -437,6 +479,68 @@ export const listByBuilding = staffQuery({
       currency: totals.currency,
       periodLabel,
       earliestPeriodLabel,
+    };
+  },
+});
+
+export const listForStaff = staffQuery({
+  args: {},
+  returns: v.object({
+    serverNow: v.number(),
+    periodLabel: v.string(),
+    collected: v.number(),
+    outstanding: v.number(),
+    currency,
+    periods: v.array(
+      v.object({
+        _id: v.id("rentPeriods"),
+        confirmedStatus,
+        dueOn: v.string(),
+      })
+    ),
+  }),
+  handler: async (ctx) => {
+    const organizationId = ctx.viewer.organizationId;
+    if (organizationId === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const buildings = await ctx.db
+      .query("buildings")
+      .withIndex("by_organizationId", (q) =>
+        q.eq("organizationId", organizationId)
+      )
+      .collect();
+
+    const serverNow = Date.now();
+    const currentMonth = monthLabelFromMillis(serverNow);
+    const { bundles, earliestPeriodLabel } = await currentLeaseRentBundles(
+      ctx,
+      buildings,
+      utcToday()
+    );
+    const periodLabel = clampPeriodLabel(
+      undefined,
+      currentMonth,
+      earliestPeriodLabel
+    );
+    const enriched = enrichBundlesForMonth(bundles, periodLabel);
+    const totals = totalsForMonth(
+      enriched.map((row) => row.period),
+      periodLabel
+    );
+
+    return {
+      serverNow,
+      periodLabel,
+      collected: totals.collected,
+      outstanding: totals.outstanding,
+      currency: totals.currency,
+      periods: enriched.map((row) => ({
+        _id: row.period._id,
+        confirmedStatus: row.period.confirmedStatus,
+        dueOn: row.period.dueOn,
+      })),
     };
   },
 });

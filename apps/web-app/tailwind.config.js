@@ -64,6 +64,9 @@ module.exports = {
         danger: COLORS.danger,
         dangerHover: COLORS.dangerHover,
       },
+      boxShadow: {
+        card: `0 8px 24px color-mix(in srgb, ${COLORS.darkGrey} 14%, transparent), 0 2px 6px color-mix(in srgb, ${COLORS.darkGrey} 8%, transparent)`,
+      },
       fontFamily: {
         appFont: ["var(--app-font)", "system-ui", "sans-serif"],
       },
@@ -71,4 +74,3 @@ module.exports = {
   },
   plugins: [],
 };
-

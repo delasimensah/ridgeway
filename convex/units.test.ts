@@ -58,7 +58,13 @@ describe("units", () => {
     expect(otherList).toEqual([]);
     expect(buildings.find((row) => row._id === buildingId)?.unitCount).toBe(1);
     expect(
+      buildings.find((row) => row._id === buildingId)?.emptyUnitCount
+    ).toBe(1);
+    expect(
       buildings.find((row) => row._id === otherBuildingId)?.unitCount
+    ).toBe(0);
+    expect(
+      buildings.find((row) => row._id === otherBuildingId)?.emptyUnitCount
     ).toBe(0);
   });
 
@@ -161,6 +167,14 @@ describe("units", () => {
       },
     ]);
     expect(list[0]?.leaseId).not.toBeNull();
+
+    const buildings = await asUser(t, userId).query(
+      api.buildings.listForViewer,
+      {}
+    );
+    expect(
+      buildings.find((row) => row._id === buildingId)?.emptyUnitCount
+    ).toBe(0);
   });
 
   it("creates a unit for a tenant whose earlier lease has ended", async () => {

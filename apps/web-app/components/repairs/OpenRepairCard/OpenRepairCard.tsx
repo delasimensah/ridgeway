@@ -26,7 +26,7 @@ const OpenRepairCard: React.FC<OpenRepairCardProps> = ({
       component={Link}
       href={href}
       underline="never"
-      className="flex items-center justify-between gap-4 rounded-[8px] border border-border bg-white p-4 shadow-sm"
+      className="!flex items-center justify-between gap-4 rounded-[8px] border border-border bg-white p-4 shadow-card"
     >
       <Box>
         <Text className="font-bold text-darkGrey">{title}</Text>

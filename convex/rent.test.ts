@@ -570,4 +570,103 @@ describe("rent", () => {
     );
     expect(tooLate.periodLabel).toBe(currentMonth);
   });
+
+  it("lets staff see this month's rent across buildings", async () => {
+    const t = makeBackend();
+    const staff = await insertPerson(t, {
+      email: "ama.boateng@ridgeway.gh",
+      displayName: "Ama Boateng",
+      role: "staff",
+    });
+    const ridgeCourtId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Ridge Court",
+        street: "14 Ridge Road",
+        area: "Cantonments",
+      }
+    );
+    const laboneId = await asUser(t, staff.userId).mutation(
+      api.buildings.create,
+      {
+        name: "Labone walk-up",
+        street: "32 Labone Crescent",
+        area: "Labone",
+      }
+    );
+    await asUser(t, staff.userId).mutation(api.units.create, {
+      buildingId: ridgeCourtId,
+      label: "B12",
+      kind: "apartment",
+      newTenant: {
+        displayName: "Akosua Darko",
+        email: "akosua.darko@ridgeway.gh",
+        startedOn: "2025-01-01",
+      },
+    });
+    await asUser(t, staff.userId).mutation(api.units.create, {
+      buildingId: laboneId,
+      label: "A1",
+      kind: "apartment",
+      newTenant: {
+        displayName: "Kojo Owusu",
+        email: "kojo.owusu@ridgeway.gh",
+        startedOn: "2025-01-01",
+      },
+    });
+    const currentMonth = monthLabelFromMillis(Date.now());
+    await t.run(async (ctx) => {
+      const leases = await ctx.db.query("leases").collect();
+      const first = leases[0];
+      const second = leases[1];
+      if (first === undefined || second === undefined) {
+        throw new Error("leases missing");
+      }
+      await ctx.db.insert("rentPeriods", {
+        leaseId: first._id,
+        periodLabel: currentMonth,
+        amount: 450000,
+        currency: "GHS",
+        dueOn: dueOnForPeriod(currentMonth, 5),
+        confirmedStatus: "paid",
+      });
+      await ctx.db.insert("rentPeriods", {
+        leaseId: second._id,
+        periodLabel: currentMonth,
+        amount: 300000,
+        currency: "GHS",
+        dueOn: dueOnForPeriod(currentMonth, 5),
+        confirmedStatus: "unpaid",
+      });
+    });
+
+    const listed = await asUser(t, staff.userId).query(
+      api.rent.listForStaff,
+      {}
+    );
+    expect(listed.periodLabel).toBe(currentMonth);
+    expect(listed.collected).toBe(450000);
+    expect(listed.outstanding).toBe(300000);
+    expect(listed.periods).toHaveLength(2);
+    expect(listed.periods.map((row) => row.confirmedStatus).sort()).toEqual([
+      "paid",
+      "unpaid",
+    ]);
+  });
+
+  it("refuses listForStaff when the caller is not staff", async () => {
+    const t = makeBackend();
+    const { userId } = await insertPerson(t, {
+      email: "yaw.darko@ridgeway.gh",
+      displayName: "Yaw Darko",
+      role: "field",
+    });
+
+    try {
+      await asUser(t, userId).query(api.rent.listForStaff, {});
+      throw new Error("expected listForStaff to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
 });

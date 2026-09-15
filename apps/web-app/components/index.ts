@@ -46,6 +46,8 @@ export { default as FieldListTable } from "./field/FieldListTable/FieldListTable
 export { default as OwnerBuildingCard } from "./owner/OwnerBuildingCard/OwnerBuildingCard";
 export { default as OwnerBuildingListEmpty } from "./owner/OwnerBuildingListEmpty/OwnerBuildingListEmpty";
 
+export { default as StaffHomeMetricCard } from "./home/StaffHomeMetricCard/StaffHomeMetricCard";
+
 export { default as AddUnitForm } from "./units/AddUnitForm/AddUnitForm";
 export { default as UnitListEmpty } from "./units/UnitListEmpty/UnitListEmpty";
 export { default as UnitListRow } from "./units/UnitListRow/UnitListRow";

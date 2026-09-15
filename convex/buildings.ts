@@ -4,7 +4,12 @@ import type { Doc, Id } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
 import { ERROR_CODES, raise } from "./lib/errors";
 import { authedQuery, staffMutation } from "./lib/functions";
-import { requireBuildingAccess, type Viewer } from "./lib/viewer";
+import {
+  isLeaseCurrent,
+  requireBuildingAccess,
+  utcToday,
+  type Viewer,
+} from "./lib/viewer";
 import { insertOwnerForOrg } from "./owners";
 
 const buildingListItem = v.object({
@@ -13,6 +18,7 @@ const buildingListItem = v.object({
   address: v.string(),
   ownerName: v.union(v.string(), v.null()),
   unitCount: v.number(),
+  emptyUnitCount: v.number(),
   openRepairCount: v.number(),
 });
 
@@ -58,6 +64,7 @@ export const listForViewer = authedQuery({
   returns: v.array(buildingListItem),
   handler: async (ctx) => {
     const rows = await buildingsVisibleToViewer(ctx);
+    const today = utcToday();
 
     return await Promise.all(
       rows.map(async (row) => {
@@ -73,12 +80,24 @@ export const listForViewer = authedQuery({
             q.eq("buildingId", row._id)
           )
           .collect();
+        let emptyUnitCount = 0;
+        for (const unit of units) {
+          const leases = await ctx.db
+            .query("leases")
+            .withIndex("by_unitId", (q) => q.eq("unitId", unit._id))
+            .collect();
+          const occupied = leases.some((lease) => isLeaseCurrent(lease, today));
+          if (!occupied) {
+            emptyUnitCount += 1;
+          }
+        }
         return {
           _id: row._id,
           name: row.name,
           address: row.address,
           ownerName: owner?.displayName ?? null,
           unitCount: units.length,
+          emptyUnitCount,
           openRepairCount: tickets.filter((ticket) => ticket.status !== "done")
             .length,
         };
