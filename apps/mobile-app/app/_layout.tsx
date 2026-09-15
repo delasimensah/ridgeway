@@ -19,11 +19,17 @@ import {
   BottomSheetsManager,
   ErrorToast,
   NeutralToast,
+  RoleWaitScreen,
   SuccessToast,
 } from "@/components";
 import { FONT_LOADING_MAP } from "@/constants";
 import { useApplyAvailableUpdate, useFieldSession } from "@/hooks";
-import { defaultStackScreenOptions, screenPresets } from "@/utils";
+import {
+  defaultStackScreenOptions,
+  screenPresets,
+  shouldWaitForRole,
+  signedInStackGuards,
+} from "@/utils";
 
 cssInterop(Image, { className: "style" });
 cssInterop(ImageBackground, { className: "style" });
@@ -48,6 +54,11 @@ const RootNavigator = () => {
   } = useFieldSession();
   const isCheckingUpdate = useApplyAvailableUpdate();
 
+  const waitForRole = shouldWaitForRole({
+    isAuthenticated,
+    isViewerReady,
+  });
+
   useEffect(() => {
     if (!isSessionLoading && !isCheckingUpdate) {
       void SplashScreen.hideAsync();
@@ -58,13 +69,18 @@ const RootNavigator = () => {
     return null;
   }
 
-  const canEnterField = isAuthenticated && (isField || !isViewerReady);
-  const canEnterTenant =
-    isAuthenticated && isViewerReady && currentLease !== null;
-  const canEnterEnded =
-    isAuthenticated && isViewerReady && isTenant && currentLease === null;
-  const canEnterNotAllowed =
-    isAuthenticated && isViewerReady && !isField && !isTenant;
+  if (waitForRole) {
+    return <RoleWaitScreen />;
+  }
+
+  const { canEnterField, canEnterTenant, canEnterEnded, canEnterNotAllowed } =
+    signedInStackGuards({
+      isAuthenticated,
+      isViewerReady,
+      isField,
+      isTenant,
+      currentLease,
+    });
 
   return (
     <Stack

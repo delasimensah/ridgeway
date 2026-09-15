@@ -21,6 +21,11 @@ export {
 } from "./repairLabels";
 export type { RepairCategory, RepairUrgency } from "./repairLabels";
 export { defaultStackScreenOptions, screenPresets } from "./navigation";
+export {
+  shouldWaitForRole,
+  signedInDestination,
+  signedInStackGuards,
+} from "./signedInDestination";
 
 // Toast utilities
 export {
