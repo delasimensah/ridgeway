@@ -58,6 +58,7 @@ const workOrderListItem = v.object({
   unitLabel: v.string(),
   unitKind,
   tenantName: v.union(v.string(), v.null()),
+  assigneeName: v.union(v.string(), v.null()),
   buildingName: v.string(),
   address: v.string(),
   reportedAt: v.number(),
@@ -114,6 +115,10 @@ async function toListItem(
     ticket.leaseId === undefined ? null : await ctx.db.get(ticket.leaseId);
   const tenant =
     lease === null ? null : await ctx.db.get(lease.tenantProfileId);
+  const assignee =
+    ticket.assigneeProfileId === undefined
+      ? null
+      : await ctx.db.get(ticket.assigneeProfileId);
   return {
     _id: ticket._id,
     title: ticket.title,
@@ -123,6 +128,7 @@ async function toListItem(
     unitLabel: unit?.label ?? "",
     unitKind: unit?.kind ?? "apartment",
     tenantName: tenant?.displayName ?? null,
+    assigneeName: assignee?.displayName ?? null,
     buildingName: building?.name ?? "",
     address: building?.address ?? "",
     reportedAt: ticket._creationTime,
@@ -469,6 +475,40 @@ export const listForCurrentField = authedQuery({
       .query("workOrders")
       .withIndex("by_assigneeProfileId_and_status", (q) =>
         q.eq("assigneeProfileId", ctx.viewer.profile._id)
+      )
+      .collect();
+    const open = rows.filter((row) => row.status !== "done");
+    open.sort((a, b) => b._creationTime - a._creationTime);
+    return await Promise.all(open.map((row) => toListItem(ctx, row)));
+  },
+});
+
+export const listForAssignee = staffQuery({
+  args: {
+    profileId: v.id("profiles"),
+  },
+  returns: v.array(workOrderListItem),
+  handler: async (ctx, args) => {
+    const organizationId = ctx.viewer.organizationId;
+    if (organizationId === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const memberships = await ctx.db
+      .query("memberships")
+      .withIndex("by_profileId", (q) => q.eq("profileId", args.profileId))
+      .take(8);
+    const fieldMembership = memberships.find(
+      (row) => row.role === "field" && row.organizationId === organizationId
+    );
+    if (fieldMembership === undefined) {
+      return [];
+    }
+
+    const rows = await ctx.db
+      .query("workOrders")
+      .withIndex("by_assigneeProfileId_and_status", (q) =>
+        q.eq("assigneeProfileId", args.profileId)
       )
       .collect();
     const open = rows.filter((row) => row.status !== "done");

@@ -13,20 +13,25 @@ export interface RepairListItem {
   status: WorkOrderStatus;
   unitLabel: string;
   buildingName: string;
+  assigneeName?: string | null;
 }
 
 interface RepairListTableProps {
   repairs: RepairListItem[];
+  showAssignee?: boolean;
 }
 
 const TH =
   "px-4 py-3 text-[13px] font-bold uppercase tracking-wider text-grey sm:px-6 sm:py-4";
 const TD = "px-4 py-4 text-[15px] text-darkGrey sm:px-6 sm:py-5";
 
-const RepairListTable: React.FC<RepairListTableProps> = ({ repairs }) => {
+const RepairListTable: React.FC<RepairListTableProps> = ({
+  repairs,
+  showAssignee = true,
+}) => {
   return (
     <Box className="overflow-hidden rounded-[8px] border border-border bg-white shadow-sm">
-      <Table.ScrollContainer minWidth={640} type="native">
+      <Table.ScrollContainer minWidth={showAssignee ? 720 : 640} type="native">
         <Table highlightOnHover withRowBorders>
           <Table.Thead className="bg-sidebar">
             <Table.Tr>
@@ -34,6 +39,9 @@ const RepairListTable: React.FC<RepairListTableProps> = ({ repairs }) => {
               <Table.Th className={TH}>Building</Table.Th>
               <Table.Th className={TH}>Unit</Table.Th>
               <Table.Th className={TH}>Status</Table.Th>
+              {showAssignee ? (
+                <Table.Th className={TH}>Assigned to</Table.Th>
+              ) : null}
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -54,6 +62,11 @@ const RepairListTable: React.FC<RepairListTableProps> = ({ repairs }) => {
                 <Table.Td className={TD}>
                   <RepairStatusBadge status={repair.status} />
                 </Table.Td>
+                {showAssignee ? (
+                  <Table.Td className={TD}>
+                    {repair.assigneeName ?? "—"}
+                  </Table.Td>
+                ) : null}
               </Table.Tr>
             ))}
           </Table.Tbody>

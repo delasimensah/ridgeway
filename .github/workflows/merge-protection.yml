@@ -6,8 +6,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
-  issues: write
 
 jobs:
   delete-branch-after-merge:
@@ -21,32 +19,13 @@ jobs:
         with:
           script: |
             const branchName = context.payload.pull_request.head.ref;
-            const repoOwner = context.repo.owner;
-            const repoName = context.repo.repo;
-
-            console.log(`🗑️ Attempting to delete branch: ${branchName}`);
 
             try {
               await github.rest.git.deleteRef({
-                owner: repoOwner,
-                repo: repoName,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
                 ref: `heads/${branchName}`
               });
-
-              console.log(`✅ Successfully deleted branch: ${branchName}`);
-
-              await github.rest.issues.createComment({
-                owner: repoOwner,
-                repo: repoName,
-                issue_number: context.payload.pull_request.number,
-                body: `## 🗑️ Branch Cleanup
-
-                ✅ **Feature branch \`${branchName}\` has been automatically deleted** after successful merge.
-
-                ---
-                *Automatic cleanup by GitHub Actions*`
-              });
-
             } catch (error) {
-              console.log(`⚠️ Could not delete branch ${branchName}: ${error.message}`);
+              console.log(`Could not delete branch ${branchName}: ${error.message}`);
             }

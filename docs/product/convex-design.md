@@ -308,10 +308,11 @@ Where a function is described as staff-only, that means it is declared with `sta
 ### Work orders
 
 - `workOrders.listForBuilding` is a query, guarded by `requireBuildingAccess`, returning tickets for that building newest first. It defaults to everything that is not done and offers done as an explicit filter (`includeDone`). Each row includes the tenant name when the ticket has a lease, and the unit kind.
-- `workOrders.listForStaff` is a staff-only query returning tickets in the caller's organization, newest first, with the same not-done default.
+- `workOrders.listForStaff` is a staff-only query returning tickets in the caller's organization, newest first, with the same not-done default. Each row includes `assigneeName` when a field worker is assigned.
 - `workOrders.listForOwner` is a query for the caller's own buildings only, returning open tickets newest first. It refuses a field worker, a tenant, and staff.
 - `workOrders.listForCurrentTenant` is a query returning the open tickets filed under the caller's current lease. Each row includes status, category, and urgency so the phone home and repairs list can show them.
 - `workOrders.listForCurrentField` is a field-only query returning the open tickets assigned to the caller, newest first. It is a list, not a paginated query, because a caretaker's open jobs are a small set.
+- `workOrders.listForAssignee` is a staff-only query returning the open tickets assigned to one field worker in the caller's organization, newest first. Each list row includes `assigneeName` (or none when the ticket is still unassigned).
 - `workOrders.get` is a query, guarded by `requireWorkOrderAccess` for reading, that returns the ticket, its history rows, permission-checked URLs for repair and completion photos, and which moves the caller may make (`canAssign`, `canSchedule`, `canComplete`, `allowedNextStatuses`).
 - `workOrders.createByTenant` is a mutation available to a tenant with a current lease on the unit. It refuses when the lease that would cover the ticket is not current, which is the second half of the ended-lease requirement. It creates the ticket at `"received"`, copies the organization and building from the unit's building at that moment, and writes the first history row in the same transaction.
 - `workOrders.updateDescription` is a mutation available to the tenant who created the ticket, and only while status is still `"received"`.

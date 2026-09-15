@@ -15,6 +15,7 @@ describe("StaffRepairsPage", () => {
             status: "received",
             unitLabel: "B12",
             buildingName: "Ridge Court",
+            assigneeName: null,
           },
         ]}
       />
