@@ -88,7 +88,8 @@ Start [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-
 - RIDGE-38 PR (merged): https://github.com/delasimensah/ridgeway/pull/23
 - RIDGE-10 PR (merged): https://github.com/delasimensah/ridgeway/pull/24
 - RIDGE-11 PR (merged): https://github.com/delasimensah/ridgeway/pull/25
-- RIDGE-39 PR: https://github.com/delasimensah/ridgeway/pull/26
+- RIDGE-39 PR (merged): https://github.com/delasimensah/ridgeway/pull/26
+- RIDGE-13 PR: https://github.com/delasimensah/ridgeway/pull/27
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
