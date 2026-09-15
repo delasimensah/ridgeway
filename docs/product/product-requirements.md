@@ -56,7 +56,7 @@ Give Ridgeway Property Group one system where staff run the office, each owner s
 **Screens the product needs** so design and tickets have a list:
 
 - Sign in and sign out. Staff set a new password on an existing login. There is no self-service forgot-password.
-- Staff website: a home command center, lists and detail pages for buildings, units, tenants, owners, repairs, and rent, forms to add or correct a building, unit, owner, tenant, office person, or field worker, a way to end a lease, and later a draft monthly owner summary. Tenants and owners have their own lists (current lease or none for tenants), not only nested under a building.
+- Staff website: a home command center, lists and detail pages for buildings, units, tenants, owners, field workers, repairs, and rent, forms to add or correct a building, unit, owner, tenant, office person, or field worker, a way to end a lease, and later a draft monthly owner summary. Tenants and owners have their own lists (current lease or none for tenants), not only nested under a building. The field-worker page lists the open jobs assigned to that person. The staff repairs list shows who each open job is assigned to.
 - Owner website: a home for their buildings only, a snapshot of each building, a list of open issues, and rent collected versus outstanding.
 - Tenant website and light phone app: a home, a form to file a repair, a timeline for that repair, a rent reminder, and later house-rules chat. After a lease ends, those screens show that the person has no permission for that unit. They do not show the old home as if they still lived there.
 - Field phone app: today’s jobs, job detail, a status update, and a completion photo.

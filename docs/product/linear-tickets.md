@@ -43,10 +43,15 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-39](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the) is **Done**.
 - [RIDGE-13](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) is **Done**.
 - [RIDGE-12](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-two-years-of-rent-and) is **Done**.
+- [RIDGE-40](https://linear.app/dm-studios/issue/RIDGE-40/staff-can-open-a-field-worker-and-see-the-jobs-assigned-to-them) is **Done**.
+- [RIDGE-41](https://linear.app/dm-studios/issue/RIDGE-41/staff-repairs-list-shows-who-each-job-is-assigned-to) is **Done**.
+- [RIDGE-44](https://linear.app/dm-studios/issue/RIDGE-44/tenant-open-does-not-flash-the-field-jobs-screen) is **Todo**.
+- [RIDGE-42](https://linear.app/dm-studios/issue/RIDGE-42/tenant-phone-and-website-rent-show-what-a-partial-payment-received-and) is **Todo**.
+- [RIDGE-43](https://linear.app/dm-studios/issue/RIDGE-43/phone-loading-skeletons-match-the-screen-they-stand-in-for) is **Todo**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
-- Next slice is [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) (TestFlight submit of the tenant and field app).
-- [RIDGE-19](https://linear.app/dm-studios/issue/RIDGE-19/epic-auth), [RIDGE-20](https://linear.app/dm-studios/issue/RIDGE-20/epic-staff-portfolio), [RIDGE-21](https://linear.app/dm-studios/issue/RIDGE-21/epic-owner-isolation), [RIDGE-22](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders), and [RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status) are **Done**.
-- [RIDGE-24](https://linear.app/dm-studios/issue/RIDGE-24/epic-launch) stays **Todo** (RIDGE-14, RIDGE-15).
+- Next slice after RIDGE-40 / RIDGE-41 merge is [RIDGE-44](https://linear.app/dm-studios/issue/RIDGE-44/tenant-open-does-not-flash-the-field-jobs-screen), then [RIDGE-42](https://linear.app/dm-studios/issue/RIDGE-42/tenant-phone-and-website-rent-show-what-a-partial-payment-received-and), then [RIDGE-43](https://linear.app/dm-studios/issue/RIDGE-43/phone-loading-skeletons-match-the-screen-they-stand-in-for), then [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app).
+- [RIDGE-20](https://linear.app/dm-studios/issue/RIDGE-20/epic-staff-portfolio) and [RIDGE-22](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders) are **Done** after RIDGE-40 / RIDGE-41. [RIDGE-19](https://linear.app/dm-studios/issue/RIDGE-19/epic-auth) and [RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status) are **Todo** (RIDGE-44, RIDGE-42). [RIDGE-21](https://linear.app/dm-studios/issue/RIDGE-21/epic-owner-isolation) stays **Done**.
+- [RIDGE-24](https://linear.app/dm-studios/issue/RIDGE-24/epic-launch) stays **Todo** (RIDGE-43, RIDGE-14, RIDGE-15).
 - RIDGE-14 and RIDGE-15 are **Todo**.
 - RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** (after TestFlight / Play).
 
@@ -60,12 +65,12 @@ Epics are parent issues for grouping. They are not slices. When every child is D
 
 Parent issues. Children sit under them.
 
-- [RIDGE-19 Auth](https://linear.app/dm-studios/issue/RIDGE-19/epic-auth) — **Done.** Sign in, roles, sign out, staff-issued logins and passwords
-- [RIDGE-20 Staff portfolio](https://linear.app/dm-studios/issue/RIDGE-20/epic-staff-portfolio) — **Done.** Command center, add and correct building, unit, owner, tenant, office person, end lease; staff lists of tenants and owners. [RIDGE-26](https://linear.app/dm-studios/issue/RIDGE-26/staff-can-remove-a-mistaken-building-or-unit-that-has-no-lease-or) stays Backlog after TestFlight / Play.
+- [RIDGE-19 Auth](https://linear.app/dm-studios/issue/RIDGE-19/epic-auth) — **Todo.** Sign in, roles, sign out, staff-issued logins and passwords; tenant open must not flash field Jobs
+- [RIDGE-20 Staff portfolio](https://linear.app/dm-studios/issue/RIDGE-20/epic-staff-portfolio) — **Done.** Command center, add and correct building, unit, owner, tenant, office person, end lease; staff lists of tenants, owners, and field workers; field-worker page lists assigned jobs. [RIDGE-26](https://linear.app/dm-studios/issue/RIDGE-26/staff-can-remove-a-mistaken-building-or-unit-that-has-no-lease-or) stays Backlog after TestFlight / Play.
 - [RIDGE-21 Owner isolation](https://linear.app/dm-studios/issue/RIDGE-21/epic-owner-isolation) — **Done.** An owner sees only their buildings
-- [RIDGE-22 Work orders](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders) — **Done.** Tenant files a repair, field update, photos
-- [RIDGE-23 Rent status](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status) — **Done.** Paid, late, or partial; tenant reported payment
-- [RIDGE-24 Launch](https://linear.app/dm-studios/issue/RIDGE-24/epic-launch) — seed look, empty states, TestFlight, Play
+- [RIDGE-22 Work orders](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders) — **Done.** Tenant files a repair, field update, photos; staff repairs list shows who is assigned
+- [RIDGE-23 Rent status](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status) — **Todo.** Paid, late, or partial; tenant reported payment; tenant can see a recorded partial
+- [RIDGE-24 Launch](https://linear.app/dm-studios/issue/RIDGE-24/epic-launch) — seed look, empty states, TestFlight, Play, phone skeletons that match each screen
 
 ---
 
@@ -458,6 +463,110 @@ Signed-in staff add field workers (name, email, temporary password) and see ever
 
 ---
 
+## RIDGE-40. Staff can open a field worker and see the jobs assigned to them
+
+**Epic:** Staff portfolio ([RIDGE-20](https://linear.app/dm-studios/issue/RIDGE-20/epic-staff-portfolio))
+**Apps:** web, Convex
+**Branch:** `feature/RIDGE-40`
+
+Signed-in staff click a field worker and see the open jobs assigned to that person. Edit stays on `/field/:profileId/edit`.
+
+**Design:**
+
+- Not locked. Reuse owner-detail chrome and the repairs table. Columns: Title, Building, Unit, Status. No Assigned to on this page.
+
+**Acceptance (yes or no)**
+
+- Staff click a field worker and see that person's open jobs.
+- A job assigned to someone else does not appear.
+- Edit field worker is still available.
+- A person who is not staff cannot load this list.
+
+**Out of scope**
+
+- [RIDGE-41](https://linear.app/dm-studios/issue/RIDGE-41/staff-repairs-list-shows-who-each-job-is-assigned-to).
+- Status chips, Add repair, pagination.
+
+---
+
+## RIDGE-41. Staff repairs list shows who each job is assigned to
+
+**Epic:** Work orders ([RIDGE-22](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders))
+**Apps:** web, Convex
+**Branch:** `feature/RIDGE-40`
+
+Staff on Repairs see who each job is assigned to. Name only. Unassigned rows show —.
+
+**Design:**
+
+- `docs/ui-design/ridgeway/exports/web/staff/repair-list.html` — Assigned to column only.
+
+**Acceptance (yes or no)**
+
+- An assigned ticket shows the field worker's name on the list.
+- An unassigned ticket shows —.
+
+**Out of scope**
+
+- Status chips, Add repair, ticket ID column, pagination.
+
+---
+
+## RIDGE-44. Tenant open does not flash the field Jobs screen
+
+**Epic:** Auth ([RIDGE-19](https://linear.app/dm-studios/issue/RIDGE-19/epic-auth))
+**Apps:** mobile
+**Branch:** `feature/RIDGE-44`
+
+A tenant who opens the app briefly sees field Jobs before tenant home. While the profile is loading, the gate treats them as field.
+
+**Acceptance (yes or no)**
+
+- A tenant cold-start never shows field Jobs.
+- A field worker still lands on Jobs.
+
+**Out of scope**
+
+- [RIDGE-43](https://linear.app/dm-studios/issue/RIDGE-43/phone-loading-skeletons-match-the-screen-they-stand-in-for).
+
+---
+
+## RIDGE-42. Tenant phone and website rent show what a partial payment received and still owes
+
+**Epic:** Rent status ([RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status))
+**Apps:** mobile (tenant), web (tenant)
+**Branch:** `feature/RIDGE-42`
+
+Staff already store how much was received on a partial. Tenant rent still shows the full month and a Partial chip. Show received and still owed. Do not add a tenant "I paid part" button.
+
+**Design:** `exports/mobile/tenant/rent.html`, `exports/web/tenant/rent.html`.
+
+**Acceptance (yes or no)**
+
+- A partial month shows received and still owed on tenant phone and tenant website.
+- After staff confirm a partial, copy does not say staff still need to confirm.
+- **I have paid** still only reports.
+
+---
+
+## RIDGE-43. Phone loading skeletons match the screen they stand in for
+
+**Epic:** Launch ([RIDGE-24](https://linear.app/dm-studios/issue/RIDGE-24/epic-launch))
+**Apps:** mobile
+**Branch:** `feature/RIDGE-43`
+
+Tenant home, rent, repairs, and repair timeline use one generic four-bar skeleton. Field Jobs and job detail already match those screens.
+
+**Acceptance (yes or no)**
+
+- Those four tenant screens each load with a skeleton that matches their layout.
+
+**Out of scope**
+
+- [RIDGE-44](https://linear.app/dm-studios/issue/RIDGE-44/tenant-open-does-not-flash-the-field-jobs-screen).
+
+---
+
 ## RIDGE-35. Field app: completion photo uploads on device, Android system bar, keyboard, and password visibility
 
 **Epic:** Work orders ([RIDGE-22](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders))
@@ -726,8 +835,13 @@ The shipped screens must look like a working Accra portfolio, not a tutorial wit
 21. [RIDGE-39 Tenant can file a repair on the phone](https://linear.app/dm-studios/issue/RIDGE-39/tenant-can-file-a-repair-with-a-photo-and-see-the-timeline-on-the) — Design: `exports/mobile/tenant/file-repair.html`, `repair-timeline.html`, `home.html`.
 22. [RIDGE-12 Seed Accra world](https://linear.app/dm-studios/issue/RIDGE-12/seed-accra-world-ten-buildings-three-owners-two-years-of-rent-and) — Ten buildings, three owners, two years of rent, no user named "test user".
 23. [RIDGE-13 Empty, loading, error, and no-permission states](https://linear.app/dm-studios/issue/RIDGE-13/empty-loading-error-and-no-permission-states-on-shipped-screens) — Design: `exports/web/staff/empty-list.html`, `loading.html`, `failed-to-load.html`, `not-allowed.html`. On the website, a full-page wait shows Ridgeway in the main green on the light gold (`#D6BD98`), not the word Loading. The phone keeps the native splash. Lists use skeletons in chrome.
-24. [RIDGE-14 TestFlight submit](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) — Launch project.
-25. [RIDGE-15 Play internal or closed test](https://linear.app/dm-studios/issue/RIDGE-15/play-internal-or-closed-test-upload-of-the-tenant-and-field-app) — Launch project.
+24. [RIDGE-40 Staff can open a field worker and see the jobs assigned to them](https://linear.app/dm-studios/issue/RIDGE-40/staff-can-open-a-field-worker-and-see-the-jobs-assigned-to-them) — Staff portfolio. Design not locked.
+25. [RIDGE-41 Staff repairs list shows who each job is assigned to](https://linear.app/dm-studios/issue/RIDGE-41/staff-repairs-list-shows-who-each-job-is-assigned-to) — Work orders. Design: `exports/web/staff/repair-list.html`.
+26. [RIDGE-44 Tenant open does not flash the field Jobs screen](https://linear.app/dm-studios/issue/RIDGE-44/tenant-open-does-not-flash-the-field-jobs-screen) — Auth. Mobile.
+27. [RIDGE-42 Tenant rent shows a recorded partial](https://linear.app/dm-studios/issue/RIDGE-42/tenant-phone-and-website-rent-show-what-a-partial-payment-received-and) — Rent. Design: `exports/mobile/tenant/rent.html`, `exports/web/tenant/rent.html`.
+28. [RIDGE-43 Phone loading skeletons match the screen they stand in for](https://linear.app/dm-studios/issue/RIDGE-43/phone-loading-skeletons-match-the-screen-they-stand-in-for) — Launch. Mobile.
+29. [RIDGE-14 TestFlight submit](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app) — Launch project.
+30. [RIDGE-15 Play internal or closed test](https://linear.app/dm-studios/issue/RIDGE-15/play-internal-or-closed-test-upload-of-the-tenant-and-field-app) — Launch project.
 
 ---
 

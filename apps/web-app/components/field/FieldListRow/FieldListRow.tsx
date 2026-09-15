@@ -25,7 +25,7 @@ const FieldListRow: React.FC<FieldListRowProps> = ({
       <Table.Td className={NAME_TD}>
         <Anchor
           component={Link}
-          href={`/field/${profileId}/edit`}
+          href={`/field/${profileId}`}
           underline="never"
           className="font-bold text-darkGrey"
         >

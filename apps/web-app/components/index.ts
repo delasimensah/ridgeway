@@ -93,6 +93,7 @@ export { default as OwnerRentPage } from "./pages/OwnerRentPage/OwnerRentPage";
 export { default as SignInPage } from "./pages/SignInPage/SignInPage";
 export { default as StaffBuildingsPage } from "./pages/StaffBuildingsPage/StaffBuildingsPage";
 export { default as StaffFieldPage } from "./pages/StaffFieldPage/StaffFieldPage";
+export { default as StaffFieldWorkerPage } from "./pages/StaffFieldWorkerPage/StaffFieldWorkerPage";
 export { default as StaffHomePage } from "./pages/StaffHomePage/StaffHomePage";
 export { default as StaffOfficePage } from "./pages/StaffOfficePage/StaffOfficePage";
 export { default as StaffOwnerPage } from "./pages/StaffOwnerPage/StaffOwnerPage";

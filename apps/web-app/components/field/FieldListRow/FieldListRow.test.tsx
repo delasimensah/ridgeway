@@ -6,7 +6,7 @@ import { render } from "@/test-utils";
 import FieldListRow from "./FieldListRow";
 
 describe("FieldListRow", () => {
-  it("shows login and opens the edit form", () => {
+  it("shows login and opens the field worker", () => {
     render(
       <Table>
         <Table.Tbody>
@@ -22,7 +22,7 @@ describe("FieldListRow", () => {
 
     expect(screen.getByRole("link", { name: "Yaw Darko" })).toHaveAttribute(
       "href",
-      "/field/profile-1/edit"
+      "/field/profile-1"
     );
     expect(screen.getByText("yaw.darko@ridgeway.gh")).toBeInTheDocument();
     expect(screen.getByText("Yes")).toBeInTheDocument();

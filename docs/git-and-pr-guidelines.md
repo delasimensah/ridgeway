@@ -57,6 +57,8 @@ When an AI agent is doing the work: branch, implement, and run checks. Then stop
 
 When this message asks to open a PR: local `yarn lint`, `yarn format:check`, `yarn type-check`, and `yarn test:ci` first, then commit, push, and create the PR. Do not wait on GitHub Actions. If a test is too slow for the default 5s timeout, rewrite the test.
 
+Quality checks and `yarn test:ci` do not run on pull requests. Run them locally. GitHub Actions on a pull request only checks the title and Why / What / How / Testing sections. Tests and lint can be started by hand from the Actions tab (`workflow_dispatch`).
+
 ## STATUS.md in a feature pull request
 
 Write `STATUS.md` as the state after this pull request merges: this ticket Done, next ticket named. Do not write “not merged” or “review this branch.” When you open the pull request, add its URL to STATUS Pointers on the same branch before you stop.
@@ -127,7 +129,7 @@ TICKET-123 Brief description of what the PR accomplishes
 
 1. Local `yarn lint`, `yarn format:check`, `yarn type-check`, and `yarn test:ci` already passed before the PR was opened
 2. Merge your PR
-3. Merge Protection deletes the feature branch after a successful merge
+3. Merge Protection deletes the feature branch after a successful merge. It does not post a comment.
 
 ## 🔄 Merge Conflict Resolution
 

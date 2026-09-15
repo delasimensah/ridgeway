@@ -370,6 +370,74 @@ describe("workOrders", () => {
     expect(doneList.map((row) => row._id)).toEqual([workOrderId]);
   });
 
+  it("lets staff list open jobs for one field worker", async () => {
+    const t = makeBackend();
+    const { staff, tenantUserId, unitId } = await seedCurrentTenant(t);
+    const yaw = await insertPerson(t, {
+      email: "yaw.darko@ridgeway.gh",
+      displayName: "Yaw Darko",
+      role: "field",
+    });
+    const esi = await insertPerson(t, {
+      email: "esi.mensah@ridgeway.gh",
+      displayName: "Esi Mensah",
+      role: "field",
+    });
+    const workOrderId = await asUser(t, tenantUserId).mutation(
+      api.workOrders.createByTenant,
+      {
+        unitId,
+        description: "Kitchen tap leak",
+        category: "plumbing",
+        urgency: "normal",
+      }
+    );
+
+    await asUser(t, staff.userId).mutation(api.workOrders.assign, {
+      workOrderId,
+      assigneeProfileId: yaw.profileId,
+    });
+
+    const yawJobs = await asUser(t, staff.userId).query(
+      api.workOrders.listForAssignee,
+      { profileId: yaw.profileId }
+    );
+    expect(yawJobs).toEqual([
+      expect.objectContaining({
+        _id: workOrderId,
+        title: "Kitchen tap leak",
+        status: "assigned",
+        assigneeName: "Yaw Darko",
+      }),
+    ]);
+
+    const esiJobs = await asUser(t, staff.userId).query(
+      api.workOrders.listForAssignee,
+      { profileId: esi.profileId }
+    );
+    expect(esiJobs).toEqual([]);
+
+    const staffList = await asUser(t, staff.userId).query(
+      api.workOrders.listForStaff,
+      {}
+    );
+    expect(staffList).toEqual([
+      expect.objectContaining({
+        _id: workOrderId,
+        assigneeName: "Yaw Darko",
+      }),
+    ]);
+
+    try {
+      await asUser(t, yaw.userId).query(api.workOrders.listForAssignee, {
+        profileId: yaw.profileId,
+      });
+      throw new Error("expected listForAssignee to refuse");
+    } catch (error) {
+      expect(errorCode(error)).toBe("NOT_PERMITTED");
+    }
+  });
+
   it("refuses jumping to done before the ticket is scheduled", async () => {
     const t = makeBackend();
     const { staff, tenantUserId, unitId } = await seedCurrentTenant(t);
