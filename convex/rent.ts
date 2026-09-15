@@ -408,7 +408,13 @@ export const listForCurrentTenant = authedQuery({
   },
 });
 
-export const listByBuilding = staffQuery({
+function requireStaffOrOwner(viewer: { isStaff: boolean; ownerId: unknown }) {
+  if (!viewer.isStaff && viewer.ownerId === null) {
+    raise(ERROR_CODES.NOT_PERMITTED);
+  }
+}
+
+export const listByBuilding = authedQuery({
   args: {
     buildingId: v.id("buildings"),
     paginationOpts: paginationOptsValidator,
@@ -426,6 +432,7 @@ export const listByBuilding = staffQuery({
     earliestPeriodLabel: v.union(v.string(), v.null()),
   }),
   handler: async (ctx, args) => {
+    requireStaffOrOwner(ctx.viewer);
     const building = await requireBuildingAccess(
       ctx,
       ctx.viewer,
@@ -541,6 +548,95 @@ export const listForStaff = staffQuery({
         confirmedStatus: row.period.confirmedStatus,
         dueOn: row.period.dueOn,
       })),
+    };
+  },
+});
+
+export const summaryForOwner = authedQuery({
+  args: {},
+  returns: v.object({
+    serverNow: v.number(),
+    periodLabel: v.string(),
+    collected: v.number(),
+    outstanding: v.number(),
+    currency,
+    buildings: v.array(
+      v.object({
+        buildingId: v.id("buildings"),
+        name: v.string(),
+        address: v.string(),
+        collected: v.number(),
+        outstanding: v.number(),
+      })
+    ),
+  }),
+  handler: async (ctx) => {
+    const ownerId = ctx.viewer.ownerId;
+    if (ownerId === null) {
+      raise(ERROR_CODES.NOT_PERMITTED);
+    }
+
+    const buildings = await ctx.db
+      .query("buildings")
+      .withIndex("by_ownerId", (q) => q.eq("ownerId", ownerId))
+      .collect();
+    buildings.sort((left, right) => left.name.localeCompare(right.name));
+
+    const serverNow = Date.now();
+    const currentMonth = monthLabelFromMillis(serverNow);
+    const { bundles, earliestPeriodLabel } = await currentLeaseRentBundles(
+      ctx,
+      buildings,
+      utcToday()
+    );
+    const periodLabel = clampPeriodLabel(
+      undefined,
+      currentMonth,
+      earliestPeriodLabel
+    );
+    const enriched = enrichBundlesForMonth(bundles, periodLabel);
+    const totals = totalsForMonth(
+      enriched.map((row) => row.period),
+      periodLabel
+    );
+
+    const moneyByBuilding = new Map<
+      Id<"buildings">,
+      { collected: number; outstanding: number }
+    >();
+    for (const building of buildings) {
+      moneyByBuilding.set(building._id, { collected: 0, outstanding: 0 });
+    }
+    for (const row of enriched) {
+      const current = moneyByBuilding.get(row.buildingId) ?? {
+        collected: 0,
+        outstanding: 0,
+      };
+      const piece = totalsForMonth([row.period], periodLabel);
+      current.collected += piece.collected;
+      current.outstanding += piece.outstanding;
+      moneyByBuilding.set(row.buildingId, current);
+    }
+
+    return {
+      serverNow,
+      periodLabel,
+      collected: totals.collected,
+      outstanding: totals.outstanding,
+      currency: totals.currency,
+      buildings: buildings.map((building) => {
+        const money = moneyByBuilding.get(building._id) ?? {
+          collected: 0,
+          outstanding: 0,
+        };
+        return {
+          buildingId: building._id,
+          name: building.name,
+          address: building.address,
+          collected: money.collected,
+          outstanding: money.outstanding,
+        };
+      }),
     };
   },
 });

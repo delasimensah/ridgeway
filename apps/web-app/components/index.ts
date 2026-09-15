@@ -79,6 +79,10 @@ export { default as BuildingDetailPage } from "./pages/BuildingDetailPage/Buildi
 export { default as FileRepairPage } from "./pages/FileRepairPage/FileRepairPage";
 export { default as NotAllowedPage } from "./pages/NotAllowedPage/NotAllowedPage";
 export { default as OwnerHomePage } from "./pages/OwnerHomePage/OwnerHomePage";
+export { default as OwnerBuildingsPage } from "./pages/OwnerBuildingsPage/OwnerBuildingsPage";
+export { default as OwnerBuildingSnapshotPage } from "./pages/OwnerBuildingSnapshotPage/OwnerBuildingSnapshotPage";
+export { default as OwnerIssuesPage } from "./pages/OwnerIssuesPage/OwnerIssuesPage";
+export { default as OwnerRentPage } from "./pages/OwnerRentPage/OwnerRentPage";
 export { default as SignInPage } from "./pages/SignInPage/SignInPage";
 export { default as StaffBuildingsPage } from "./pages/StaffBuildingsPage/StaffBuildingsPage";
 export { default as StaffFieldPage } from "./pages/StaffFieldPage/StaffFieldPage";

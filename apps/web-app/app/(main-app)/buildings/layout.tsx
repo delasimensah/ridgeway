@@ -1,9 +1,7 @@
 "use client";
 
-import { StaffGate } from "@/components";
-
-const StaffOnlyLayout = ({ children }: { children: React.ReactNode }) => {
-  return <StaffGate>{() => children}</StaffGate>;
+const BuildingsLayout = ({ children }: { children: React.ReactNode }) => {
+  return children;
 };
 
-export default StaffOnlyLayout;
+export default BuildingsLayout;
