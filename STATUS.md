@@ -93,6 +93,7 @@ Start [RIDGE-43](https://linear.app/dm-studios/issue/RIDGE-43/phone-loading-skel
 - RIDGE-12 PR (merged): https://github.com/delasimensah/ridgeway/pull/28
 - RIDGE-40 PR (merged): https://github.com/delasimensah/ridgeway/pull/29
 - RIDGE-44 PR (merged): https://github.com/delasimensah/ridgeway/pull/30
+- RIDGE-42 PR: https://github.com/delasimensah/ridgeway/pull/31
 - Product requirements: `docs/product/product-requirements.md`
 - Linear tickets: `docs/product/linear-tickets.md`
 - Screen design: `docs/ui-design/ridgeway/`
