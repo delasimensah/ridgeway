@@ -17,6 +17,7 @@ describe("TenantRentScreen", () => {
             currency: "GHS",
             dueOn: "2026-09-05",
             confirmedStatus: "unpaid",
+            confirmedAmount: null,
             tenantReportedAt: null,
           },
           {
@@ -26,6 +27,7 @@ describe("TenantRentScreen", () => {
             currency: "GHS",
             dueOn: "2026-08-05",
             confirmedStatus: "paid",
+            confirmedAmount: 450000,
             tenantReportedAt: Date.UTC(2026, 7, 2),
           },
         ]}

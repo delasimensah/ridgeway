@@ -7,6 +7,7 @@ import {
   formatDateString,
   formatMoney,
   formatPeriodLabel,
+  formatRentPartialLine,
   getRentDisplayStatus,
   type RentConfirmedStatus,
 } from "shared";
@@ -20,6 +21,7 @@ interface TenantRentInvoiceRowProps {
   currency: Currency;
   dueOn: string;
   confirmedStatus: RentConfirmedStatus;
+  confirmedAmount: number | null;
   tenantReportedAt: number | null;
   serverNow: number;
   isReporting?: boolean;
@@ -32,13 +34,16 @@ const TenantRentInvoiceRow: React.FC<TenantRentInvoiceRowProps> = ({
   currency,
   dueOn,
   confirmedStatus,
+  confirmedAmount,
   tenantReportedAt,
   serverNow,
   isReporting = false,
   onReport,
 }) => {
   const status = getRentDisplayStatus({ confirmedStatus, dueOn }, serverNow);
-  const canReport = confirmedStatus !== "paid" && tenantReportedAt === null;
+  const canReport = confirmedStatus === "unpaid" && tenantReportedAt === null;
+  const awaitingStaff =
+    confirmedStatus === "unpaid" && tenantReportedAt !== null;
 
   return (
     <Box className="flex flex-col gap-4 rounded-[8px] border border-border bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
@@ -58,6 +63,11 @@ const TenantRentInvoiceRow: React.FC<TenantRentInvoiceRowProps> = ({
           <Text className="text-lg font-bold text-darkGrey">
             {formatMoney(amount, currency)}
           </Text>
+          {confirmedStatus === "partial" ? (
+            <Text className="mt-1 text-sm text-grey">
+              {formatRentPartialLine(amount, confirmedAmount, currency)}
+            </Text>
+          ) : null}
         </Box>
         <Box>
           <Text className="mb-1 text-[12px] font-bold uppercase tracking-wider text-grey">
@@ -78,7 +88,7 @@ const TenantRentInvoiceRow: React.FC<TenantRentInvoiceRowProps> = ({
           >
             I have paid
           </Button>
-        ) : tenantReportedAt !== null && confirmedStatus !== "paid" ? (
+        ) : awaitingStaff ? (
           <Text className="text-sm font-medium text-grey">Reported</Text>
         ) : null}
       </Box>

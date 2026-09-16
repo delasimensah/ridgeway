@@ -29,6 +29,7 @@ export {
   formatMoney,
   formatMonthName,
   formatPeriodLabel,
+  formatRentPartialLine,
   fromSmallestUnit,
   getRentDisplayStatus,
   periodLabelForYear,

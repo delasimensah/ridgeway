@@ -7,6 +7,7 @@ import {
   formatDate,
   formatDateString,
   formatMoney,
+  formatRentPartialLine,
   getRentDisplayStatus,
   type RentConfirmedStatus,
 } from "shared";
@@ -53,8 +54,6 @@ const StaffRentRow: React.FC<StaffRentRowProps> = ({
   onRequestPartial,
 }) => {
   const status = getRentDisplayStatus({ confirmedStatus, dueOn }, serverNow);
-  const outstanding =
-    confirmedStatus === "partial" ? amount - (confirmedAmount ?? 0) : 0;
   const isAwaitingConfirmation =
     tenantReportedAt !== null && confirmedStatus !== "paid";
 
@@ -71,7 +70,7 @@ const StaffRentRow: React.FC<StaffRentRowProps> = ({
         </Text>
         {confirmedStatus === "partial" ? (
           <Text className="mt-1 text-[13px] text-grey">
-            {`${formatMoney(confirmedAmount ?? 0, currency)} received · ${formatMoney(outstanding, currency)} still owed`}
+            {formatRentPartialLine(amount, confirmedAmount, currency)}
           </Text>
         ) : null}
         {arrears > 0 ? (

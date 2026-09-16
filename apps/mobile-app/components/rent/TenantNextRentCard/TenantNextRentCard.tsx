@@ -3,6 +3,7 @@ import {
   type Currency,
   formatDateString,
   formatMoney,
+  formatRentPartialLine,
   getRentDisplayStatus,
   type RentConfirmedStatus,
 } from "shared";
@@ -17,6 +18,7 @@ interface TenantNextRentCardProps {
   currency: Currency;
   dueOn: string;
   confirmedStatus: RentConfirmedStatus;
+  confirmedAmount?: number | null;
   serverNow: number;
   onManageRent: () => void;
 }
@@ -26,6 +28,7 @@ const TenantNextRentCard: React.FC<TenantNextRentCardProps> = ({
   currency,
   dueOn,
   confirmedStatus,
+  confirmedAmount = null,
   serverNow,
   onManageRent,
 }) => {
@@ -48,6 +51,11 @@ const TenantNextRentCard: React.FC<TenantNextRentCardProps> = ({
       <Text className="text-sm text-grey">
         Due {formatDateString(dueOn, "d MMM yyyy")}
       </Text>
+      {confirmedStatus === "partial" ? (
+        <Text className="text-sm text-grey">
+          {formatRentPartialLine(amount, confirmedAmount, currency)}
+        </Text>
+      ) : null}
       <Button text="Manage Rent" fullWidth onPress={onManageRent} />
     </VStack>
   );

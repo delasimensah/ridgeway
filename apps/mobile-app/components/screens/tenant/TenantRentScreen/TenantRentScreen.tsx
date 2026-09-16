@@ -15,6 +15,7 @@ export interface TenantRentPeriod {
   currency: Currency;
   dueOn: string;
   confirmedStatus: RentConfirmedStatus;
+  confirmedAmount: number | null;
   tenantReportedAt: number | null;
 }
 
@@ -57,6 +58,7 @@ const TenantRentScreen: React.FC<TenantRentScreenProps> = ({
                 currency={period.currency}
                 dueOn={period.dueOn}
                 confirmedStatus={period.confirmedStatus}
+                confirmedAmount={period.confirmedAmount}
                 tenantReportedAt={period.tenantReportedAt}
                 serverNow={serverNow}
                 isReporting={reportingPeriodId === period._id}

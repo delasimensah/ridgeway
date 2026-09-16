@@ -46,11 +46,11 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-40](https://linear.app/dm-studios/issue/RIDGE-40/staff-can-open-a-field-worker-and-see-the-jobs-assigned-to-them) is **Done**.
 - [RIDGE-41](https://linear.app/dm-studios/issue/RIDGE-41/staff-repairs-list-shows-who-each-job-is-assigned-to) is **Done**.
 - [RIDGE-44](https://linear.app/dm-studios/issue/RIDGE-44/tenant-open-does-not-flash-the-field-jobs-screen) is **Done**.
+- [RIDGE-42](https://linear.app/dm-studios/issue/RIDGE-42/tenant-phone-and-website-rent-show-what-a-partial-payment-received-and) is **Done**.
 - [RIDGE-43](https://linear.app/dm-studios/issue/RIDGE-43/phone-loading-skeletons-match-the-screen-they-stand-in-for) is **Done**.
-- [RIDGE-42](https://linear.app/dm-studios/issue/RIDGE-42/tenant-phone-and-website-rent-show-what-a-partial-payment-received-and) is **Todo**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
-- Next slice is [RIDGE-42](https://linear.app/dm-studios/issue/RIDGE-42/tenant-phone-and-website-rent-show-what-a-partial-payment-received-and), then [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app).
-- [RIDGE-19](https://linear.app/dm-studios/issue/RIDGE-19/epic-auth), [RIDGE-20](https://linear.app/dm-studios/issue/RIDGE-20/epic-staff-portfolio), [RIDGE-21](https://linear.app/dm-studios/issue/RIDGE-21/epic-owner-isolation), and [RIDGE-22](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders) are **Done**. [RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status) is **Todo** (RIDGE-42).
+- Next slice is [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app).
+- [RIDGE-19](https://linear.app/dm-studios/issue/RIDGE-19/epic-auth), [RIDGE-20](https://linear.app/dm-studios/issue/RIDGE-20/epic-staff-portfolio), [RIDGE-21](https://linear.app/dm-studios/issue/RIDGE-21/epic-owner-isolation), [RIDGE-22](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders), and [RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status) are **Done**.
 - [RIDGE-24](https://linear.app/dm-studios/issue/RIDGE-24/epic-launch) stays **Todo** (RIDGE-14, RIDGE-15).
 - RIDGE-14 and RIDGE-15 are **Todo**.
 - RIDGE-16, RIDGE-17, RIDGE-18, and RIDGE-26 stay **Backlog** (after TestFlight / Play).

@@ -6,6 +6,7 @@ import {
   type Currency,
   formatDateString,
   formatMoney,
+  formatRentPartialLine,
   getRentDisplayStatus,
   type RentConfirmedStatus,
 } from "shared";
@@ -18,6 +19,7 @@ interface NextRentCardProps {
   currency: Currency;
   dueOn: string;
   confirmedStatus: RentConfirmedStatus;
+  confirmedAmount?: number | null;
   serverNow: number;
 }
 
@@ -26,6 +28,7 @@ const NextRentCard: React.FC<NextRentCardProps> = ({
   currency,
   dueOn,
   confirmedStatus,
+  confirmedAmount = null,
   serverNow,
 }) => {
   const status = getRentDisplayStatus({ confirmedStatus, dueOn }, serverNow);
@@ -40,6 +43,11 @@ const NextRentCard: React.FC<NextRentCardProps> = ({
           <Text className="text-sm text-grey">
             Due {formatDateString(dueOn, "d MMM yyyy")}
           </Text>
+          {confirmedStatus === "partial" ? (
+            <Text className="mt-1 text-sm text-grey">
+              {formatRentPartialLine(amount, confirmedAmount, currency)}
+            </Text>
+          ) : null}
         </Box>
         <RentStatusBadge status={status} />
       </Box>
