@@ -49,6 +49,16 @@ export function formatMoney(amount: number, currency: Currency): string {
   return `${currencySymbol(currency)} ${formatted}`;
 }
 
+export function formatRentPartialLine(
+  amount: number,
+  confirmedAmount: number | null | undefined,
+  currency: Currency
+): string {
+  const received = confirmedAmount ?? 0;
+  const owed = Math.max(amount - received, 0);
+  return `${formatMoney(received, currency)} received · ${formatMoney(owed, currency)} still owed`;
+}
+
 /** Whole cedis or dollars → pesewas or cents. GH₵ 4,500 → 450000. */
 export function toSmallestUnit(major: number): number {
   return Math.round(major * 100);

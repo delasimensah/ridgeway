@@ -25,6 +25,7 @@ export interface TenantRentPeriod {
   currency: Currency;
   dueOn: string;
   confirmedStatus: RentConfirmedStatus;
+  confirmedAmount: number | null;
   tenantReportedAt: number | null;
 }
 
@@ -51,6 +52,9 @@ const TenantRentPage: React.FC<TenantRentPageProps> = ({
 }) => {
   const open = periods.filter((period) => period.confirmedStatus !== "paid");
   const history = periods.filter((period) => period.confirmedStatus === "paid");
+  const showReportingNote = periods.some(
+    (period) => period.confirmedStatus === "unpaid"
+  );
 
   return (
     <Box className="mx-auto w-full max-w-[800px] px-4 py-8 sm:px-6 sm:py-12">
@@ -111,6 +115,7 @@ const TenantRentPage: React.FC<TenantRentPageProps> = ({
                     currency={period.currency}
                     dueOn={period.dueOn}
                     confirmedStatus={period.confirmedStatus}
+                    confirmedAmount={period.confirmedAmount}
                     tenantReportedAt={period.tenantReportedAt}
                     serverNow={serverNow}
                     isReporting={reportingPeriodId === period._id}
@@ -118,7 +123,9 @@ const TenantRentPage: React.FC<TenantRentPageProps> = ({
                   />
                 ))
               : null}
-            {loadState === "ready" ? <RentReportingNote /> : null}
+            {loadState === "ready" && showReportingNote ? (
+              <RentReportingNote />
+            ) : null}
           </Box>
           {loadState === "ready" && history.length > 0 ? (
             <Box component="section" className="mt-12">

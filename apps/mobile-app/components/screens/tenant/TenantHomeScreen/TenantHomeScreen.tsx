@@ -16,6 +16,7 @@ interface TenantHomeNextRent {
   currency: Currency;
   dueOn: string;
   confirmedStatus: RentConfirmedStatus;
+  confirmedAmount?: number | null;
 }
 
 interface TenantHomeScreenProps {
@@ -73,6 +74,7 @@ const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
               currency={nextRent.currency}
               dueOn={nextRent.dueOn}
               confirmedStatus={nextRent.confirmedStatus}
+              confirmedAmount={nextRent.confirmedAmount}
               serverNow={serverNow}
               onManageRent={onManageRent}
             />

@@ -4,6 +4,7 @@ import {
   formatDateString,
   formatMoney,
   formatPeriodLabel,
+  formatRentPartialLine,
   getRentDisplayStatus,
   type RentConfirmedStatus,
 } from "shared";
@@ -19,6 +20,7 @@ interface TenantRentInvoiceCardProps {
   currency: Currency;
   dueOn: string;
   confirmedStatus: RentConfirmedStatus;
+  confirmedAmount: number | null;
   tenantReportedAt: number | null;
   serverNow: number;
   isReporting?: boolean;
@@ -31,13 +33,16 @@ const TenantRentInvoiceCard: React.FC<TenantRentInvoiceCardProps> = ({
   currency,
   dueOn,
   confirmedStatus,
+  confirmedAmount,
   tenantReportedAt,
   serverNow,
   isReporting = false,
   onReport,
 }) => {
   const status = getRentDisplayStatus({ confirmedStatus, dueOn }, serverNow);
-  const canReport = confirmedStatus !== "paid" && tenantReportedAt === null;
+  const canReport = confirmedStatus === "unpaid" && tenantReportedAt === null;
+  const awaitingStaff =
+    confirmedStatus === "unpaid" && tenantReportedAt !== null;
 
   return (
     <VStack
@@ -65,6 +70,11 @@ const TenantRentInvoiceCard: React.FC<TenantRentInvoiceCardProps> = ({
           {formatMoney(amount, currency)}
         </Text>
       </HStack>
+      {confirmedStatus === "partial" ? (
+        <Text className="text-sm text-grey">
+          {formatRentPartialLine(amount, confirmedAmount, currency)}
+        </Text>
+      ) : null}
       {canReport ? (
         <VStack spacing="sm">
           <Button
@@ -78,7 +88,7 @@ const TenantRentInvoiceCard: React.FC<TenantRentInvoiceCardProps> = ({
             Note: Ridgeway staff still confirm all payments manually.
           </Text>
         </VStack>
-      ) : tenantReportedAt !== null && confirmedStatus !== "paid" ? (
+      ) : awaitingStaff ? (
         <Text className="text-center font-app-medium text-sm text-grey">
           Reported. Ridgeway staff still confirm this.
         </Text>
