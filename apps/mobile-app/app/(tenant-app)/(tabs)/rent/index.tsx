@@ -9,6 +9,7 @@ import {
   NotPermittedGate,
   QueryPageStatus,
   TenantRentScreen,
+  TenantRentScreenSkeleton,
 } from "@/components";
 import { useFieldSession, useRetryKey } from "@/hooks";
 import { getConvexErrorMessage, showErrorToast } from "@/utils";
@@ -36,6 +37,7 @@ const TenantRentRouteBody = ({ onRetry }: { onRetry: () => void }) => {
         loadState={queries.length === 0 ? "loading" : screenLoadState(queries)}
         onRetry={onRetry}
         failedTitle="Couldn't load rent."
+        skeleton={<TenantRentScreenSkeleton />}
       >
         <TenantRentScreen
           periods={rent.data?.periods ?? []}

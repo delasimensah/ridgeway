@@ -7,6 +7,7 @@ import {
   NotPermittedGate,
   QueryPageStatus,
   TenantHomeScreen,
+  TenantHomeScreenSkeleton,
 } from "@/components";
 import { useFieldSession, useRetryKey } from "@/hooks";
 
@@ -36,6 +37,7 @@ const TenantHomeRouteBody = ({ onRetry }: { onRetry: () => void }) => {
         loadState={currentLease === null ? "loading" : screenLoadState(queries)}
         onRetry={onRetry}
         failedTitle="Couldn't load home."
+        skeleton={<TenantHomeScreenSkeleton />}
       >
         {currentLease !== null ? (
           <TenantHomeScreen

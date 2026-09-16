@@ -1,19 +1,22 @@
 import { render, screen } from "@testing-library/react-native";
 
+import TenantHomeScreenSkeleton from "../../screens/tenant/TenantHomeScreen/TenantHomeScreenSkeleton";
 import QueryPageStatus from "./QueryPageStatus";
 
 describe("QueryPageStatus", () => {
-  it("shows a skeleton while the page loads", () => {
+  it("shows a tenant home skeleton while that page loads", () => {
     render(
       <QueryPageStatus
         loadState="loading"
         failedTitle="Couldn't load this page."
+        skeleton={<TenantHomeScreenSkeleton />}
       >
-        Form
+        Home
       </QueryPageStatus>
     );
 
-    expect(screen.getByLabelText("Loading page")).toBeTruthy();
-    expect(screen.queryByText("Form")).toBeNull();
+    expect(screen.getByLabelText("Loading home")).toBeTruthy();
+    expect(screen.queryByLabelText("Loading page")).toBeNull();
+    expect(screen.queryByText("Home")).toBeNull();
   });
 });

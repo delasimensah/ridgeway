@@ -7,6 +7,7 @@ import {
   NotPermittedGate,
   QueryPageStatus,
   TenantRepairsScreen,
+  TenantRepairsScreenSkeleton,
 } from "@/components";
 import { useFieldSession, useRetryKey } from "@/hooks";
 
@@ -29,6 +30,7 @@ const TenantRepairsRouteBody = ({ onRetry }: { onRetry: () => void }) => {
         loadState={queries.length === 0 ? "loading" : screenLoadState(queries)}
         onRetry={onRetry}
         failedTitle="Couldn't load repairs."
+        skeleton={<TenantRepairsScreenSkeleton />}
       >
         <TenantRepairsScreen
           repairs={repairs.data ?? []}

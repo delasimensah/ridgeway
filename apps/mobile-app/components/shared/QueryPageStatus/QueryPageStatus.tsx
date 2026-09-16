@@ -9,6 +9,7 @@ interface QueryPageStatusProps {
   onRetry?: () => void;
   failedTitle: string;
   children: React.ReactNode;
+  skeleton?: React.ReactNode;
 }
 
 const QueryPageStatus: React.FC<QueryPageStatusProps> = ({
@@ -16,9 +17,10 @@ const QueryPageStatus: React.FC<QueryPageStatusProps> = ({
   onRetry,
   failedTitle,
   children,
+  skeleton,
 }) => {
   if (loadState === "loading") {
-    return <PageContentSkeleton />;
+    return skeleton ?? <PageContentSkeleton />;
   }
 
   if (loadState === "failed") {
