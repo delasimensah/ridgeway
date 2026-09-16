@@ -9,6 +9,7 @@ import {
   NotPermittedGate,
   QueryPageStatus,
   TenantRepairTimelineScreen,
+  TenantRepairTimelineScreenSkeleton,
 } from "@/components";
 import { useRetryKey } from "@/hooks";
 
@@ -45,6 +46,7 @@ const TenantRepairTimelineRouteBody = ({
         }
         onRetry={onRetry}
         failedTitle="Couldn't load this repair."
+        skeleton={<TenantRepairTimelineScreenSkeleton />}
       >
         {ticket.data ? (
           <TenantRepairTimelineScreen
