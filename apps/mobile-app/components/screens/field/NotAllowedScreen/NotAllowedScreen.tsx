@@ -2,6 +2,7 @@ import React from "react";
 
 import { useAppInsets } from "@/hooks";
 
+import BrandMark from "../../../ui/BrandMark/BrandMark";
 import Button from "../../../ui/Button/Button";
 import { VStack } from "../../../ui/Stack/Stack";
 import Text from "../../../ui/Text/Text";
@@ -26,7 +27,10 @@ const NotAllowedScreen: React.FC<NotAllowedScreenProps> = ({
       className="flex-1 bg-white"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
     >
-      <Text className="font-app-bold text-2xl text-darkGrey">Ridgeway</Text>
+      <BrandMark
+        size="page"
+        textClassName="font-app-bold text-2xl text-darkGrey"
+      />
       <VStack spacing="sm" align="center">
         <Text className="text-center font-app-bold text-xl text-darkGrey">
           You don’t have permission to see this page.

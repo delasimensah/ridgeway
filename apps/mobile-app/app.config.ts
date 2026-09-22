@@ -2,7 +2,8 @@ import type { ConfigContext, ExpoConfig } from "expo/config";
 
 const ASSET_PATHS = {
   appIcon: "./assets/icons/icon.png",
-  appIconForeground: "./assets/icons/icon-foreground.png",
+  /** Android adaptive foreground — safe-zone padded; not the full-bleed mark. */
+  androidAdaptiveIcon: "./assets/icons/adaptive-icon.png",
   /** iOS Liquid Glass (Icon Composer). Older iOS falls back automatically. */
   appIconIos: "./assets/icons/ridgeway.icon",
   splashIcon: "./assets/icons/splash-icon.png",
@@ -59,7 +60,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ...config.android,
     package: getUniqueIdentifier(),
     adaptiveIcon: {
-      foregroundImage: ASSET_PATHS.appIconForeground,
+      foregroundImage: ASSET_PATHS.androidAdaptiveIcon,
       backgroundColor: BRAND_COLOR,
     },
     predictiveBackGestureEnabled: false,

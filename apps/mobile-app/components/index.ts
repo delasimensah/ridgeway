@@ -1,4 +1,5 @@
 export { HStack, VStack } from "./ui/Stack/Stack";
+export { default as BrandMark } from "./ui/BrandMark/BrandMark";
 export { default as ScrollableStack } from "./ui/ScrollableStack/ScrollableStack";
 export { default as SkeletonCard } from "./ui/SkeletonCard/SkeletonCard";
 export { default as Text } from "./ui/Text/Text";

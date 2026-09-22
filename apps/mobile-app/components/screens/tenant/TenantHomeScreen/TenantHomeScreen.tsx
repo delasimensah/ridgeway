@@ -6,6 +6,7 @@ import type { Currency, RentConfirmedStatus } from "shared";
 import TenantNextRentCard from "../../../rent/TenantNextRentCard/TenantNextRentCard";
 import type { TenantRepairCardItem } from "../../../repairs/TenantRepairCard/TenantRepairCard";
 import TenantRepairCard from "../../../repairs/TenantRepairCard/TenantRepairCard";
+import BrandMark from "../../../ui/BrandMark/BrandMark";
 import PersonAvatar from "../../../ui/PersonAvatar/PersonAvatar";
 import ScrollableStack from "../../../ui/ScrollableStack/ScrollableStack";
 import { HStack, VStack } from "../../../ui/Stack/Stack";
@@ -54,9 +55,10 @@ const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
     >
       <VStack spacing="sm" paddingX="md" className="pb-2 pt-3">
         <HStack align="center" justify="between">
-          <Text className="font-app-bold text-xl tracking-tight text-darkGrey">
-            Ridgeway
-          </Text>
+          <BrandMark
+            size="header"
+            textClassName="font-app-bold text-xl tracking-tight text-darkGrey"
+          />
           <PersonAvatar displayName={displayName} size={32} />
         </HStack>
         <VStack spacing="none">

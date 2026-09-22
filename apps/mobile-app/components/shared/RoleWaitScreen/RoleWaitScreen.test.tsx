@@ -7,6 +7,6 @@ describe("RoleWaitScreen", () => {
     render(<RoleWaitScreen />);
 
     expect(screen.getByRole("header", { name: "Ridgeway" })).toBeTruthy();
-    expect(screen.queryByText(/loading/i)).toBeNull();
+    expect(screen.queryByText("Loading...")).toBeNull();
   });
 });

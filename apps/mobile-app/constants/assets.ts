@@ -1,28 +1,17 @@
 /**
- * Asset Management for Mobile App
- *
- * All images, icons, videos, and sounds are defined here.
- * Use require() statements for React Native asset loading.
- *
- * Usage:
- * import { ASSETS } from "@/constants";
- * <Image source={ASSETS.icons.appIcon} />
+ * Asset paths for React Native. Use with expo-image / Image.
  */
 
 export const ASSETS = {
   icons: {
+    /** Transparent mark for in-app chrome. */
+    logo: require("../assets/icons/icon-foreground.png"),
+    /** Mark on gold — home screen / stores (non-adaptive). */
     appIcon: require("../assets/icons/icon.png"),
+    /** Android adaptive foreground — smaller safe-zone padding. */
+    adaptiveIcon: require("../assets/icons/adaptive-icon.png"),
   },
-  images: {
-    // Add your image assets here
-    // background: require("../assets/images/background.png"),
-  },
-  videos: {
-    // Add your video assets here
-    // promo: require("../assets/videos/promo.mp4"),
-  },
-  sounds: {
-    // Add your sound assets here
-    // notification: require("../assets/sounds/notification.wav"),
-  },
+  images: {},
+  videos: {},
+  sounds: {},
 } as const;
