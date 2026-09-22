@@ -1,3 +1,4 @@
+export { default as BrandMark } from "./ui/BrandMark/BrandMark";
 export { default as Heading } from "./ui/Heading/Heading";
 export { default as PersonAvatar } from "./ui/PersonAvatar/PersonAvatar";
 export { default as Skeleton } from "./ui/Skeleton/Skeleton";

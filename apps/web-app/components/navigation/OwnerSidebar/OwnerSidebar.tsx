@@ -12,7 +12,7 @@ import Link from "next/link";
 import React from "react";
 import { cn } from "shared";
 
-import Heading from "../../ui/Heading/Heading";
+import BrandMark from "../../ui/BrandMark/BrandMark";
 import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 import Text from "../../ui/Text/Text";
 
@@ -59,12 +59,10 @@ const OwnerSidebar: React.FC<OwnerSidebarProps> = ({
   return (
     <Box className="flex h-full w-full flex-col border-r border-border bg-sidebar">
       <Box className="p-6">
-        <Heading
-          variant="section"
-          className="mb-0 text-[24px] font-bold tracking-tight text-darkGrey"
-        >
-          Ridgeway
-        </Heading>
+        <BrandMark
+          size="nav"
+          headingClassName="mb-0 text-[24px] font-bold tracking-tight text-darkGrey"
+        />
       </Box>
       <Box component="nav" className="flex-1 space-y-1 px-4">
         {NAV_ITEMS.map((item) => {

@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 
 import { COLORS } from "@/constants";
 
-import Heading from "../../ui/Heading/Heading";
+import BrandMark from "../../ui/BrandMark/BrandMark";
 import StaffSidebar, { type StaffNavId } from "../StaffSidebar/StaffSidebar";
 
 interface StaffAppShellProps {
@@ -79,12 +79,10 @@ const StaffAppShell: React.FC<StaffAppShellProps> = ({
             color={COLORS.darkGrey}
             aria-label="Toggle navigation"
           />
-          <Heading
-            variant="section"
-            className="mb-0 text-[20px] font-bold tracking-tight text-darkGrey"
-          >
-            Ridgeway
-          </Heading>
+          <BrandMark
+            size="header"
+            headingClassName="mb-0 text-[20px] font-bold tracking-tight text-darkGrey"
+          />
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p={0} withBorder={false}>

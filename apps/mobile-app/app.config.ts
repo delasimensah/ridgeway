@@ -2,6 +2,9 @@ import type { ConfigContext, ExpoConfig } from "expo/config";
 
 const ASSET_PATHS = {
   appIcon: "./assets/icons/icon.png",
+  appIconForeground: "./assets/icons/icon-foreground.png",
+  /** iOS Liquid Glass (Icon Composer). Older iOS falls back automatically. */
+  appIconIos: "./assets/icons/ridgeway.icon",
   splashIcon: "./assets/icons/splash-icon.png",
 };
 
@@ -45,7 +48,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     ...config.ios,
     bundleIdentifier: getUniqueIdentifier(),
-    icon: ASSET_PATHS.appIcon,
+    icon: ASSET_PATHS.appIconIos,
     supportsTablet: true,
     infoPlist: {
       ...config.ios?.infoPlist,
@@ -56,7 +59,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ...config.android,
     package: getUniqueIdentifier(),
     adaptiveIcon: {
-      foregroundImage: ASSET_PATHS.appIcon,
+      foregroundImage: ASSET_PATHS.appIconForeground,
       backgroundColor: BRAND_COLOR,
     },
     predictiveBackGestureEnabled: false,
@@ -80,15 +83,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-splash-screen",
       {
-        ios: {
+        backgroundColor: BRAND_COLOR,
+        image: ASSET_PATHS.splashIcon,
+        imageWidth: 200,
+        resizeMode: "contain",
+        dark: {
           backgroundColor: BRAND_COLOR,
           image: ASSET_PATHS.splashIcon,
-          resizeMode: "cover",
-        },
-        android: {
-          backgroundColor: BRAND_COLOR,
-          image: ASSET_PATHS.splashIcon,
-          imageWidth: 150,
         },
       },
     ],

@@ -3,6 +3,7 @@
 import { Box, Button } from "@mantine/core";
 import React from "react";
 
+import BrandMark from "../../ui/BrandMark/BrandMark";
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
@@ -18,12 +19,11 @@ const NotAllowedPage: React.FC<NotAllowedPageProps> = ({
   return (
     <Box className="flex min-h-screen flex-col items-center justify-center bg-white p-6 text-center">
       <Box className="max-w-[480px]">
-        <Heading
-          variant="page"
-          className="mb-16 text-[32px] font-bold tracking-tight text-darkGrey"
-        >
-          Ridgeway
-        </Heading>
+        <BrandMark
+          size="page"
+          className="mb-16"
+          headingClassName="mb-0 text-[32px] font-bold tracking-tight text-darkGrey"
+        />
         <Heading
           variant="section"
           className="mb-6 text-[24px] font-bold leading-tight text-darkGrey sm:text-[28px]"

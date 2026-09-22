@@ -1,10 +1,9 @@
 "use client";
 
 import { Box, Button } from "@mantine/core";
-import Link from "next/link";
 import React from "react";
 
-import Heading from "../../ui/Heading/Heading";
+import BrandMark from "../../ui/BrandMark/BrandMark";
 import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 import Text from "../../ui/Text/Text";
 
@@ -27,14 +26,11 @@ const TenantAppShell: React.FC<TenantAppShellProps> = ({
         component="header"
         className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-border bg-white px-4 sm:h-16 sm:px-8"
       >
-        <Heading
-          variant="section"
-          className="mb-0 text-[20px] font-bold tracking-tight text-darkGrey"
-        >
-          <Box component={Link} href="/" className="text-inherit no-underline">
-            Ridgeway
-          </Box>
-        </Heading>
+        <BrandMark
+          size="header"
+          href="/"
+          headingClassName="mb-0 text-[20px] font-bold tracking-tight text-darkGrey"
+        />
         <Box className="flex items-center gap-3 sm:gap-6">
           <Box className="flex items-center gap-2">
             <PersonAvatar displayName={displayName} size={28} />

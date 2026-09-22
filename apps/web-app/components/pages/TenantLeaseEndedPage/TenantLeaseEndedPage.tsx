@@ -4,7 +4,7 @@ import { Box, Button, Stack } from "@mantine/core";
 import React from "react";
 
 import TenantLeaseEndedNotice from "../../tenants/TenantLeaseEndedNotice/TenantLeaseEndedNotice";
-import Heading from "../../ui/Heading/Heading";
+import BrandMark from "../../ui/BrandMark/BrandMark";
 import Text from "../../ui/Text/Text";
 
 interface TenantLeaseEndedPageProps {
@@ -29,12 +29,11 @@ const TenantLeaseEndedPage: React.FC<TenantLeaseEndedPageProps> = ({
         align="center"
         gap={0}
       >
-        <Heading
-          variant="page"
-          className="mb-12 text-[24px] font-bold tracking-tight text-darkGrey sm:mb-16"
-        >
-          Ridgeway
-        </Heading>
+        <BrandMark
+          size="page"
+          className="mb-12 sm:mb-16"
+          headingClassName="mb-0 text-[24px] font-bold tracking-tight text-darkGrey"
+        />
         <TenantLeaseEndedNotice
           unitLabel={unitLabel}
           buildingName={buildingName}
