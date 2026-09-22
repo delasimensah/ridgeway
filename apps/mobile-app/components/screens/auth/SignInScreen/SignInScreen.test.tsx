@@ -9,7 +9,8 @@ jest.mock("@convex-dev/auth/react", () => ({
 describe("SignInScreen", () => {
   it("shows the field and tenant sign-in copy", () => {
     render(<SignInScreen />);
-    expect(screen.getByText("Ridgeway")).toBeTruthy();
+    expect(screen.getByLabelText("Ridgeway")).toBeTruthy();
+    expect(screen.queryByText("Ridgeway")).toBeNull();
     expect(screen.getByText("Sign in")).toBeTruthy();
     expect(
       screen.getByText("Tenants and field staff use this app.")

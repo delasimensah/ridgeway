@@ -18,10 +18,7 @@ const TenantHomeScreenSkeleton: React.FC = () => {
     >
       <VStack spacing="sm" paddingX="md" className="pb-2 pt-3">
         <HStack align="center" justify="between">
-          <HStack align="center" spacing="sm">
-            <SkeletonCard width={24} height={24} radius={4} />
-            <SkeletonCard width={112} height={24} radius={4} />
-          </HStack>
+          <SkeletonCard width={24} height={24} radius={4} />
           <SkeletonCard width={32} height={32} radius={16} />
         </HStack>
         <SkeletonCard width={200} height={28} radius={4} mb={8} />

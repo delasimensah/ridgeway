@@ -1,7 +1,5 @@
 import React from "react";
 
-import { FONTS } from "@/constants";
-
 import SignInForm from "../../../auth/SignInForm/SignInForm";
 import BrandMark from "../../../ui/BrandMark/BrandMark";
 import KeyboardFormView from "../../../ui/KeyboardFormView/KeyboardFormView";
@@ -11,12 +9,8 @@ import Text from "../../../ui/Text/Text";
 const SignInScreen: React.FC = () => {
   return (
     <KeyboardFormView>
-      <VStack spacing="xl" className="w-full" align="center">
-        <BrandMark
-          size="page"
-          textClassName="text-center text-[32px] tracking-tight text-darkGrey"
-          textStyle={{ fontFamily: FONTS.black }}
-        />
+      <VStack spacing="xl" className="w-full">
+        <BrandMark size="page" showWordmark={false} className="self-center" />
         <SignInForm />
         <Text className="text-center text-[14px] text-grey">
           Tenants and field staff use this app.

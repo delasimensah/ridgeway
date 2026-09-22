@@ -21,7 +21,9 @@ const SIZE_CONFIG: Record<
 
 interface BrandMarkProps {
   size: BrandMarkSize;
-  textClassName: string;
+  /** When false, only the logo shows (still labeled Ridgeway for a11y). */
+  showWordmark?: boolean;
+  textClassName?: string;
   textStyle?: StyleProp<TextStyle>;
   className?: string;
   accessibilityRole?: AccessibilityRole;
@@ -29,6 +31,7 @@ interface BrandMarkProps {
 
 const BrandMark: React.FC<BrandMarkProps> = ({
   size,
+  showWordmark = true,
   textClassName,
   textStyle,
   className,
@@ -53,9 +56,11 @@ const BrandMark: React.FC<BrandMarkProps> = ({
         accessibilityElementsHidden
         importantForAccessibility="no"
       />
-      <Text className={textClassName} style={textStyle} accessible={false}>
-        Ridgeway
-      </Text>
+      {showWordmark ? (
+        <Text className={textClassName} style={textStyle} accessible={false}>
+          Ridgeway
+        </Text>
+      ) : null}
     </Stack>
   );
 };

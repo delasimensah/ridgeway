@@ -55,10 +55,7 @@ const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
     >
       <VStack spacing="sm" paddingX="md" className="pb-2 pt-3">
         <HStack align="center" justify="between">
-          <BrandMark
-            size="header"
-            textClassName="font-app-bold text-xl tracking-tight text-darkGrey"
-          />
+          <BrandMark size="header" showWordmark={false} />
           <PersonAvatar displayName={displayName} size={32} />
         </HStack>
         <VStack spacing="none">
