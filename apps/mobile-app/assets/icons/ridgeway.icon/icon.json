@@ -12,10 +12,7 @@
           "glass": true,
           "position": {
             "scale": 1,
-            "translation-in-points": [
-              0,
-              0
-            ]
+            "translation-in-points": [0, 0]
           }
         }
       ],

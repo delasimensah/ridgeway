@@ -5,6 +5,7 @@ import { type Currency, formatMoney, formatPeriodLabel } from "shared";
 import { COLORS } from "@/constants";
 
 import { HStack, VStack } from "../../ui/Stack/Stack";
+import SurfaceCard from "../../ui/SurfaceCard/SurfaceCard";
 import Text from "../../ui/Text/Text";
 
 interface TenantRentHistoryCardProps {
@@ -19,26 +20,30 @@ const TenantRentHistoryCard: React.FC<TenantRentHistoryCardProps> = ({
   currency,
 }) => {
   return (
-    <HStack
-      align="center"
-      justify="between"
-      className="rounded-lg border border-border bg-white p-4"
-    >
-      <VStack spacing="none">
-        <Text className="font-app-bold text-[15px] text-darkGrey">
-          {formatPeriodLabel(periodLabel)}
-        </Text>
-      </VStack>
-      <VStack spacing="none" align="end">
-        <Text className="font-app-bold text-[15px] text-darkGrey">
-          {formatMoney(amount, currency)}
-        </Text>
-        <HStack spacing="xs" align="center">
-          <Ionicons name="checkmark-circle" size={10} color={COLORS.darkGrey} />
-          <Text className="font-app-bold text-[12px] text-darkGrey">Done</Text>
-        </HStack>
-      </VStack>
-    </HStack>
+    <SurfaceCard stripeColor={COLORS.primary} paddingClassName="p-4">
+      <HStack align="center" justify="between">
+        <VStack spacing="none">
+          <Text className="font-app-bold text-[15px] text-darkGrey">
+            {formatPeriodLabel(periodLabel)}
+          </Text>
+        </VStack>
+        <VStack spacing="none" align="end">
+          <Text className="font-app-bold text-[15px] text-darkGrey">
+            {formatMoney(amount, currency)}
+          </Text>
+          <HStack spacing="xs" align="center">
+            <Ionicons
+              name="checkmark-circle"
+              size={10}
+              color={COLORS.darkGrey}
+            />
+            <Text className="font-app-bold text-[12px] text-darkGrey">
+              Done
+            </Text>
+          </HStack>
+        </VStack>
+      </HStack>
+    </SurfaceCard>
   );
 };
 

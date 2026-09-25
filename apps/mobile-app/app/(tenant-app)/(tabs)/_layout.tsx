@@ -1,71 +1,56 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { NativeTabs } from "expo-router/unstable-native-tabs";
+import { Platform } from "react-native";
 
 import { COLORS } from "@/constants";
-import { useAppInsets } from "@/hooks";
 
-const TAB_BAR_CONTENT_HEIGHT = 56;
+/** Soft Material indicator — not a full primary blob. */
+const ANDROID_TAB_INDICATOR = COLORS.lightGrey;
 
+const tabScreenStyle = { backgroundColor: COLORS.sidebar };
+
+/**
+ * Native tabs. Android: solid white bar, labeled icons, warm indicator.
+ * iOS: system chrome (may be liquid glass on newer OS). Same layout both.
+ * https://docs.expo.dev/router/advanced/native-tabs/
+ */
 const TenantTabsLayout = () => {
-  const insets = useAppInsets();
-
   return (
-    <Tabs
-      initialRouteName="home"
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: COLORS.darkGrey,
-        tabBarInactiveTintColor: COLORS.grey,
-        tabBarStyle: {
-          backgroundColor: COLORS.white,
-          borderTopColor: COLORS.border,
-          height: TAB_BAR_CONTENT_HEIGHT + insets.bottom,
-          paddingBottom: insets.bottom,
-          paddingTop: 6,
-        },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontFamily: "Template-Medium",
-        },
+    <NativeTabs
+      tintColor={COLORS.primary}
+      backgroundColor={Platform.OS === "android" ? COLORS.white : undefined}
+      labelVisibilityMode="labeled"
+      disableTransparentOnScrollEdge
+      tabBarRespectsIMEInsets
+      indicatorColor={
+        Platform.OS === "android" ? ANDROID_TAB_INDICATOR : undefined
+      }
+      iconColor={{
+        default: COLORS.grey,
+        selected: COLORS.primary,
+      }}
+      rippleColor={COLORS.lightGrey}
+      labelStyle={{
+        fontSize: 11,
+        fontFamily: "Template-Medium",
       }}
     >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="repairs"
-        options={{
-          title: "Repairs",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="construct" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="rent"
-        options={{
-          title: "Rent",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="receipt" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="account"
-        options={{
-          title: "Account",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+      <NativeTabs.Trigger name="home" contentStyle={tabScreenStyle}>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="repairs" contentStyle={tabScreenStyle}>
+        <NativeTabs.Trigger.Label>Repairs</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="wrench.and.screwdriver.fill" md="build" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="rent" contentStyle={tabScreenStyle}>
+        <NativeTabs.Trigger.Label>Rent</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="doc.text.fill" md="receipt" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="account" contentStyle={tabScreenStyle}>
+        <NativeTabs.Trigger.Label>Account</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="person.fill" md="person" />
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 };
 

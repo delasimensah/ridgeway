@@ -7,7 +7,7 @@ export { getConvexErrorMessage } from "./convexError";
 export { createConvexClient } from "./convexClient";
 export { bottomSafePad } from "./insets";
 export { formatJobsHeadingDate } from "./jobDate";
-export { JOB_STATUS_LABEL } from "./jobStatus";
+export { JOB_STATUS_LABEL, JOB_STATUS_STRIPE } from "./jobStatus";
 export {
   formatRepairDateTime,
   REPAIR_CATEGORIES,

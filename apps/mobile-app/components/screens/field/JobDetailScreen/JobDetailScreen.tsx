@@ -48,12 +48,12 @@ const JobDetailScreen: React.FC<JobDetailScreenProps> = ({
   const [street, ...rest] = address.split(",").map((part) => part.trim());
 
   return (
-    <VStack spacing="none" className="flex-1 bg-white">
+    <VStack spacing="none" className="flex-1 bg-sidebar">
       <HStack
         align="center"
         justify="between"
         paddingX="md"
-        className="border-b border-border"
+        className="border-b border-border bg-white"
         style={{ paddingTop: insets.top + 8, paddingBottom: 16 }}
       >
         <Pressable
@@ -107,7 +107,7 @@ const JobDetailScreen: React.FC<JobDetailScreenProps> = ({
             </HStack>
             <VStack
               spacing="sm"
-              className="rounded-lg border border-border bg-sidebar p-4"
+              className="rounded-lg border border-border bg-white p-4"
             >
               <Text className="font-app-bold text-sm uppercase tracking-wider text-grey">
                 Instructions

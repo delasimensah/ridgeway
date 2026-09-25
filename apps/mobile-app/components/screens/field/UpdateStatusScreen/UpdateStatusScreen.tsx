@@ -34,12 +34,12 @@ const UpdateStatusScreen: React.FC<UpdateStatusScreenProps> = ({
   const insets = useAppInsets();
 
   return (
-    <VStack spacing="none" className="flex-1 bg-white">
+    <VStack spacing="none" className="flex-1 bg-sidebar">
       <HStack
         align="center"
         justify="between"
         paddingX="md"
-        className="border-b border-border"
+        className="border-b border-border bg-white"
         style={{ paddingTop: insets.top + 8, paddingBottom: 16 }}
       >
         <Pressable

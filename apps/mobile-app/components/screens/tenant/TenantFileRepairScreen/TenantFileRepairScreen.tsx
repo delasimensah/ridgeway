@@ -57,12 +57,12 @@ const TenantFileRepairScreen: React.FC<TenantFileRepairScreenProps> = ({
   );
 
   return (
-    <VStack spacing="none" className="flex-1 bg-white">
+    <VStack spacing="none" className="flex-1 bg-sidebar">
       <HStack
         align="center"
         justify="between"
         paddingX="md"
-        className="border-b border-border"
+        className="border-b border-border bg-white"
         style={{ paddingTop: insets.top + 8, paddingBottom: 16 }}
       >
         <Pressable
@@ -78,7 +78,7 @@ const TenantFileRepairScreen: React.FC<TenantFileRepairScreenProps> = ({
         </Text>
         <VStack spacing="none" className="h-10 w-10" />
       </HStack>
-      <KeyboardAvoidingView className="flex-1 bg-white" behavior="padding">
+      <KeyboardAvoidingView className="flex-1 bg-sidebar" behavior="padding">
         <ScrollableStack
           padding="md"
           keyboardShouldPersistTaps="handled"

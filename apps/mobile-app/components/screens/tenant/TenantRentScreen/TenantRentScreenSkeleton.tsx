@@ -11,7 +11,7 @@ const TenantRentScreenSkeleton: React.FC = () => {
   return (
     <VStack
       spacing="none"
-      className="flex-1 bg-white"
+      className="flex-1 bg-sidebar"
       style={{ paddingTop: insets.top + 8 }}
       accessible
       accessibilityLabel="Loading rent"

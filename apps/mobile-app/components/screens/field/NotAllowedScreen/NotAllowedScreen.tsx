@@ -24,7 +24,7 @@ const NotAllowedScreen: React.FC<NotAllowedScreenProps> = ({
       align="center"
       justify="center"
       paddingX="xl"
-      className="flex-1 bg-white"
+      className="flex-1 bg-sidebar"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
     >
       <BrandMark

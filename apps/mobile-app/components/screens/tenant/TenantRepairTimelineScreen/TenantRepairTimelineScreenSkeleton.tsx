@@ -11,7 +11,7 @@ const TenantRepairTimelineScreenSkeleton: React.FC = () => {
   return (
     <VStack
       spacing="none"
-      className="flex-1 bg-white"
+      className="flex-1 bg-sidebar"
       accessible
       accessibilityLabel="Loading repair"
     >

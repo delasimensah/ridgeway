@@ -35,6 +35,7 @@ describe("TenantHomeScreen", () => {
       />
     );
 
+    expect(screen.getByText("Home")).toBeTruthy();
     expect(screen.getByText("B12 · Ridge Court")).toBeTruthy();
     expect(screen.getByText("GH₵ 4,500")).toBeTruthy();
     expect(screen.getByText("Kitchen tap leak")).toBeTruthy();

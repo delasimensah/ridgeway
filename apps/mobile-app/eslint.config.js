@@ -16,7 +16,8 @@ const barrelOnlyPatterns = [
   },
   {
     group: ["@/services/*", "@/services/*/**"],
-    message: "Import from @/services barrel only — not deep @/services/... paths.",
+    message:
+      "Import from @/services barrel only — not deep @/services/... paths.",
   },
   {
     group: ["@/utils/*", "@/utils/*/**"],

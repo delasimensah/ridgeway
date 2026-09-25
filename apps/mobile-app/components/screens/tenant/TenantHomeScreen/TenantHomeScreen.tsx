@@ -6,7 +6,7 @@ import type { Currency, RentConfirmedStatus } from "shared";
 import TenantNextRentCard from "../../../rent/TenantNextRentCard/TenantNextRentCard";
 import type { TenantRepairCardItem } from "../../../repairs/TenantRepairCard/TenantRepairCard";
 import TenantRepairCard from "../../../repairs/TenantRepairCard/TenantRepairCard";
-import BrandMark from "../../../ui/BrandMark/BrandMark";
+import ListEmpty from "../../../ui/ListEmpty/ListEmpty";
 import PersonAvatar from "../../../ui/PersonAvatar/PersonAvatar";
 import ScrollableStack from "../../../ui/ScrollableStack/ScrollableStack";
 import { HStack, VStack } from "../../../ui/Stack/Stack";
@@ -46,19 +46,28 @@ const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
   onOpenRepair,
 }) => {
   const insets = useSafeAreaInsets();
+  const firstName = displayName.trim().split(/\s+/)[0] || displayName;
 
   return (
     <VStack
       spacing="none"
-      className="flex-1 bg-white"
+      className="flex-1 bg-sidebar"
       style={{ paddingTop: insets.top + 8 }}
     >
       <VStack spacing="sm" paddingX="md" className="pb-2 pt-3">
         <HStack align="center" justify="between">
-          <BrandMark size="header" showWordmark={false} />
+          <Text
+            className="font-app-bold text-3xl text-darkGrey"
+            accessibilityRole="header"
+          >
+            Home
+          </Text>
           <PersonAvatar displayName={displayName} size={32} />
         </HStack>
         <VStack spacing="none">
+          <Text className="font-app-medium text-[13px] text-grey">
+            Hello, {firstName}
+          </Text>
           <Text className="font-app-bold text-2xl text-darkGrey">
             {unitLabel} · {buildingName}
           </Text>
@@ -86,14 +95,20 @@ const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
               accessibilityRole="button"
               accessibilityLabel="File a repair"
               onPress={onFileRepair}
+              hitSlop={8}
             >
-              <Text className="font-app-medium text-sm text-darkGrey">
+              <Text className="font-app-medium text-sm text-primary">
                 + File a repair
               </Text>
             </Pressable>
           </HStack>
           {repairs.length === 0 ? (
-            <Text className="text-base text-grey">No open repairs.</Text>
+            <ListEmpty
+              message="No open repairs."
+              actionLabel="File a repair"
+              onAction={onFileRepair}
+              className="py-6"
+            />
           ) : (
             repairs.map((repair) => (
               <TenantRepairCard

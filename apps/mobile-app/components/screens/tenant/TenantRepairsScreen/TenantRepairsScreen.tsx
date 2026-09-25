@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { TenantRepairCardItem } from "../../../repairs/TenantRepairCard/TenantRepairCard";
 import TenantRepairCard from "../../../repairs/TenantRepairCard/TenantRepairCard";
+import ListEmpty from "../../../ui/ListEmpty/ListEmpty";
 import ScrollableStack from "../../../ui/ScrollableStack/ScrollableStack";
 import { HStack, VStack } from "../../../ui/Stack/Stack";
 import Text from "../../../ui/Text/Text";
@@ -24,7 +25,7 @@ const TenantRepairsScreen: React.FC<TenantRepairsScreenProps> = ({
   return (
     <VStack
       spacing="none"
-      className="flex-1 bg-white"
+      className="flex-1 bg-sidebar"
       style={{ paddingTop: insets.top + 8 }}
     >
       <HStack
@@ -33,13 +34,14 @@ const TenantRepairsScreen: React.FC<TenantRepairsScreenProps> = ({
         paddingX="md"
         className="pb-2 pt-3"
       >
-        <Text className="font-app-bold text-2xl text-darkGrey">Repairs</Text>
+        <Text className="font-app-bold text-3xl text-darkGrey">Repairs</Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="File a repair"
           onPress={onFileRepair}
+          hitSlop={8}
         >
-          <Text className="font-app-medium text-sm text-darkGrey">
+          <Text className="font-app-medium text-sm text-primary">
             + File a repair
           </Text>
         </Pressable>
@@ -47,7 +49,11 @@ const TenantRepairsScreen: React.FC<TenantRepairsScreenProps> = ({
       <ScrollableStack paddingX="md" paddingY="sm" className="flex-1">
         <VStack spacing="sm" className="pb-8">
           {repairs.length === 0 ? (
-            <Text className="text-base text-grey">No open repairs.</Text>
+            <ListEmpty
+              message="No open repairs."
+              actionLabel="File a repair"
+              onAction={onFileRepair}
+            />
           ) : (
             repairs.map((repair) => (
               <TenantRepairCard

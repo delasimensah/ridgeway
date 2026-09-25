@@ -33,10 +33,14 @@ const AccountScreen: React.FC<AccountScreenProps> = ({
     <VStack
       spacing="lg"
       paddingX="md"
-      className="flex-1 bg-white"
+      className="flex-1 bg-sidebar"
       style={{ paddingTop: insets.top + 24 }}
     >
-      <VStack spacing="md" align="center">
+      <VStack
+        spacing="md"
+        align="center"
+        className="rounded-lg border border-border bg-white p-6"
+      >
         <PersonAvatar displayName={displayName} size={80} />
         <VStack spacing="none" align="center">
           <Text className="font-app-bold text-2xl text-darkGrey">

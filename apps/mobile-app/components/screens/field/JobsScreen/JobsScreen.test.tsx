@@ -13,7 +13,7 @@ describe("JobsScreen", () => {
         onOpenJob={() => undefined}
       />
     );
-    expect(screen.getByText("No jobs assigned today.")).toBeTruthy();
+    expect(screen.getByText(/No jobs assigned today/)).toBeTruthy();
   });
 
   it("shows job card skeletons while the list loads", () => {
@@ -29,7 +29,7 @@ describe("JobsScreen", () => {
     );
     expect(screen.getByLabelText("Loading jobs")).toBeTruthy();
     expect(screen.queryByText("Today's jobs")).toBeNull();
-    expect(screen.queryByText("No jobs assigned today.")).toBeNull();
+    expect(screen.queryByText(/No jobs assigned today/)).toBeNull();
   });
 
   it("shows a short error and retries", () => {
@@ -47,7 +47,7 @@ describe("JobsScreen", () => {
     );
 
     expect(screen.getByText("Couldn't load jobs.")).toBeTruthy();
-    expect(screen.queryByText("No jobs assigned today.")).toBeNull();
+    expect(screen.queryByText(/No jobs assigned today/)).toBeNull();
     fireEvent.press(screen.getByText("Try again"));
     expect(onRetry).toHaveBeenCalledTimes(1);
   });

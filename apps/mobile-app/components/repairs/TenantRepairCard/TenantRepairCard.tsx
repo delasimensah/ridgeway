@@ -1,13 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Pressable } from "react-native";
 import type { WorkOrderStatus, WorkOrderUrgency } from "shared";
 
 import { COLORS } from "@/constants";
-import { repairMetaLine } from "@/utils";
+import { JOB_STATUS_STRIPE, repairMetaLine } from "@/utils";
 
 import JobStatusChip from "../../jobs/JobStatusChip/JobStatusChip";
 import { HStack, VStack } from "../../ui/Stack/Stack";
+import SurfaceCard from "../../ui/SurfaceCard/SurfaceCard";
 import Text from "../../ui/Text/Text";
 
 export interface TenantRepairCardItem {
@@ -28,15 +28,14 @@ const TenantRepairCard: React.FC<TenantRepairCardProps> = ({
   onPress,
 }) => {
   return (
-    <Pressable
-      accessibilityRole="button"
+    <SurfaceCard
+      stripeColor={JOB_STATUS_STRIPE[repair.status]}
       accessibilityLabel={repair.title}
       onPress={onPress}
-      className="rounded-lg border border-border bg-white p-4"
     >
       <VStack spacing="sm">
         <HStack align="start" justify="between">
-          <Text className="flex-1 font-app-bold text-base text-darkGrey">
+          <Text className="flex-1 pr-2 font-app-bold text-base text-darkGrey">
             {repair.title}
           </Text>
           <JobStatusChip status={repair.status} />
@@ -54,7 +53,7 @@ const TenantRepairCard: React.FC<TenantRepairCardProps> = ({
           <Ionicons name="chevron-forward" size={12} color={COLORS.darkGrey} />
         </HStack>
       </VStack>
-    </Pressable>
+    </SurfaceCard>
   );
 };
 

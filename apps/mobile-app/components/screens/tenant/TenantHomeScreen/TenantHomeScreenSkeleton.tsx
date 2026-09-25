@@ -11,14 +11,14 @@ const TenantHomeScreenSkeleton: React.FC = () => {
   return (
     <VStack
       spacing="none"
-      className="flex-1 bg-white"
+      className="flex-1 bg-sidebar"
       style={{ paddingTop: insets.top + 8 }}
       accessible
       accessibilityLabel="Loading home"
     >
       <VStack spacing="sm" paddingX="md" className="pb-2 pt-3">
         <HStack align="center" justify="between">
-          <SkeletonCard width={24} height={24} radius={4} />
+          <SkeletonCard width={96} height={36} radius={4} />
           <SkeletonCard width={32} height={32} radius={16} />
         </HStack>
         <SkeletonCard width={200} height={28} radius={4} mb={8} />

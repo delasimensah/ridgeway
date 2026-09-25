@@ -4,6 +4,7 @@ import { type Currency, type RentConfirmedStatus } from "shared";
 
 import TenantRentHistoryCard from "../../../rent/TenantRentHistoryCard/TenantRentHistoryCard";
 import TenantRentInvoiceCard from "../../../rent/TenantRentInvoiceCard/TenantRentInvoiceCard";
+import ListEmpty from "../../../ui/ListEmpty/ListEmpty";
 import ScrollableStack from "../../../ui/ScrollableStack/ScrollableStack";
 import { VStack } from "../../../ui/Stack/Stack";
 import Text from "../../../ui/Text/Text";
@@ -39,16 +40,19 @@ const TenantRentScreen: React.FC<TenantRentScreenProps> = ({
   return (
     <VStack
       spacing="none"
-      className="flex-1 bg-white"
+      className="flex-1 bg-sidebar"
       style={{ paddingTop: insets.top + 8 }}
     >
       <VStack spacing="none" paddingX="md" className="pb-2 pt-3">
-        <Text className="font-app-bold text-2xl text-darkGrey">Rent</Text>
+        <Text className="font-app-bold text-3xl text-darkGrey">Rent</Text>
+        <Text className="text-sm text-grey">
+          Report when you have paid. Staff still confirm.
+        </Text>
       </VStack>
-      <ScrollableStack paddingX="md" paddingY="none" className="flex-1">
+      <ScrollableStack paddingX="md" paddingY="sm" className="flex-1">
         <VStack spacing="lg" className="pb-8">
           {open.length === 0 ? (
-            <Text className="text-base text-grey">No open rent.</Text>
+            <ListEmpty message="No open rent." className="py-6" />
           ) : (
             open.map((period) => (
               <TenantRentInvoiceCard

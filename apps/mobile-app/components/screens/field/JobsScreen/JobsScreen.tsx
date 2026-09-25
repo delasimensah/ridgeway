@@ -6,6 +6,7 @@ import type { JobListItem } from "@/types";
 
 import JobCard from "../../../jobs/JobCard/JobCard";
 import LoadFailed from "../../../shared/LoadFailed/LoadFailed";
+import ListEmpty from "../../../ui/ListEmpty/ListEmpty";
 import ScrollableStack from "../../../ui/ScrollableStack/ScrollableStack";
 import { VStack } from "../../../ui/Stack/Stack";
 import Text from "../../../ui/Text/Text";
@@ -37,7 +38,7 @@ const JobsScreen: React.FC<JobsScreenProps> = ({
   return (
     <VStack
       spacing="none"
-      className="flex-1 bg-white"
+      className="flex-1 bg-sidebar"
       style={{ paddingTop: insets.top + 8 }}
     >
       {isLoading ? (
@@ -48,7 +49,7 @@ const JobsScreen: React.FC<JobsScreenProps> = ({
             <Text className="font-app-medium text-[13px] text-grey">
               {headingDate}
             </Text>
-            <Text className="font-app-bold text-2xl text-darkGrey">
+            <Text className="font-app-bold text-3xl text-darkGrey">
               Today&apos;s jobs
             </Text>
           </VStack>
@@ -65,11 +66,10 @@ const JobsScreen: React.FC<JobsScreenProps> = ({
               }
             >
               {jobs.length === 0 ? (
-                <VStack align="center" justify="center" className="py-20">
-                  <Text className="text-center font-app-medium text-grey">
-                    No jobs assigned today.
-                  </Text>
-                </VStack>
+                <ListEmpty
+                  message="No jobs assigned today. Pull down to refresh."
+                  className="py-20"
+                />
               ) : (
                 <VStack spacing="md">
                   {jobs.map((job) => (

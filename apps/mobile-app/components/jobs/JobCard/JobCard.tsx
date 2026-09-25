@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Pressable } from "react-native";
 
 import { COLORS } from "@/constants";
 import type { JobListItem } from "@/types";
+import { JOB_STATUS_STRIPE } from "@/utils";
 
 import { HStack, VStack } from "../../ui/Stack/Stack";
+import SurfaceCard from "../../ui/SurfaceCard/SurfaceCard";
 import Text from "../../ui/Text/Text";
 import JobStatusChip from "../JobStatusChip/JobStatusChip";
 
@@ -16,16 +17,16 @@ interface JobCardProps {
 
 const JobCard: React.FC<JobCardProps> = ({ job, onPress }) => {
   return (
-    <Pressable
-      accessibilityRole="button"
+    <SurfaceCard
+      stripeColor={JOB_STATUS_STRIPE[job.status]}
+      paddingClassName="p-3"
       accessibilityLabel={job.title}
       onPress={onPress}
-      className="rounded-lg border border-border bg-white p-3"
     >
       <VStack spacing="sm">
         <HStack align="start" justify="between">
-          <VStack spacing="none" className="flex-1">
-            <Text className="font-app-bold text-[13px] text-darkGrey">
+          <VStack spacing="none" className="flex-1 pr-2">
+            <Text className="font-app-medium text-[13px] text-grey">
               {job.buildingName} · {job.unitLabel}
             </Text>
             <Text className="font-app-bold text-lg text-darkGrey">
@@ -36,10 +37,10 @@ const JobCard: React.FC<JobCardProps> = ({ job, onPress }) => {
         </HStack>
         <HStack spacing="sm" align="center">
           <Ionicons name="location-sharp" size={12} color={COLORS.grey} />
-          <Text className="text-sm text-grey">{job.address}</Text>
+          <Text className="flex-1 text-sm text-grey">{job.address}</Text>
         </HStack>
       </VStack>
-    </Pressable>
+    </SurfaceCard>
   );
 };
 
