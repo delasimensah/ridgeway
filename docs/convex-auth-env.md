@@ -54,4 +54,14 @@ Only someone with Convex access can run this. Do not put the new password in Git
 
 ## Production
 
-Production Convex is a **different** deployment. When it exists, set `JWT_PRIVATE_KEY`, `JWKS`, and `SITE_URL` there too. `SITE_URL` on production is the stable production website URL, not localhost.
+Production is a different deployment. The live website uses it. Preview links stay on the dev deployment, so the demo data stays on preview. The steps are in `docs/convex-production.md`.
+
+Generate a new key pair. Do not copy the dev keys. Set them on production:
+
+```bash
+npx convex env set --prod "JWT_PRIVATE_KEY=…"
+npx convex env set --prod "JWKS=…"
+npx convex env set --prod "SITE_URL=https://the-production-website"
+```
+
+Leave the dev `SITE_URL` as the local website. Do not run the demo seed against production.

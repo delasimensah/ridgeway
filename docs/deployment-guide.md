@@ -313,6 +313,12 @@ If you prefer the dashboard over the CLI:
 
 ---
 
+## Convex
+
+The website deploy does not update the database. Preview links keep the dev database and its demo data. The live site uses a separate production database. Later updates reach that database only after `yarn deploy:backend` from the repo root. See `docs/convex-production.md`.
+
+---
+
 ## 🔧 Configuration Files
 
 ### **eas.json** (Mobile)

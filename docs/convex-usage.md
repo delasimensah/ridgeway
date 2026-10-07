@@ -35,7 +35,7 @@ npx convex deployment usage
 ```
 
 - That command is **per deployment**. Run it in each Convex project on the team.
-- Use `--prod` when you care about the production deployment.
+- Use `--prod` when you care about the production deployment. Dev and production share this team's Free caps. Opening production, and later updates to it, are in `docs/convex-production.md`.
 - Team roll-up: Convex dashboard → team settings / usage.
 
 Also useful:
