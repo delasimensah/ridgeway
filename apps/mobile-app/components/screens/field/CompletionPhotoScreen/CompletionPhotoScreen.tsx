@@ -12,6 +12,7 @@ import { HStack, VStack } from "../../../ui/Stack/Stack";
 import Text from "../../../ui/Text/Text";
 
 interface CompletionPhotoScreenProps {
+  jobLine?: string;
   uri: string | null;
   caption: string;
   isSaving: boolean;
@@ -23,6 +24,7 @@ interface CompletionPhotoScreenProps {
 }
 
 const CompletionPhotoScreen: React.FC<CompletionPhotoScreenProps> = ({
+  jobLine = "",
   uri,
   caption,
   isSaving,
@@ -63,6 +65,11 @@ const CompletionPhotoScreen: React.FC<CompletionPhotoScreenProps> = ({
           keyboardDismissMode="on-drag"
         >
           <VStack spacing="lg">
+            {jobLine !== "" ? (
+              <Text className="text-center font-app-medium text-sm text-darkGrey">
+                {jobLine}
+              </Text>
+            ) : null}
             <CompletionPhotoPicker uri={uri} onPress={onPickPhoto} />
             <VStack spacing="sm">
               <Text className="font-app-bold text-sm uppercase tracking-wider text-grey">

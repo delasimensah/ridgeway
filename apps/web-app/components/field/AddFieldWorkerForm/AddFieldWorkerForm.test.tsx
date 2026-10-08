@@ -64,6 +64,6 @@ describe("AddFieldWorkerForm", () => {
     });
     expect(mockUpdate).not.toHaveBeenCalled();
     expect(mockSetPassword).not.toHaveBeenCalled();
-    expect(mockReplace).toHaveBeenCalledWith("/field");
+    expect(mockReplace).toHaveBeenCalledWith("/users");
   });
 });

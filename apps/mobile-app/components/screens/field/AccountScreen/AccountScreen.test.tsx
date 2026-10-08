@@ -14,7 +14,7 @@ describe("AccountScreen", () => {
       />
     );
     expect(screen.getByText("Yaw Darko")).toBeTruthy();
-    expect(screen.getByText("YD")).toBeTruthy();
+    expect(screen.getByLabelText("Yaw Darko")).toBeTruthy();
     expect(screen.getByText("Field worker")).toBeTruthy();
     fireEvent.press(screen.getByLabelText("Sign out"));
     expect(onSignOut).not.toHaveBeenCalled();

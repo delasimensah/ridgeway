@@ -5,10 +5,12 @@ import { render } from "@/test-utils";
 import PersonAvatar from "./PersonAvatar";
 
 describe("PersonAvatar", () => {
-  it("shows initials from the display name", () => {
+  it("shows a picture for the person", () => {
     render(<PersonAvatar displayName="Ama Boateng" />);
 
-    expect(screen.getByText("AB")).toBeInTheDocument();
-    expect(screen.getByTitle("Ama Boateng")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Ama Boateng" })).toHaveAttribute(
+      "src",
+      expect.stringMatching(/^\/look\/people\//)
+    );
   });
 });

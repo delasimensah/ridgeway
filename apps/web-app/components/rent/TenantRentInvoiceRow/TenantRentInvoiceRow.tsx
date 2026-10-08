@@ -64,7 +64,7 @@ const TenantRentInvoiceRow: React.FC<TenantRentInvoiceRowProps> = ({
             {formatMoney(amount, currency)}
           </Text>
           {confirmedStatus === "partial" ? (
-            <Text className="mt-1 text-sm text-grey">
+            <Text className="mt-1 text-sm font-medium text-accentInk">
               {formatRentPartialLine(amount, confirmedAmount, currency)}
             </Text>
           ) : null}

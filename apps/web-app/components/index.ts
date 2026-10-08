@@ -103,6 +103,7 @@ export { default as StaffRepairDetailPage } from "./pages/StaffRepairDetailPage/
 export { default as StaffRepairsPage } from "./pages/StaffRepairsPage/StaffRepairsPage";
 export { default as StaffRentPage } from "./pages/StaffRentPage/StaffRentPage";
 export { default as StaffTenantsPage } from "./pages/StaffTenantsPage/StaffTenantsPage";
+export { default as StaffUsersPage } from "./pages/StaffUsersPage/StaffUsersPage";
 export { default as TenantHomePage } from "./pages/TenantHomePage/TenantHomePage";
 export { default as TenantLeaseEndedPage } from "./pages/TenantLeaseEndedPage/TenantLeaseEndedPage";
 export { default as TenantRentPage } from "./pages/TenantRentPage/TenantRentPage";

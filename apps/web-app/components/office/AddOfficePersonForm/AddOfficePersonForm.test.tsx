@@ -66,7 +66,7 @@ describe("AddOfficePersonForm", () => {
     });
     expect(mockUpdate).not.toHaveBeenCalled();
     expect(mockSetPassword).not.toHaveBeenCalled();
-    expect(mockReplace).toHaveBeenCalledWith("/office");
+    expect(mockReplace).toHaveBeenCalledWith("/users");
   });
 
   it("sets a new password when one is typed on an existing person", async () => {

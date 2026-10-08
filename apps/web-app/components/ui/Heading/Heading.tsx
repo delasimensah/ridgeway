@@ -25,7 +25,15 @@ interface HeadingProps {
 const Heading: React.FC<HeadingProps> = ({ variant, children, className }) => {
   const { order, className: variantClassName } = VARIANT_CONFIG[variant];
   return (
-    <Title order={order} className={cn(variantClassName, className)}>
+    <Title
+      order={order}
+      className={cn(variantClassName, className)}
+      style={
+        variant === "page"
+          ? { fontWeight: 600, letterSpacing: "-0.02em" }
+          : undefined
+      }
+    >
       {children}
     </Title>
   );

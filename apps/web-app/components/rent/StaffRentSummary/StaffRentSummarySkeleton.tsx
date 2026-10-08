@@ -19,7 +19,7 @@ const StaffRentSummarySkeleton: React.FC<StaffRentSummarySkeletonProps> = ({
       className={
         isStack
           ? "flex flex-col gap-6 rounded-[8px] border border-border bg-white p-8 shadow-card"
-          : "flex flex-col gap-8 rounded-[8px] border border-border bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:gap-24 sm:p-10"
+          : "flex flex-col gap-8 rounded-[8px] border border-border bg-white p-6 shadow-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-24 sm:p-10"
       }
     >
       <Box>
@@ -37,6 +37,7 @@ const StaffRentSummarySkeleton: React.FC<StaffRentSummarySkeletonProps> = ({
         <Skeleton height={14} width={104} className="mb-3" />
         <Skeleton height={40} width={160} />
       </Box>
+      <Skeleton height={6} className="w-full sm:basis-full" />
     </Box>
   );
 };

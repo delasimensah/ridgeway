@@ -24,7 +24,7 @@ describe("OwnerPortfolioIssueRow", () => {
     expect(
       screen.getByText("Ridge Court · Cantonments · Akosua Darko")
     ).toBeInTheDocument();
-    expect(screen.getByText("ASSIGNED")).toBeInTheDocument();
+    expect(screen.getByText("Assigned")).toBeInTheDocument();
     expect(screen.getByText("Reported")).toBeInTheDocument();
   });
 });

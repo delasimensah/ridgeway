@@ -1,8 +1,10 @@
 "use client";
 
-import { Anchor, Table } from "@mantine/core";
+import { Anchor, Box, Table } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
+
+import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 
 interface TenantListRowProps {
   leaseId: string;
@@ -41,9 +43,10 @@ const TenantListRow: React.FC<TenantListRowProps> = ({
           component={Link}
           href={`/tenants/${leaseId}/edit`}
           underline="never"
-          className="font-bold text-darkGrey"
+          className="inline-flex items-center gap-3 font-bold text-darkGrey"
         >
-          {displayName}
+          <PersonAvatar displayName={displayName} decorative />
+          <Box component="span">{displayName}</Box>
         </Anchor>
       </Table.Td>
       <Table.Td className={TD}>{email}</Table.Td>

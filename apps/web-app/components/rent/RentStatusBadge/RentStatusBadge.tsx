@@ -8,22 +8,24 @@ interface RentStatusBadgeProps {
   status: RentStatus;
 }
 
-const STATUS_CLASS: Record<RentStatus, string> = {
-  paid: "border border-border bg-sidebar text-darkGrey",
-  due: "border border-border bg-white text-grey",
-  late: "bg-overdue text-white",
-  partial: "border border-border bg-sidebar text-darkGrey",
+const DOT_CLASS: Record<RentStatus, string> = {
+  paid: "bg-dotGreen",
+  due: "bg-dotBlue",
+  late: "bg-dotRed",
+  partial: "bg-dotGold",
 };
 
 const RentStatusBadge: React.FC<RentStatusBadgeProps> = ({ status }) => {
   return (
     <Box
       component="span"
-      className={cn(
-        "rounded-full px-3 py-1 text-[12px] font-bold uppercase",
-        STATUS_CLASS[status]
-      )}
+      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-2.5 py-1 text-[12px] font-medium text-darkGrey"
     >
+      <Box
+        component="span"
+        aria-hidden
+        className={cn("h-2 w-2 rounded-full", DOT_CLASS[status])}
+      />
       {rentStatusLabel(status)}
     </Box>
   );

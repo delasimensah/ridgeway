@@ -61,8 +61,8 @@ const StaffRentRow: React.FC<StaffRentRowProps> = ({
     <Table.Tr className="hover:bg-sidebar">
       <Table.Td className={LABEL_TD}>{unitLabel}</Table.Td>
       <Table.Td className={TD}>{tenantName}</Table.Td>
-      <Table.Td className={TD}>
-        <Text className="font-semibold text-darkGrey">
+      <Table.Td className={`${TD} text-right`}>
+        <Text className="font-semibold tabular-nums text-darkGrey">
           {formatMoney(amount, currency)}
         </Text>
         <Text className="mt-1 text-[13px] text-grey">
@@ -74,7 +74,7 @@ const StaffRentRow: React.FC<StaffRentRowProps> = ({
           </Text>
         ) : null}
         {arrears > 0 ? (
-          <Text className="mt-1 text-[13px] font-semibold text-accent">
+          <Text className="mt-1 text-[13px] font-semibold text-accentInk">
             {`${formatMoney(arrears, currency)} in arrears from earlier months`}
           </Text>
         ) : null}
@@ -101,10 +101,10 @@ const StaffRentRow: React.FC<StaffRentRowProps> = ({
               }}
               classNames={{
                 input:
-                  "min-h-9 w-[8.5rem] rounded-[4px] border-border bg-sidebar text-[12px] font-bold uppercase text-darkGrey",
+                  "min-h-9 w-[8.5rem] rounded-[4px] border-border bg-sidebar text-[13px] font-medium text-darkGrey",
                 dropdown: "rounded-[8px] border border-border bg-white",
                 option:
-                  "rounded-[6px] text-[12px] font-bold uppercase text-darkGrey bg-white hover:bg-sidebar data-[combobox-selected]:bg-sidebar data-[combobox-active]:bg-sidebar",
+                  "rounded-[6px] text-[13px] font-medium text-darkGrey bg-white hover:bg-sidebar data-[combobox-selected]:bg-sidebar data-[combobox-active]:bg-sidebar",
               }}
             />
           </Box>

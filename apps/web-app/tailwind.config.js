@@ -54,6 +54,7 @@ module.exports = {
         primary: COLORS.primary,
         primaryHover: COLORS.primaryHover,
         accent: COLORS.accent,
+        accentInk: COLORS.accentInk,
         grey: COLORS.grey,
         lightGrey: COLORS.lightGrey,
         darkGrey: COLORS.darkGrey,
@@ -63,9 +64,24 @@ module.exports = {
         overdue: COLORS.overdue,
         danger: COLORS.danger,
         dangerHover: COLORS.dangerHover,
+        dotGreen: COLORS.dotGreen,
+        dotBlue: COLORS.dotBlue,
+        dotGold: COLORS.dotGold,
+        dotRed: COLORS.dotRed,
+        dotTeal: COLORS.dotTeal,
       },
       boxShadow: {
-        card: `0 8px 24px color-mix(in srgb, ${COLORS.darkGrey} 14%, transparent), 0 2px 6px color-mix(in srgb, ${COLORS.darkGrey} 8%, transparent)`,
+        card: `0 1px 2px color-mix(in srgb, ${COLORS.darkGrey} 6%, transparent), 0 8px 20px color-mix(in srgb, ${COLORS.darkGrey} 5%, transparent)`,
+        cardHover: `0 2px 6px color-mix(in srgb, ${COLORS.darkGrey} 8%, transparent), 0 12px 28px color-mix(in srgb, ${COLORS.darkGrey} 8%, transparent)`,
+      },
+      keyframes: {
+        fadeIn: {
+          from: { opacity: "0", transform: "translateY(4px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        fadeIn: "fadeIn 180ms ease-out",
       },
       fontFamily: {
         appFont: ["var(--app-font)", "system-ui", "sans-serif"],

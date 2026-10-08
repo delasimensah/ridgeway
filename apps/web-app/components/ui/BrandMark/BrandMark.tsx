@@ -19,7 +19,7 @@ const SIZE_CONFIG: Record<
     headingVariant: "page" | "section";
   }
 > = {
-  nav: { mark: 28, layout: "inline", headingVariant: "section" },
+  nav: { mark: 32, layout: "inline", headingVariant: "section" },
   header: { mark: 24, layout: "inline", headingVariant: "section" },
   page: { mark: 48, layout: "stack", headingVariant: "page" },
   splash: { mark: 56, layout: "stack", headingVariant: "page" },

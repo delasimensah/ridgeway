@@ -82,7 +82,7 @@ const ScrollableStack: React.FC<ScrollableStackProps> = ({
         className
       )}
       showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-      contentContainerStyle={{ paddingBottom: 100 }}
+      contentContainerStyle={{ paddingBottom: 140 }}
       {...props}
     >
       {children}

@@ -57,7 +57,7 @@ const OwnerAppShell: React.FC<OwnerAppShellProps> = ({
       <AppShell.Header
         hiddenFrom="md"
         withBorder={false}
-        className="flex items-center border-b border-border bg-sidebar px-4"
+        className="flex items-center border-b border-border bg-white px-4"
       >
         <Group gap="sm" wrap="nowrap" h="100%">
           <Burger
@@ -82,7 +82,9 @@ const OwnerAppShell: React.FC<OwnerAppShellProps> = ({
           onNavigate={close}
         />
       </AppShell.Navbar>
-      <AppShell.Main className="bg-white">{children}</AppShell.Main>
+      <AppShell.Main className="animate-fadeIn bg-sidebar">
+        {children}
+      </AppShell.Main>
     </AppShell>
   );
 };

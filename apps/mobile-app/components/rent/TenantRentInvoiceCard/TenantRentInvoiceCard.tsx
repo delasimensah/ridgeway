@@ -78,7 +78,7 @@ const TenantRentInvoiceCard: React.FC<TenantRentInvoiceCardProps> = ({
           </Text>
         </VStack>
         {confirmedStatus === "partial" ? (
-          <Text className="text-sm text-grey">
+          <Text className="font-app-medium text-sm text-accentInk">
             {formatRentPartialLine(amount, confirmedAmount, currency)}
           </Text>
         ) : null}

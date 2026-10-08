@@ -503,6 +503,9 @@ export const listForStaff = staffQuery({
         _id: v.id("rentPeriods"),
         confirmedStatus,
         dueOn: v.string(),
+        unitLabel: v.string(),
+        tenantName: v.string(),
+        buildingName: v.string(),
       })
     ),
   }),
@@ -547,6 +550,9 @@ export const listForStaff = staffQuery({
         _id: row.period._id,
         confirmedStatus: row.period.confirmedStatus,
         dueOn: row.period.dueOn,
+        unitLabel: row.unitLabel,
+        tenantName: row.tenantName,
+        buildingName: row.buildingName,
       })),
     };
   },

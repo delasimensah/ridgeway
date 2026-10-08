@@ -1,8 +1,10 @@
 "use client";
 
-import { Anchor, Table } from "@mantine/core";
+import { Anchor, Box, Table } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
+
+import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 
 interface OwnerListRowProps {
   ownerId: string;
@@ -22,32 +24,24 @@ const OwnerListRow: React.FC<OwnerListRowProps> = ({
   hasLogin,
   buildingCount,
 }) => {
+  const href = `/owners/${ownerId}`;
+
   return (
-    <Table.Tr className="hover:bg-sidebar">
+    <Table.Tr className="relative cursor-pointer hover:bg-sidebar">
       <Table.Td className={NAME_TD}>
         <Anchor
           component={Link}
-          href={`/owners/${ownerId}`}
+          href={href}
           underline="never"
-          className="font-bold text-darkGrey"
+          className="inline-flex items-center gap-3 font-bold text-darkGrey after:absolute after:inset-0"
         >
-          {displayName}
+          <PersonAvatar displayName={displayName} decorative />
+          <Box component="span">{displayName}</Box>
         </Anchor>
       </Table.Td>
       <Table.Td className={TD}>{contactEmail ?? "—"}</Table.Td>
       <Table.Td className={TD}>
-        {buildingCount === 0 ? (
-          "None"
-        ) : (
-          <Anchor
-            component={Link}
-            href={`/owners/${ownerId}`}
-            underline="never"
-            className="text-[15px] text-darkGrey"
-          >
-            {buildingCount}
-          </Anchor>
-        )}
+        {buildingCount === 0 ? "None" : buildingCount}
       </Table.Td>
       <Table.Td className={TD}>{hasLogin ? "Yes" : "No"}</Table.Td>
     </Table.Tr>

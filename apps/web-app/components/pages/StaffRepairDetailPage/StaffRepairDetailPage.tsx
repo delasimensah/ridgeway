@@ -15,6 +15,7 @@ import AssignRepairForm, {
   type FieldWorkerOption,
 } from "../../repairs/AssignRepairForm/AssignRepairForm";
 import RepairStatusBadge from "../../repairs/RepairStatusBadge/RepairStatusBadge";
+import RepairTimeline from "../../repairs/RepairTimeline/RepairTimeline";
 import ScheduleRepairForm from "../../repairs/ScheduleRepairForm/ScheduleRepairForm";
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
@@ -162,7 +163,7 @@ const StaffRepairDetailPage: React.FC<StaffRepairDetailPageProps> = ({
                   component="img"
                   src={url}
                   alt="Repair photo"
-                  className="h-24 w-24 rounded border border-border object-cover"
+                  className="h-40 w-40 rounded-[8px] border border-border bg-primary object-cover"
                 />
               ))}
             </Box>
@@ -180,7 +181,7 @@ const StaffRepairDetailPage: React.FC<StaffRepairDetailPageProps> = ({
                   component="img"
                   src={url}
                   alt="Completion photo"
-                  className="h-24 w-24 rounded border border-border object-cover"
+                  className="h-40 w-40 rounded-[8px] border border-border bg-primary object-cover"
                 />
               ))}
             </Box>
@@ -194,18 +195,13 @@ const StaffRepairDetailPage: React.FC<StaffRepairDetailPageProps> = ({
         >
           Timeline
         </Heading>
-        <Box className="space-y-8">
-          {events.map((event) => (
-            <Box key={event._id}>
-              <Text className="font-bold">
-                {repairEventTitle(event.toStatus)}
-              </Text>
-              <Text className="text-sm text-grey">
-                {event.actorName} · {formatRepairDate(event.createdAt)}
-              </Text>
-            </Box>
-          ))}
-        </Box>
+        <RepairTimeline
+          events={events.map((event) => ({
+            _id: event._id,
+            title: repairEventTitle(event.toStatus),
+            detail: `${event.actorName} · ${formatRepairDate(event.createdAt)}`,
+          }))}
+        />
       </Box>
     </Box>
   );

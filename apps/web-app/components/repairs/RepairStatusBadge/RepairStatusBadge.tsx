@@ -11,22 +11,24 @@ interface RepairStatusBadgeProps {
   status: WorkOrderStatus;
 }
 
-const STATUS_CLASS: Record<WorkOrderStatus, string> = {
-  received: "bg-grey text-white",
-  assigned: "bg-primaryHover text-white",
-  scheduled: "bg-accent text-darkGrey",
-  done: "border border-border bg-sidebar text-darkGrey",
+const DOT_CLASS: Record<WorkOrderStatus, string> = {
+  received: "bg-dotBlue",
+  assigned: "bg-dotTeal",
+  scheduled: "bg-dotGold",
+  done: "bg-dotGreen",
 };
 
 const RepairStatusBadge: React.FC<RepairStatusBadgeProps> = ({ status }) => {
   return (
     <Box
       component="span"
-      className={cn(
-        "rounded-full px-3 py-1 text-[12px] font-bold uppercase",
-        STATUS_CLASS[status]
-      )}
+      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-white px-2.5 py-1 text-[12px] font-medium text-darkGrey"
     >
+      <Box
+        component="span"
+        aria-hidden
+        className={cn("h-2 w-2 rounded-full", DOT_CLASS[status])}
+      />
       {repairStatusLabel(status)}
     </Box>
   );

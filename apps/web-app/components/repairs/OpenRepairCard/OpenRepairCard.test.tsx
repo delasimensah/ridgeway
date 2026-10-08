@@ -18,6 +18,6 @@ describe("OpenRepairCard", () => {
     expect(
       screen.getByRole("link", { name: /kitchen tap leak/i })
     ).toHaveAttribute("href", "/repairs/wo-1");
-    expect(screen.getByText("RECEIVED")).toBeInTheDocument();
+    expect(screen.getByText("Received")).toBeInTheDocument();
   });
 });

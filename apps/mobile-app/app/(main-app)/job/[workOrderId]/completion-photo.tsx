@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation } from "convex/react";
+import { useQuery } from "convex-helpers/react";
 import * as ImagePicker from "expo-image-picker";
 import { type Href, router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
@@ -15,6 +16,13 @@ import {
 
 const CompletionPhotoRoute = () => {
   const { workOrderId } = useLocalSearchParams<{ workOrderId: string }>();
+  const ticket = useQuery(api.workOrders.get, {
+    workOrderId: workOrderId as Id<"workOrders">,
+  });
+  const jobLine =
+    ticket.data != null
+      ? `${ticket.data.title} · ${ticket.data.buildingName} ${ticket.data.unitLabel}`
+      : "";
   const createUploadUrl = useMutation(api.files.createUploadUrl);
   const attachToWorkOrder = useMutation(api.files.attachToWorkOrder);
   const complete = useMutation(api.workOrders.complete);
@@ -76,6 +84,7 @@ const CompletionPhotoRoute = () => {
 
   return (
     <CompletionPhotoScreen
+      jobLine={jobLine}
       uri={uri}
       caption={caption}
       isSaving={isSaving}

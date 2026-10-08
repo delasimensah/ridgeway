@@ -10,6 +10,7 @@ export {
   showSuccessNotification,
 } from "./notificationUtils";
 export { default as staffGreeting } from "./staffGreeting";
+export { buildingLookPhoto, personLookPhoto } from "./lookPhotos";
 export { default as areaFromAccraAddress } from "./areaFromAccraAddress";
 export {
   ACCRA_CITY,

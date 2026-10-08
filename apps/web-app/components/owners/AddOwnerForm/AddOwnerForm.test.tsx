@@ -89,7 +89,7 @@ describe("AddOwnerForm", () => {
     });
     expect(mockGrantLogin).not.toHaveBeenCalled();
     expect(mockSetPassword).not.toHaveBeenCalled();
-    expect(mockReplace).toHaveBeenCalledWith("/owners");
+    expect(mockReplace).toHaveBeenCalledWith("/users");
   });
 
   it("grants a login when a password is set", async () => {
@@ -122,7 +122,7 @@ describe("AddOwnerForm", () => {
       });
     });
     expect(mockMutate).not.toHaveBeenCalled();
-    expect(mockReplace).toHaveBeenCalledWith("/owners");
+    expect(mockReplace).toHaveBeenCalledWith("/users");
   });
 
   it("lets staff type a new password when the owner can already sign in", async () => {
@@ -373,6 +373,6 @@ describe("AddOwnerForm", () => {
     render(<AddOwnerForm />);
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
-    expect(mockPush).toHaveBeenCalledWith("/owners");
+    expect(mockPush).toHaveBeenCalledWith("/users");
   });
 });

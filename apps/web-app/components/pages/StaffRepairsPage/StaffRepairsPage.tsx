@@ -30,7 +30,7 @@ const StaffRepairsPage: React.FC<StaffRepairsPageProps> = ({
       isEmpty={repairs.length === 0}
       empty={
         <ListEmpty
-          title="No open repairs."
+          title="Nothing open right now."
           description="When a tenant files a ticket, it will show here."
         />
       }

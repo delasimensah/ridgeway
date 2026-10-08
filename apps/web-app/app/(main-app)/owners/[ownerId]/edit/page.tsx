@@ -18,7 +18,7 @@ const EditOwnerRoute = () => {
 
   useEffect(() => {
     if (owner.isSuccess && owner.data === null) {
-      router.replace("/owners");
+      router.replace("/users");
     }
   }, [owner.data, owner.isSuccess, router]);
 

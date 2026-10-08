@@ -40,17 +40,14 @@ const TenantRepairCard: React.FC<TenantRepairCardProps> = ({
           </Text>
           <JobStatusChip status={repair.status} />
         </HStack>
-        <HStack spacing="sm" align="center">
-          <Ionicons name="construct" size={14} color={COLORS.grey} />
-          <Text className="text-[13px] text-grey">
-            {repairMetaLine(repair.category, repair.urgency)}
-          </Text>
-        </HStack>
         <HStack align="center" justify="between">
-          <Text className="font-app-medium text-[13px] text-darkGrey">
-            View status timeline
-          </Text>
-          <Ionicons name="chevron-forward" size={12} color={COLORS.darkGrey} />
+          <HStack spacing="sm" align="center" className="min-w-0 flex-1">
+            <Ionicons name="construct" size={14} color={COLORS.grey} />
+            <Text className="text-[13px] text-grey">
+              {repairMetaLine(repair.category, repair.urgency)}
+            </Text>
+          </HStack>
+          <Ionicons name="chevron-forward" size={16} color={COLORS.grey} />
         </HStack>
       </VStack>
     </SurfaceCard>

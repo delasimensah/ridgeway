@@ -29,13 +29,15 @@ const CompletionPhotoPicker: React.FC<CompletionPhotoPickerProps> = ({
       {uri ? (
         <Image
           source={{ uri }}
-          className="h-full w-full rounded-lg"
+          className="h-full w-full rounded-lg bg-primary"
+          style={{ backgroundColor: COLORS.primary }}
           contentFit="cover"
         />
       ) : (
         <VStack spacing="sm" align="center">
-          <Ionicons name="camera" size={32} color={COLORS.grey} />
-          <Text className="font-app-bold text-grey">{label}</Text>
+          <Ionicons name="camera" size={40} color={COLORS.darkGrey} />
+          <Text className="font-app-bold text-base text-darkGrey">{label}</Text>
+          <Text className="text-sm text-grey">Tap to take a photo</Text>
         </VStack>
       )}
     </Pressable>

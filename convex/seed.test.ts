@@ -85,9 +85,23 @@ describe("seed.insertWorld", () => {
     expect(labels).toHaveLength(24);
 
     const asanteId = await userIdByEmail(t, OWNER_ASANTE.email);
-    const asanteRent = await asUser(t, asanteId).query(
-      api.rent.summaryForOwner,
+    const asanteBuildings = await asUser(t, asanteId).query(
+      api.buildings.listForViewer,
       {}
+    );
+    const airport = asanteBuildings.find(
+      (row) => row.name === "Airport West Residences"
+    );
+    if (airport === undefined) {
+      throw new Error("Airport West Residences missing");
+    }
+    const asanteRent = await asUser(t, asanteId).query(
+      api.rent.listByBuilding,
+      {
+        buildingId: airport._id,
+        periodLabel: "2026-09",
+        paginationOpts: { numItems: 20, cursor: null },
+      }
     );
     expect(asanteRent.currency).toBe("USD");
     expect(asanteRent.collected + asanteRent.outstanding).toBeGreaterThan(0);

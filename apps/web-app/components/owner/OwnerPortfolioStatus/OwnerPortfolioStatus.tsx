@@ -43,7 +43,7 @@ const OwnerPortfolioStatus: React.FC<OwnerPortfolioStatusProps> = ({
             <Text className="mb-1 text-sm font-medium uppercase tracking-wider text-grey">
               Total Collected
             </Text>
-            <Text className="text-[32px] font-bold text-darkGrey md:text-[40px]">
+            <Text className="text-[32px] font-semibold tabular-nums tracking-tight text-darkGrey md:text-[40px]">
               {formatMoney(collected, currency)}
             </Text>
             <Text className="mt-2 text-[13px] text-grey">Current month</Text>
@@ -53,7 +53,7 @@ const OwnerPortfolioStatus: React.FC<OwnerPortfolioStatusProps> = ({
             <Text className="mb-1 text-sm font-medium uppercase tracking-wider text-grey">
               Total Outstanding
             </Text>
-            <Text className="text-[32px] font-bold text-accent md:text-[40px]">
+            <Text className="text-[32px] font-semibold tabular-nums tracking-tight text-accentInk md:text-[40px]">
               {formatMoney(outstanding, currency)}
             </Text>
             <Text className="mt-2 text-[13px] text-grey">{acrossLabel}</Text>

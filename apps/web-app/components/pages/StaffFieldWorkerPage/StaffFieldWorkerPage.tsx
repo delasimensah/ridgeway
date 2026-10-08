@@ -33,11 +33,11 @@ const StaffFieldWorkerPage: React.FC<StaffFieldWorkerPageProps> = ({
         <Group gap={8} className="mb-2 text-[14px] font-medium">
           <Anchor
             component={Link}
-            href="/field"
+            href="/users"
             underline="never"
             className="text-grey hover:text-darkGrey"
           >
-            Field workers
+            Users
           </Anchor>
         </Group>
         <Group

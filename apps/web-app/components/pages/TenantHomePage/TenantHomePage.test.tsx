@@ -57,7 +57,7 @@ describe("TenantHomePage", () => {
       />
     );
 
-    expect(screen.getByText("No open repairs.")).toBeInTheDocument();
+    expect(screen.getByText("Nothing open right now.")).toBeInTheDocument();
   });
 
   it("keeps unit chrome and section headings while home loads", () => {
@@ -82,6 +82,8 @@ describe("TenantHomePage", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Loading next rent")).toBeInTheDocument();
     expect(screen.getByLabelText("Loading repairs")).toBeInTheDocument();
-    expect(screen.queryByText("No open repairs.")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Nothing open right now.")
+    ).not.toBeInTheDocument();
   });
 });
