@@ -12,7 +12,10 @@ describe("StaffSidebar", () => {
     render(<StaffSidebar displayName="Ama Boateng" onSignOut={onSignOut} />);
 
     expect(screen.getByText("Ama Boateng")).toBeInTheDocument();
-    expect(screen.getByText("AB")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Ama Boateng" })).toHaveAttribute(
+      "src",
+      expect.stringMatching(/^\/look\/people\//)
+    );
     expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute(
       "href",
       "/"
@@ -21,21 +24,13 @@ describe("StaffSidebar", () => {
       "href",
       "/buildings"
     );
-    expect(screen.getByRole("link", { name: "Owners" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Users" })).toHaveAttribute(
       "href",
-      "/owners"
+      "/users"
     );
     expect(screen.getByRole("link", { name: "Tenants" })).toHaveAttribute(
       "href",
       "/tenants"
-    );
-    expect(screen.getByRole("link", { name: "Staff" })).toHaveAttribute(
-      "href",
-      "/office"
-    );
-    expect(screen.getByRole("link", { name: "Field workers" })).toHaveAttribute(
-      "href",
-      "/field"
     );
     expect(screen.getByRole("link", { name: "Repairs" })).toHaveAttribute(
       "href",

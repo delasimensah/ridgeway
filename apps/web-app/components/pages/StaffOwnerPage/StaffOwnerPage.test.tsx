@@ -30,9 +30,9 @@ describe("StaffOwnerPage", () => {
     expect(
       screen.getByRole("heading", { name: "Kwesi Mensah" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Owners" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Users" })).toHaveAttribute(
       "href",
-      "/owners"
+      "/users"
     );
     expect(screen.getByRole("link", { name: "Edit owner" })).toHaveAttribute(
       "href",

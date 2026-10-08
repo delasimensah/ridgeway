@@ -41,7 +41,7 @@ describe("TenantRepairTimelinePage", () => {
     mockMutate.mockResolvedValue(null);
     render(<TenantRepairTimelinePage {...ticket} canEditDescription />);
 
-    expect(screen.getByText("RECEIVED")).toBeInTheDocument();
+    expect(screen.getByText("Received")).toBeInTheDocument();
     expect(screen.getByText("Repair received")).toBeInTheDocument();
     await fillField(
       user,

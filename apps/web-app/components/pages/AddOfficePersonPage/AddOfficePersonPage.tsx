@@ -25,11 +25,11 @@ const AddOfficePersonPage: React.FC<AddOfficePersonPageProps> = ({
         <Group gap={8} className="mb-2 text-[14px] font-medium">
           <Anchor
             component={Link}
-            href="/office"
+            href="/users"
             underline="never"
             className="text-grey hover:text-darkGrey"
           >
-            Staff
+            Users
           </Anchor>
         </Group>
         <Heading

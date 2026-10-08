@@ -14,7 +14,8 @@ Source: [Color Hunt — #1A3636 #40534C #677D6A #D6BD98](https://colorhunt.co/pa
 
 - **Primary:** `#1A3636` — buttons, links, active nav, headline text
 - **Primary hover:** `#40534C` (second swatch)
-- **Accent:** `#D6BD98` — money, scheduled chips, small highlights. Not the page fill.
+- **Accent:** `#D6BD98` — chip fills, highlights, initials marks. Not for text on white, and not the page fill.
+- **Accent ink:** `#8A6B3A` — money and other accent text on white.
 - **Neutrals:**
   - Page background `#FFFFFF` (Jobber/Ghost canvas)
   - Surface `#FFFFFF`
@@ -24,6 +25,7 @@ Source: [Color Hunt — #1A3636 #40534C #677D6A #D6BD98](https://colorhunt.co/pa
   - Grey `#677D6A`
   - Border `#E8E4DA`
 - **Status (repairs):** received `#677D6A`, assigned `#40534C`, scheduled `#D6BD98`, done `#1A3636`, overdue `#7F2020` from [Color Hunt — #F6F3EB #C9CAAC #869B7E #7F2020](https://colorhunt.co/palette/f6f3ebc9caac869b7e7f2020)
+- **Status dots** (the small mark on a chip, brighter than the brand inks): paid and done `#2BA86A`, due and received `#3B82F6`, partial and scheduled `#E2A325`, late `#E24B4A`, assigned `#14A3A0`
 
 ---
 
@@ -41,7 +43,7 @@ Source: [Color Hunt — #1A3636 #40534C #677D6A #D6BD98](https://colorhunt.co/pa
 - **Web spacing:** generous — 16–24px between elements, 24–32px between sections.
 - **Phone spacing:** compact rows — 8–12px inside a job card, 16px between cards. Thumb targets at least 44px.
 - **Corner radius:** 8px cards and buttons; 6px inputs.
-- **Shadows:** very light card shadow plus the warm 1px border. No heavy drop shadows.
+- **Shadows:** a soft two-layer card shadow plus the warm 1px border. Cards may lift slightly on hover. No heavy drop shadows.
 
 ---
 

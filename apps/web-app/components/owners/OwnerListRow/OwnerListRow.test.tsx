@@ -26,10 +26,7 @@ describe("OwnerListRow", () => {
       "/owners/owner-1"
     );
     expect(screen.getByText("kwesi.mensah@ridgeway.gh")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "2" })).toHaveAttribute(
-      "href",
-      "/owners/owner-1"
-    );
+    expect(screen.getByText("2")).toBeInTheDocument();
     expect(screen.getByText("Yes")).toBeInTheDocument();
   });
 

@@ -3,6 +3,16 @@ import { describe, expect, it } from "vitest";
 import { api, internal } from "./_generated/api";
 import { asUser, errorCode, insertPerson, makeBackend } from "./test.setup";
 import { dueOnForPeriod, monthLabelFromMillis } from "./rent";
+
+function nextMonthLabel(periodLabel: string): string {
+  const year = Number(periodLabel.slice(0, 4));
+  const month = Number(periodLabel.slice(5, 7));
+  if (month === 12) {
+    return `${year + 1}-01`;
+  }
+  return `${year}-${String(month + 1).padStart(2, "0")}`;
+}
+
 async function tenantUserIdByEmail(
   t: ReturnType<typeof makeBackend>,
   email: string
@@ -140,7 +150,11 @@ describe("rent", () => {
 
     const staffList = await asUser(t, staff.userId).query(
       api.rent.listByBuilding,
-      { buildingId, paginationOpts: { numItems: 20, cursor: null } }
+      {
+        buildingId,
+        periodLabel: "2026-09",
+        paginationOpts: { numItems: 20, cursor: null },
+      }
     );
     expect(staffList.page).toEqual([
       expect.objectContaining({
@@ -311,32 +325,33 @@ describe("rent", () => {
       rentDueDay: 5,
     });
 
+    const periodLabel = nextMonthLabel(monthLabelFromMillis(Date.now()));
     const first = await t.mutation(internal.rent.chargeMonth, {
-      periodLabel: "2026-10",
+      periodLabel,
     });
     expect(first.inserted).toBe(1);
 
     const rows = await t.run(async (ctx) => {
       return await ctx.db.query("rentPeriods").collect();
     });
-    const october = rows.filter((row) => row.periodLabel === "2026-10");
-    expect(october).toHaveLength(1);
-    expect(october[0]).toMatchObject({
+    const charged = rows.filter((row) => row.periodLabel === periodLabel);
+    expect(charged).toHaveLength(1);
+    expect(charged[0]).toMatchObject({
       amount: 450000,
       currency: "GHS",
-      dueOn: "2026-10-05",
+      dueOn: dueOnForPeriod(periodLabel, 5),
       confirmedStatus: "unpaid",
     });
 
     const second = await t.mutation(internal.rent.chargeMonth, {
-      periodLabel: "2026-10",
+      periodLabel,
     });
     expect(second.inserted).toBe(0);
     const afterRepeat = await t.run(async (ctx) => {
       return await ctx.db.query("rentPeriods").collect();
     });
     expect(
-      afterRepeat.filter((row) => row.periodLabel === "2026-10")
+      afterRepeat.filter((row) => row.periodLabel === periodLabel)
     ).toHaveLength(1);
   });
 

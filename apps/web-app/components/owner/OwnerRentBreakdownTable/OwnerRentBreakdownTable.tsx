@@ -60,7 +60,9 @@ const OwnerRentBreakdownTable: React.FC<OwnerRentBreakdownTableProps> = ({
                 <Table.Td
                   className={cn(
                     `${TD} text-right text-[16px] font-bold`,
-                    building.outstanding > 0 ? "text-accent" : "text-darkGrey"
+                    building.outstanding > 0
+                      ? "text-accentInk"
+                      : "text-darkGrey"
                   )}
                 >
                   {formatMoney(building.outstanding, currency)}
@@ -79,7 +81,7 @@ const OwnerRentBreakdownTable: React.FC<OwnerRentBreakdownTableProps> = ({
               <Table.Td
                 className={cn(
                   `${TD} text-right text-[18px]`,
-                  outstanding > 0 ? "text-accent" : "text-darkGrey"
+                  outstanding > 0 ? "text-accentInk" : "text-darkGrey"
                 )}
               >
                 {formatMoney(outstanding, currency)}

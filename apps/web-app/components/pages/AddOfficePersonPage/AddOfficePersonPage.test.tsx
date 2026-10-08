@@ -23,9 +23,9 @@ describe("AddOfficePersonPage", () => {
     expect(
       screen.getByRole("heading", { name: "Add office person" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Staff" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Users" })).toHaveAttribute(
       "href",
-      "/office"
+      "/users"
     );
     expect(
       screen.getByRole("textbox", { name: /^full name/i })

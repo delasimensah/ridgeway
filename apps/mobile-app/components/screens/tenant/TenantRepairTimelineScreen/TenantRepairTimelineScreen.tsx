@@ -196,7 +196,8 @@ const TenantRepairTimelineScreen: React.FC<TenantRepairTimelineScreenProps> = ({
                         >
                           <Image
                             source={{ uri: url }}
-                            className="h-24 w-24 rounded-lg border border-border"
+                            className="h-24 w-24 rounded-lg border border-border bg-primary"
+                            style={{ backgroundColor: COLORS.primary }}
                             contentFit="cover"
                           />
                         </View>

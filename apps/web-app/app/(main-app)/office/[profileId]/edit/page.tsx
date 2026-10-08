@@ -22,7 +22,7 @@ const EditOfficePersonRoute = () => {
 
   useEffect(() => {
     if (person.isSuccess && person.data === null) {
-      router.replace("/office");
+      router.replace("/users");
     }
   }, [person.data, person.isSuccess, router]);
 

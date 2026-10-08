@@ -56,7 +56,7 @@ const OwnerUpcomingRentTable: React.FC<OwnerUpcomingRentTableProps> = ({
                     <Text
                       className={cn(
                         "text-[12px] font-bold uppercase",
-                        isCollected ? "text-darkGrey" : "text-accent"
+                        isCollected ? "text-darkGrey" : "text-accentInk"
                       )}
                     >
                       {isCollected ? "Collected" : "Outstanding"}

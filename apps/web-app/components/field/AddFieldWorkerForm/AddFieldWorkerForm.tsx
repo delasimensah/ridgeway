@@ -77,7 +77,7 @@ const AddFieldWorkerForm: React.FC<AddFieldWorkerFormProps> = ({
           password: values.password,
         });
       }
-      router.replace("/field");
+      router.replace("/users");
     } catch (caught) {
       const info = getConvexErrorInfo(caught);
       if (info.code === "NOT_PERMITTED" || info.message === "NOT_PERMITTED") {
@@ -132,7 +132,7 @@ const AddFieldWorkerForm: React.FC<AddFieldWorkerFormProps> = ({
         <Button
           type="button"
           variant="subtle"
-          onClick={() => router.push("/field")}
+          onClick={() => router.push("/users")}
           className="h-auto w-full px-6 py-3 text-[15px] font-semibold text-grey hover:text-darkGrey sm:w-auto"
         >
           Cancel

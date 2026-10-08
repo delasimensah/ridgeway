@@ -33,7 +33,7 @@ const OwnerRentTotals: React.FC<OwnerRentTotalsProps> = ({
         <Text className="mb-1 text-sm font-medium uppercase tracking-wider text-grey">
           Collected
         </Text>
-        <Text className="text-[32px] font-bold text-darkGrey sm:text-[48px]">
+        <Text className="text-[32px] font-semibold tabular-nums tracking-tight text-darkGrey sm:text-[48px]">
           {formatMoney(collected, currency)}
         </Text>
         <Box className="mt-4 flex items-center gap-2">
@@ -47,10 +47,10 @@ const OwnerRentTotals: React.FC<OwnerRentTotalsProps> = ({
         </Box>
       </Box>
       <Box className="rounded-[8px] border border-border bg-white p-6 shadow-sm sm:p-8">
-        <Text className="mb-1 text-sm font-medium uppercase tracking-wider text-accent">
+        <Text className="mb-1 text-sm font-medium uppercase tracking-wider text-grey">
           Outstanding
         </Text>
-        <Text className="text-[32px] font-bold text-accent sm:text-[48px]">
+        <Text className="text-[32px] font-semibold tabular-nums tracking-tight text-accentInk sm:text-[48px]">
           {formatMoney(outstanding, currency)}
         </Text>
         <Text className="mt-4 text-sm text-grey">Expected by end of month</Text>

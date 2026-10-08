@@ -44,9 +44,9 @@ const NAV_ITEMS: {
 ];
 
 const NAV_LINK_CLASS =
-  "flex items-center gap-3 rounded-[8px] px-4 py-2.5 no-underline hover:bg-lightGrey";
+  "relative flex items-center gap-3 overflow-hidden rounded-[8px] px-4 py-2.5 no-underline transition-colors duration-150 hover:bg-sidebar";
 const NAV_LINK_ACTIVE_CLASS =
-  "bg-primary font-semibold text-white hover:bg-primary hover:text-white";
+  "bg-sidebar font-semibold text-darkGrey before:absolute before:bottom-2 before:left-0 before:top-2 before:w-[3px] before:rounded-full before:bg-primary hover:bg-sidebar hover:text-darkGrey";
 const NAV_LINK_IDLE_CLASS = "font-medium text-darkGrey";
 
 const OwnerSidebar: React.FC<OwnerSidebarProps> = ({
@@ -57,7 +57,7 @@ const OwnerSidebar: React.FC<OwnerSidebarProps> = ({
   onNavigate,
 }) => {
   return (
-    <Box className="flex h-full w-full flex-col border-r border-border bg-sidebar">
+    <Box className="flex h-full w-full flex-col border-r border-border bg-white">
       <Box className="p-6">
         <BrandMark
           size="nav"

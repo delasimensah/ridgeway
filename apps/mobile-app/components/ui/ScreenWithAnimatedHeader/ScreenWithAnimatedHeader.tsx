@@ -35,7 +35,7 @@ const ScreenWithAnimatedHeader: React.FC<ScreenWithAnimatedHeaderProps> = ({
         onScroll={scrollHandler}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100, ...contentContainerStyle }}
+        contentContainerStyle={{ paddingBottom: 140, ...contentContainerStyle }}
       >
         <VStack spacing="2xl" paddingX="lg" paddingY="md">
           <LargeTitle title={title} />

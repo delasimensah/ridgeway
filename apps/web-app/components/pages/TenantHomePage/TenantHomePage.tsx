@@ -121,7 +121,9 @@ const TenantHomePage: React.FC<TenantHomePageProps> = ({
               </Box>
             ) : null}
             {loadState === "ready" && repairs.length === 0 ? (
-              <Text className="text-base text-grey">No open repairs.</Text>
+              <Text className="text-base text-grey">
+                Nothing open right now.
+              </Text>
             ) : null}
             {loadState === "ready" && repairs.length > 0 ? (
               <Box className="space-y-4">

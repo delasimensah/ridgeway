@@ -119,7 +119,7 @@ const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
             Open repairs
           </Heading>
           {openRepairs.length === 0 ? (
-            <Text className="text-base text-grey">No open repairs.</Text>
+            <Text className="text-base text-grey">Nothing open right now.</Text>
           ) : (
             <Box className="space-y-4">
               {openRepairs.map((repair) => (

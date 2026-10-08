@@ -1,6 +1,12 @@
 "use client";
 
 import { Anchor, Box, SimpleGrid, Stack } from "@mantine/core";
+import {
+  IconBuilding,
+  IconCashBanknote,
+  IconDoor,
+  IconTool,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import React from "react";
 import {
@@ -31,9 +37,16 @@ interface StaffHomeRepair {
 }
 
 interface StaffHomeRentPeriod {
+  _id: string;
   confirmedStatus: RentConfirmedStatus;
   dueOn: string;
+  unitLabel: string;
+  tenantName: string;
+  buildingName: string;
 }
+
+const OPEN_REPAIR_LIMIT = 5;
+const LATE_RENT_LIMIT = 5;
 
 interface StaffHomePageProps {
   greeting: string;
@@ -74,9 +87,12 @@ const StaffHomePage: React.FC<StaffHomePageProps> = ({
   rentPeriods,
   serverNow,
 }) => {
-  const lateCount = rentPeriods.filter(
+  const latePeriods = rentPeriods.filter(
     (period) => getRentDisplayStatus(period, serverNow) === "late"
-  ).length;
+  );
+  const lateCount = latePeriods.length;
+  const visibleRepairs = repairs.slice(0, OPEN_REPAIR_LIMIT);
+  const visibleLate = latePeriods.slice(0, LATE_RENT_LIMIT);
   const showPortfolio =
     loadState === "loading" || (loadState === "ready" && buildingCount > 0);
 
@@ -118,22 +134,26 @@ const StaffHomePage: React.FC<StaffHomePageProps> = ({
             label="Buildings"
             value={buildingCount}
             href="/buildings"
+            Icon={IconBuilding}
           />
           <StaffHomeMetricCard
             label="Open repairs"
             value={repairs.length}
             href="/repairs"
+            Icon={IconTool}
           />
           <StaffHomeMetricCard
             label="Rent late"
             value={lateCount}
             href="/rent"
+            Icon={IconCashBanknote}
             valueClassName="text-overdue"
           />
           <StaffHomeMetricCard
             label="Units empty"
             value={emptyUnitCount}
             href="/buildings"
+            Icon={IconDoor}
           />
         </SimpleGrid>
       ) : null}
@@ -160,11 +180,21 @@ const StaffHomePage: React.FC<StaffHomePageProps> = ({
               </Box>
             ) : null}
             {loadState === "ready" && repairs.length === 0 ? (
-              <Text className="text-base text-grey">No open repairs.</Text>
+              <Box className="flex items-center gap-3 rounded-[8px] border border-dashed border-border bg-white px-4 py-5">
+                <IconTool
+                  size={20}
+                  stroke={1.5}
+                  className="text-grey"
+                  aria-hidden
+                />
+                <Text className="text-base text-grey">
+                  Nothing open right now.
+                </Text>
+              </Box>
             ) : null}
             {loadState === "ready" && repairs.length > 0 ? (
               <Box className="space-y-4">
-                {repairs.map((repair) => (
+                {visibleRepairs.map((repair) => (
                   <OpenRepairCard
                     key={repair._id}
                     href={`/repairs/${repair._id}`}
@@ -173,6 +203,16 @@ const StaffHomePage: React.FC<StaffHomePageProps> = ({
                     status={repair.status}
                   />
                 ))}
+                {repairs.length > OPEN_REPAIR_LIMIT ? (
+                  <Anchor
+                    component={Link}
+                    href="/repairs"
+                    underline="never"
+                    className="inline-block text-sm font-semibold text-darkGrey"
+                  >
+                    View all repairs
+                  </Anchor>
+                ) : null}
               </Box>
             ) : null}
           </Box>
@@ -186,20 +226,60 @@ const StaffHomePage: React.FC<StaffHomePageProps> = ({
             {loadState === "loading" ? (
               <StaffRentSummarySkeleton layout="stack" />
             ) : (
-              <Anchor
-                component={Link}
-                href="/rent"
-                underline="never"
-                aria-label="Rent status"
-                className="!block"
-              >
-                <StaffRentSummary
-                  layout="stack"
-                  collected={collected}
-                  outstanding={outstanding}
-                  currency={currency}
-                />
-              </Anchor>
+              <Box>
+                <Anchor
+                  component={Link}
+                  href="/rent"
+                  underline="never"
+                  aria-label="Rent status"
+                  className="!block"
+                >
+                  <StaffRentSummary
+                    layout="stack"
+                    collected={collected}
+                    outstanding={outstanding}
+                    currency={currency}
+                  />
+                </Anchor>
+                {visibleLate.length > 0 ? (
+                  <Box className="mt-4 rounded-[8px] border border-border bg-white p-4 shadow-card">
+                    <Text className="mb-3 text-sm font-semibold text-darkGrey">
+                      Late this month
+                    </Text>
+                    <Box className="space-y-3">
+                      {visibleLate.map((period) => (
+                        <Anchor
+                          key={period._id}
+                          component={Link}
+                          href="/rent"
+                          underline="never"
+                          className="!block"
+                        >
+                          <Text className="text-sm font-semibold text-darkGrey">
+                            {period.unitLabel}
+                            {period.tenantName !== ""
+                              ? ` · ${period.tenantName}`
+                              : ""}
+                          </Text>
+                          <Text className="text-[13px] text-grey">
+                            {period.buildingName}
+                          </Text>
+                        </Anchor>
+                      ))}
+                    </Box>
+                    {lateCount > LATE_RENT_LIMIT ? (
+                      <Anchor
+                        component={Link}
+                        href="/rent"
+                        underline="never"
+                        className="mt-3 inline-block text-sm font-semibold text-darkGrey"
+                      >
+                        View all late rent
+                      </Anchor>
+                    ) : null}
+                  </Box>
+                ) : null}
+              </Box>
             )}
           </Box>
         </SimpleGrid>

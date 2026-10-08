@@ -41,6 +41,8 @@ export {
 
 export { getDisplayInitials } from "./displayInitials";
 
+export { personLookPhotoFile, type PersonLookPhotoFile } from "./lookPhotos";
+
 export {
   firstQueryError,
   isNotPermittedError,

@@ -104,7 +104,7 @@ const TenantHomeScreen: React.FC<TenantHomeScreenProps> = ({
           </HStack>
           {repairs.length === 0 ? (
             <ListEmpty
-              message="No open repairs."
+              message="Nothing open right now."
               actionLabel="File a repair"
               onAction={onFileRepair}
               className="py-6"

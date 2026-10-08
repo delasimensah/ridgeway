@@ -22,7 +22,7 @@ interface RepairListTableProps {
 }
 
 const TH =
-  "px-4 py-3 text-[13px] font-bold uppercase tracking-wider text-grey sm:px-6 sm:py-4";
+  "px-4 py-3 text-[12px] font-semibold uppercase tracking-wider text-grey sm:px-6 sm:py-4";
 const TD = "px-4 py-4 text-[15px] text-darkGrey sm:px-6 sm:py-5";
 
 const RepairListTable: React.FC<RepairListTableProps> = ({

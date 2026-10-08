@@ -33,7 +33,7 @@ describe("StaffRepairsPage", () => {
   it("shows an empty state when there are none", () => {
     render(<StaffRepairsPage repairs={[]} />);
     expect(
-      screen.getByRole("heading", { name: "No open repairs." })
+      screen.getByRole("heading", { name: "Nothing open right now." })
     ).toBeInTheDocument();
   });
 });

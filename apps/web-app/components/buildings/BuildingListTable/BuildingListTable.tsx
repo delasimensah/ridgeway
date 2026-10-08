@@ -19,11 +19,11 @@ interface BuildingListTableProps {
 }
 
 const TH =
-  "px-4 py-3 text-[13px] font-bold uppercase tracking-wider text-grey sm:px-6 sm:py-4";
+  "px-4 py-3 text-[12px] font-semibold uppercase tracking-wider text-grey sm:px-6 sm:py-4";
 
 const BuildingListTable: React.FC<BuildingListTableProps> = ({ buildings }) => {
   return (
-    <Box className="overflow-hidden rounded-[8px] border border-border bg-white shadow-sm">
+    <Box className="overflow-hidden rounded-[8px] border border-border bg-white shadow-card">
       <Table.ScrollContainer minWidth={640} type="native">
         <Table highlightOnHover withRowBorders>
           <Table.Thead className="bg-sidebar">

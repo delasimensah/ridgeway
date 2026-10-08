@@ -32,11 +32,11 @@ const AddOwnerPage: React.FC<AddOwnerPageProps> = ({
           <Group gap={8} className="mb-2 text-[14px] font-medium">
             <Anchor
               component={Link}
-              href={ownerId === undefined ? "/owners" : `/owners/${ownerId}`}
+              href="/users"
               underline="never"
               className="text-grey hover:text-darkGrey"
             >
-              Owners
+              Users
             </Anchor>
           </Group>
         ) : null}

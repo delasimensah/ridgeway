@@ -12,7 +12,7 @@ const RoleWaitScreen: React.FC = () => {
       align="center"
       justify="center"
       spacing="lg"
-      className="flex-1 bg-accent"
+      className="flex-1 bg-sidebar"
     >
       <BrandMark
         size="splash"

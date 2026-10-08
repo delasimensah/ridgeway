@@ -50,7 +50,7 @@ const TenantRepairsScreen: React.FC<TenantRepairsScreenProps> = ({
         <VStack spacing="sm" className="pb-8">
           {repairs.length === 0 ? (
             <ListEmpty
-              message="No open repairs."
+              message="Nothing open right now."
               actionLabel="File a repair"
               onAction={onFileRepair}
             />

@@ -50,6 +50,7 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 - [RIDGE-43](https://linear.app/dm-studios/issue/RIDGE-43/phone-loading-skeletons-match-the-screen-they-stand-in-for) is **Done**.
 - [RIDGE-28](https://linear.app/dm-studios/issue/RIDGE-28/a-person-can-reset-a-forgotten-password-from-sign-in) is **Canceled** (self-service forgot-password). Staff set passwords instead.
 - Next slice is [RIDGE-14](https://linear.app/dm-studios/issue/RIDGE-14/testflight-submit-of-the-tenant-and-field-app).
+- Look pass (website and phone) is in the product. Linear could not create the issue: the Ridgeway team is retired. Ticket text is under **Look pass** below. Branch: `feature/RIDGE-45`.
 - [RIDGE-19](https://linear.app/dm-studios/issue/RIDGE-19/epic-auth), [RIDGE-20](https://linear.app/dm-studios/issue/RIDGE-20/epic-staff-portfolio), [RIDGE-21](https://linear.app/dm-studios/issue/RIDGE-21/epic-owner-isolation), [RIDGE-22](https://linear.app/dm-studios/issue/RIDGE-22/epic-work-orders), and [RIDGE-23](https://linear.app/dm-studios/issue/RIDGE-23/epic-rent-status) are **Done**.
 - [RIDGE-24](https://linear.app/dm-studios/issue/RIDGE-24/epic-launch) stays **Todo** (RIDGE-14, RIDGE-15).
 - RIDGE-14 and RIDGE-15 are **Todo**.
@@ -58,6 +59,31 @@ Board flow: **Todo → In Progress → Done**. Backlog is later work only.
 When a slice is started, move that issue to In Progress immediately. Do not use Backlog for queued first-version work. Linear stays In Progress until merge to `main`. In the feature PR, write this Status now block as that post-merge board.
 
 Epics are parent issues for grouping. They are not slices. When every child is Done or Canceled, move the epic to **Done**. Linear does not do that on its own. Do not leave a finished epic in Todo.
+
+---
+
+## Look pass. Sharpen the look of the website and the phone apps
+
+Look only. Same screens, same actions, same data.
+
+Linear could not create this issue. The Ridgeway team is retired. Create it by hand if that team is restored, then match this text.
+
+**Branch:** `feature/RIDGE-45`
+
+**Acceptance (yes or no)**
+
+- Money on white uses the darker ink. Beige stays on fills and chips.
+- Staff home shows larger figures, at most five open repairs, a collected bar, and who is late this month.
+- Status labels are sentence case with a dot. Building rows show initials. The rent year is fully visible.
+- Sign-in is two columns on a wide screen, with a drawn skyline on the left. A repair timeline is a stepper. The active sidebar item is a warm tint with a short bar.
+- Status dots are brighter than the brand inks.
+- Owners, office staff, and field workers sit on one Users page. Tenants stay their own link.
+- On the phone, lists clear the tab bar, a repair card does not repeat "View status timeline", file-a-repair names the flat, and the completion sheet names the job.
+- Avatars on the phone use the same free stock portraits as the website. The same name always gets the same picture.
+
+**Out**
+
+- No new actions and no photo uploads. The portraits are a look preview, not a photo stored on the person.
 
 ---
 

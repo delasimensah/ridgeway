@@ -13,7 +13,7 @@ describe("repairLabels", () => {
   });
 
   it("labels statuses and events", () => {
-    expect(repairStatusLabel("received")).toBe("RECEIVED");
+    expect(repairStatusLabel("received")).toBe("Received");
     expect(repairEventTitle("received")).toBe("Repair received");
     expect(repairCategoryLabel("plumbing")).toBe("Plumbing");
     expect(repairCategoryLabel(null)).toBe("—");

@@ -34,6 +34,6 @@ describe("RepairListTable", () => {
     ).toHaveAttribute("href", "/repairs/wo-1");
     expect(screen.getByText("Yaw Darko")).toBeInTheDocument();
     expect(screen.getByText("—")).toBeInTheDocument();
-    expect(screen.getByText("ASSIGNED")).toBeInTheDocument();
+    expect(screen.getByText("Assigned")).toBeInTheDocument();
   });
 });

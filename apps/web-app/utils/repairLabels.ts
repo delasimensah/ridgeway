@@ -1,7 +1,14 @@
 import type { WorkOrderStatus, WorkOrderUrgency } from "shared";
 
+const REPAIR_STATUS_LABEL: Record<WorkOrderStatus, string> = {
+  received: "Received",
+  assigned: "Assigned",
+  scheduled: "Scheduled",
+  done: "Done",
+};
+
 export function repairStatusLabel(status: WorkOrderStatus): string {
-  return status.toUpperCase();
+  return REPAIR_STATUS_LABEL[status];
 }
 
 export function repairCategoryLabel(category: string | null): string {

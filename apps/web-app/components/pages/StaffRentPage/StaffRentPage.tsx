@@ -206,9 +206,9 @@ const StaffRentPage: React.FC<StaffRentPageProps> = ({
                 );
               }}
               classNames={{
-                root: "w-[4.75rem] shrink-0",
+                root: "w-[6.25rem] shrink-0",
                 input:
-                  "h-9 min-h-9 rounded-[8px] border-border bg-white px-2 text-center text-[15px] font-bold text-darkGrey disabled:bg-white disabled:opacity-100",
+                  "h-9 min-h-9 rounded-[8px] border-border bg-white pl-2 pr-7 text-center text-[15px] font-semibold text-darkGrey disabled:bg-white disabled:opacity-100",
                 dropdown: "rounded-[8px] border border-border bg-white",
                 option:
                   "rounded-[6px] text-[15px] font-semibold text-darkGrey bg-white hover:bg-sidebar data-[combobox-selected]:bg-sidebar data-[combobox-active]:bg-sidebar",

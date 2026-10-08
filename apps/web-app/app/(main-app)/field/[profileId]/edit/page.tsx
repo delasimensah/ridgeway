@@ -22,7 +22,7 @@ const EditFieldWorkerRoute = () => {
 
   useEffect(() => {
     if (person.isSuccess && person.data === null) {
-      router.replace("/field");
+      router.replace("/users");
     }
   }, [person.data, person.isSuccess, router]);
 

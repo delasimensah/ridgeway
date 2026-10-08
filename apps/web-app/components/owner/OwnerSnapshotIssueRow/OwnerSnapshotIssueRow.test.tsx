@@ -17,6 +17,6 @@ describe("OwnerSnapshotIssueRow", () => {
 
     expect(screen.getByText("B12 leak")).toBeInTheDocument();
     expect(screen.getByText("Tenant: Akosua Darko")).toBeInTheDocument();
-    expect(screen.getByText("ASSIGNED")).toBeInTheDocument();
+    expect(screen.getByText("Assigned")).toBeInTheDocument();
   });
 });

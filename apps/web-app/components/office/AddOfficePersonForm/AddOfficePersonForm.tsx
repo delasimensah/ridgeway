@@ -77,7 +77,7 @@ const AddOfficePersonForm: React.FC<AddOfficePersonFormProps> = ({
           password: values.password,
         });
       }
-      router.replace("/office");
+      router.replace("/users");
     } catch (caught) {
       const info = getConvexErrorInfo(caught);
       if (info.code === "NOT_PERMITTED" || info.message === "NOT_PERMITTED") {
@@ -132,7 +132,7 @@ const AddOfficePersonForm: React.FC<AddOfficePersonFormProps> = ({
         <Button
           type="button"
           variant="subtle"
-          onClick={() => router.push("/office")}
+          onClick={() => router.push("/users")}
           className="h-auto w-full px-6 py-3 text-[15px] font-semibold text-grey hover:text-darkGrey sm:w-auto"
         >
           Cancel

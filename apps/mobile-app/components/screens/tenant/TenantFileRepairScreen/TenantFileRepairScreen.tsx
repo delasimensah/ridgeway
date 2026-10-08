@@ -90,14 +90,17 @@ const TenantFileRepairScreen: React.FC<TenantFileRepairScreenProps> = ({
             ) : null}
             <VStack spacing="sm">
               <Text className="font-app-bold text-[13px] uppercase tracking-wider text-grey">
-                Unit
+                Your flat
               </Text>
               <VStack
                 spacing="none"
-                className="rounded-lg border border-border bg-sidebar p-4"
+                className="rounded-lg border border-border bg-white p-4"
               >
                 <Text className="font-app-medium text-base text-darkGrey">
                   {buildingName} · {unitLabel}
+                </Text>
+                <Text className="mt-1 text-[13px] text-grey">
+                  This repair is for the flat you live in.
                 </Text>
               </VStack>
             </VStack>

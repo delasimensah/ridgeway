@@ -71,7 +71,7 @@ const RepairPhotoDropzone: React.FC<RepairPhotoDropzoneProps> = ({
               alt={value.name}
               fit="contain"
               radius={8}
-              className="mb-2 max-h-48 w-auto"
+              className="mb-2 max-h-48 w-auto bg-primary"
             />
           ) : (
             <IconCamera

@@ -1,8 +1,10 @@
 "use client";
 
-import { Anchor, Table } from "@mantine/core";
+import { Anchor, Box, Table } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
+
+import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 
 interface FieldListRowProps {
   profileId: string;
@@ -20,16 +22,19 @@ const FieldListRow: React.FC<FieldListRowProps> = ({
   email,
   hasLogin,
 }) => {
+  const href = `/field/${profileId}`;
+
   return (
-    <Table.Tr className="hover:bg-sidebar">
+    <Table.Tr className="relative cursor-pointer hover:bg-sidebar">
       <Table.Td className={NAME_TD}>
         <Anchor
           component={Link}
-          href={`/field/${profileId}`}
+          href={href}
           underline="never"
-          className="font-bold text-darkGrey"
+          className="inline-flex items-center gap-3 font-bold text-darkGrey after:absolute after:inset-0"
         >
-          {displayName}
+          <PersonAvatar displayName={displayName} decorative />
+          <Box component="span">{displayName}</Box>
         </Anchor>
       </Table.Td>
       <Table.Td className={TD}>{email ?? "—"}</Table.Td>

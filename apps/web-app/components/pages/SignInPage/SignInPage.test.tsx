@@ -23,7 +23,12 @@ describe("SignInPage", () => {
     render(<SignInPage />);
 
     expect(
-      screen.getByRole("heading", { name: "Ridgeway" })
+      screen.getByRole("heading", { level: 1, name: "Ridgeway" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "The buildings, the rent, and the repairs, in one place."
+      )
     ).toBeInTheDocument();
     expect(
       screen.getByText("Staff, owners, and tenants use this site.")

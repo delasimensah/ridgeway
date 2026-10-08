@@ -30,7 +30,7 @@ interface StaffRentTableProps {
 }
 
 const TH =
-  "px-4 py-3 text-[13px] font-bold uppercase tracking-wider text-grey sm:px-6 sm:py-4";
+  "px-4 py-3 text-[12px] font-semibold uppercase tracking-wider text-grey sm:px-6 sm:py-4";
 
 const StaffRentTable: React.FC<StaffRentTableProps> = ({
   periods,
@@ -46,7 +46,7 @@ const StaffRentTable: React.FC<StaffRentTableProps> = ({
             <Table.Tr>
               <Table.Th className={TH}>Unit</Table.Th>
               <Table.Th className={TH}>Tenant</Table.Th>
-              <Table.Th className={TH}>Monthly rent</Table.Th>
+              <Table.Th className={`${TH} text-right`}>Monthly rent</Table.Th>
               <Table.Th className={TH}>Status</Table.Th>
             </Table.Tr>
           </Table.Thead>

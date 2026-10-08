@@ -25,9 +25,30 @@ describe("StaffHomePage", () => {
         currency="GHS"
         serverNow={Date.UTC(2026, 8, 13)}
         rentPeriods={[
-          { confirmedStatus: "unpaid", dueOn: "2026-09-05" },
-          { confirmedStatus: "paid", dueOn: "2026-09-05" },
-          { confirmedStatus: "partial", dueOn: "2026-09-05" },
+          {
+            _id: "rent-b12",
+            confirmedStatus: "unpaid",
+            dueOn: "2026-09-05",
+            unitLabel: "B12",
+            tenantName: "Aba Gyamfi",
+            buildingName: "Ridge Court",
+          },
+          {
+            _id: "rent-a1",
+            confirmedStatus: "paid",
+            dueOn: "2026-09-05",
+            unitLabel: "A1",
+            tenantName: "Kojo Owusu",
+            buildingName: "Ridge Court",
+          },
+          {
+            _id: "rent-c2",
+            confirmedStatus: "partial",
+            dueOn: "2026-09-05",
+            unitLabel: "C2",
+            tenantName: "Esi Mensah",
+            buildingName: "Labone Walk-up",
+          },
         ]}
       />
     );
@@ -115,7 +136,9 @@ describe("StaffHomePage", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Loading repairs")).toBeInTheDocument();
     expect(screen.getByLabelText("Loading rent summary")).toBeInTheDocument();
-    expect(screen.queryByText("No open repairs.")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Nothing open right now.")
+    ).not.toBeInTheDocument();
     expect(screen.queryByText("GH₵ 0")).not.toBeInTheDocument();
   });
 });

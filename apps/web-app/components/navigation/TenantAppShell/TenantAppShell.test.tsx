@@ -16,7 +16,10 @@ describe("TenantAppShell", () => {
     );
 
     expect(screen.getByText("Akosua Darko")).toBeInTheDocument();
-    expect(screen.getByText("AD")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Akosua Darko" })).toHaveAttribute(
+      "src",
+      expect.stringMatching(/^\/look\/people\//)
+    );
     expect(screen.getByRole("link", { name: "Ridgeway" })).toHaveAttribute(
       "href",
       "/"

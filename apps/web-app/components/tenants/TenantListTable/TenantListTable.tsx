@@ -21,7 +21,7 @@ interface TenantListTableProps {
 }
 
 const TH =
-  "px-4 py-3 text-[13px] font-bold uppercase tracking-wider text-grey sm:px-6 sm:py-4";
+  "px-4 py-3 text-[12px] font-semibold uppercase tracking-wider text-grey sm:px-6 sm:py-4";
 
 const TenantListTable: React.FC<TenantListTableProps> = ({ tenants }) => {
   return (

@@ -5,12 +5,10 @@ import {
   type Icon,
   IconBuilding,
   IconCashBanknote,
-  IconHelmet,
   IconHome,
-  IconIdBadge2,
   IconTool,
-  IconUser,
   IconUsers,
+  IconUsersGroup,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import React from "react";
@@ -21,14 +19,7 @@ import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 import Text from "../../ui/Text/Text";
 
 export type StaffNavId =
-  | "home"
-  | "buildings"
-  | "owners"
-  | "tenants"
-  | "office"
-  | "field"
-  | "repairs"
-  | "rent";
+  "home" | "buildings" | "users" | "tenants" | "repairs" | "rent";
 
 interface StaffSidebarProps {
   displayName: string;
@@ -51,18 +42,16 @@ const NAV_ITEMS: {
     label: "Buildings",
     Icon: IconBuilding,
   },
-  { id: "owners", href: "/owners", label: "Owners", Icon: IconUser },
+  { id: "users", href: "/users", label: "Users", Icon: IconUsersGroup },
   { id: "tenants", href: "/tenants", label: "Tenants", Icon: IconUsers },
-  { id: "office", href: "/office", label: "Staff", Icon: IconIdBadge2 },
-  { id: "field", href: "/field", label: "Field workers", Icon: IconHelmet },
   { id: "repairs", href: "/repairs", label: "Repairs", Icon: IconTool },
   { id: "rent", href: "/rent", label: "Rent", Icon: IconCashBanknote },
 ];
 
 const NAV_LINK_CLASS =
-  "flex items-center gap-3 rounded-[8px] px-4 py-2.5 no-underline hover:bg-lightGrey";
+  "relative flex items-center gap-3 overflow-hidden rounded-[8px] px-4 py-2.5 no-underline transition-colors duration-150 hover:bg-sidebar";
 const NAV_LINK_ACTIVE_CLASS =
-  "bg-primary font-semibold text-white hover:bg-primary hover:text-white";
+  "bg-sidebar font-semibold text-darkGrey before:absolute before:bottom-2 before:left-0 before:top-2 before:w-[3px] before:rounded-full before:bg-primary hover:bg-sidebar hover:text-darkGrey";
 const NAV_LINK_IDLE_CLASS = "font-medium text-darkGrey";
 
 const StaffSidebar: React.FC<StaffSidebarProps> = ({
@@ -73,7 +62,7 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({
   onNavigate,
 }) => {
   return (
-    <Box className="flex h-full w-full flex-col border-r border-border bg-sidebar">
+    <Box className="flex h-full w-full flex-col border-r border-border bg-white">
       <Box className="p-6">
         <BrandMark
           size="nav"

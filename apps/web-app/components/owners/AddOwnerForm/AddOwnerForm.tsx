@@ -62,7 +62,7 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
       ? `/buildings/${buildingId}`
       : ownerId !== undefined
         ? `/owners/${ownerId}`
-        : "/owners";
+        : "/users";
 
   const form = useForm<AddOwnerFormValues & { ownerChoice: string }>({
     initialValues: {
