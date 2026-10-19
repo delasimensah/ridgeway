@@ -1,0 +1,1 @@
+../../.cursor/rules/web-mantine-over-html.mdc

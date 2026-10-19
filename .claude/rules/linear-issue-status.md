@@ -1,0 +1,1 @@
+../../.cursor/rules/linear-issue-status.mdc

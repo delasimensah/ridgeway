@@ -56,5 +56,9 @@ coverage/
 !**/.eas/workflows/
 !**/.eas/workflows/**
 
-# Claude Code skill copies (Cursor uses .agents/skills/). Keep local; do not commit.
-.claude/
+# Claude Code local settings stay uncommitted. Rules and skills are links, so commit those.
+.claude/*
+!.claude/rules/
+!.claude/rules/**
+!.claude/skills
+!.claude/skills/**
