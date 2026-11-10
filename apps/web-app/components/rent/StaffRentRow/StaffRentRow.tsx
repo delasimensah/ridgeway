@@ -12,6 +12,8 @@ import {
   type RentConfirmedStatus,
 } from "shared";
 
+import { useWritesLocked } from "@/hooks";
+
 import Text from "../../ui/Text/Text";
 import RentStatusBadge from "../RentStatusBadge/RentStatusBadge";
 
@@ -53,6 +55,7 @@ const StaffRentRow: React.FC<StaffRentRowProps> = ({
   onSetStatus,
   onRequestPartial,
 }) => {
+  const writesLocked = useWritesLocked();
   const status = getRentDisplayStatus({ confirmedStatus, dueOn }, serverNow);
   const isAwaitingConfirmation =
     tenantReportedAt !== null && confirmedStatus !== "paid";
@@ -85,6 +88,7 @@ const StaffRentRow: React.FC<StaffRentRowProps> = ({
             <RentStatusBadge status={status} />
             <Select
               aria-label={`Confirm rent for ${unitLabel}`}
+              disabled={writesLocked}
               value={confirmedStatus}
               data={[...CONFIRMED_STATUS_OPTIONS]}
               allowDeselect={false}

@@ -12,6 +12,8 @@ import {
   type RentConfirmedStatus,
 } from "shared";
 
+import { useWritesLocked } from "@/hooks";
+
 import Text from "../../ui/Text/Text";
 import RentStatusBadge from "../RentStatusBadge/RentStatusBadge";
 
@@ -40,6 +42,7 @@ const TenantRentInvoiceRow: React.FC<TenantRentInvoiceRowProps> = ({
   isReporting = false,
   onReport,
 }) => {
+  const writesLocked = useWritesLocked();
   const status = getRentDisplayStatus({ confirmedStatus, dueOn }, serverNow);
   const canReport = confirmedStatus === "unpaid" && tenantReportedAt === null;
   const awaitingStaff =
@@ -84,6 +87,7 @@ const TenantRentInvoiceRow: React.FC<TenantRentInvoiceRowProps> = ({
           <Button
             onClick={onReport}
             loading={isReporting}
+            disabled={writesLocked}
             className="h-auto rounded-[8px] bg-primary px-6 py-2 text-sm font-semibold text-white hover:bg-primaryHover"
           >
             I have paid

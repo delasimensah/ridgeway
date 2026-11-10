@@ -9,9 +9,11 @@ import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import { useWritesLocked } from "@/hooks";
 import {
   type AddUnitFormValues,
   addUnitSchema,
+  blockDemoSave,
   getConvexErrorInfo,
   isExistingTenantChoice,
   leaseRentMutationArgs,
@@ -75,6 +77,7 @@ const AddUnitForm: React.FC<AddUnitFormProps> = ({
   const updateUnit = useMutation(api.units.update);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const writesLocked = useWritesLocked();
   const buildingHref = `/buildings/${buildingId}`;
 
   const form = useForm<AddUnitFormValues>({
@@ -86,6 +89,9 @@ const AddUnitForm: React.FC<AddUnitFormProps> = ({
   });
 
   const handleSubmit = async (values: AddUnitFormValues) => {
+    if (blockDemoSave(writesLocked, setError)) {
+      return;
+    }
     setError(null);
     setIsSubmitting(true);
     try {
@@ -202,6 +208,7 @@ const AddUnitForm: React.FC<AddUnitFormProps> = ({
         <Button
           type="submit"
           loading={isSubmitting}
+          disabled={writesLocked}
           className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
         >
           Save unit

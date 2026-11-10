@@ -8,7 +8,9 @@ import Link from "next/link";
 import React, { useState } from "react";
 import type { ScreenLoadState, WorkOrderStatus } from "shared";
 
+import { useWritesLocked } from "@/hooks";
 import {
+  blockDemoSave,
   formatRepairDate,
   getConvexErrorInfo,
   repairCategoryLabel,
@@ -72,8 +74,12 @@ const TenantRepairTimelinePage: React.FC<TenantRepairTimelinePageProps> = ({
   const [draft, setDraft] = useState(description);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const writesLocked = useWritesLocked();
 
   const handleSave = async () => {
+    if (blockDemoSave(writesLocked, setError)) {
+      return;
+    }
     setError(null);
     setIsSaving(true);
     try {
@@ -221,6 +227,7 @@ const TenantRepairTimelinePage: React.FC<TenantRepairTimelinePageProps> = ({
                   <Button
                     onClick={() => void handleSave()}
                     loading={isSaving}
+                    disabled={writesLocked}
                     className="mt-3 h-auto rounded-[8px] bg-primary px-6 py-2 text-[15px] font-semibold text-white hover:bg-primaryHover"
                   >
                     Save description

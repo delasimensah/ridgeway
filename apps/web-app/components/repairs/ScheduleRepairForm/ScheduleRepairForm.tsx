@@ -10,7 +10,9 @@ import { useMutation } from "convex/react";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React, { useState } from "react";
 
+import { useWritesLocked } from "@/hooks";
 import {
+  blockDemoSave,
   getConvexErrorInfo,
   type ScheduleRepairFormValues,
   scheduleRepairSchema,
@@ -40,6 +42,7 @@ const ScheduleRepairForm: React.FC<ScheduleRepairFormProps> = ({
   const schedule = useMutation(api.workOrders.schedule);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const writesLocked = useWritesLocked();
   const form = useForm<ScheduleRepairFormValues>({
     initialValues: {
       scheduledFor: initialValues?.scheduledFor ?? "",
@@ -48,6 +51,9 @@ const ScheduleRepairForm: React.FC<ScheduleRepairFormProps> = ({
   });
 
   const handleSubmit = async (values: ScheduleRepairFormValues) => {
+    if (blockDemoSave(writesLocked, setError)) {
+      return;
+    }
     setError(null);
     setIsSaving(true);
     try {
@@ -93,6 +99,7 @@ const ScheduleRepairForm: React.FC<ScheduleRepairFormProps> = ({
       <Button
         type="submit"
         loading={isSaving}
+        disabled={writesLocked}
         className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
       >
         Schedule

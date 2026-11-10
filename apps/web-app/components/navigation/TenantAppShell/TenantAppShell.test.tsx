@@ -1,6 +1,7 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+import { WritesLockedProvider } from "@/hooks";
 import { render } from "@/test-utils";
 
 import TenantAppShell from "./TenantAppShell";
@@ -29,5 +30,20 @@ describe("TenantAppShell", () => {
 
     await user.click(screen.getByRole("button", { name: /sign out/i }));
     expect(onSignOut).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows the demo lock on the page", () => {
+    render(
+      <WritesLockedProvider locked>
+        <TenantAppShell displayName="Akosua Darko" onSignOut={jest.fn()}>
+          <p>Tenant home</p>
+        </TenantAppShell>
+      </WritesLockedProvider>
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "This demo can't save changes."
+    );
   });
 });

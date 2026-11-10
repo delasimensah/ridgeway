@@ -8,9 +8,11 @@ import { useMutation } from "convex/react";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React, { useState } from "react";
 
+import { useWritesLocked } from "@/hooks";
 import {
   type AssignRepairFormValues,
   assignRepairSchema,
+  blockDemoSave,
   getConvexErrorInfo,
 } from "@/utils";
 
@@ -44,6 +46,7 @@ const AssignRepairForm: React.FC<AssignRepairFormProps> = ({
   const assign = useMutation(api.workOrders.assign);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const writesLocked = useWritesLocked();
   const form = useForm<AssignRepairFormValues>({
     initialValues: {
       assigneeProfileId: initialValues?.assigneeProfileId ?? "",
@@ -52,6 +55,9 @@ const AssignRepairForm: React.FC<AssignRepairFormProps> = ({
   });
 
   const handleSubmit = async (values: AssignRepairFormValues) => {
+    if (blockDemoSave(writesLocked, setError)) {
+      return;
+    }
     setError(null);
     setIsSaving(true);
     try {
@@ -98,6 +104,7 @@ const AssignRepairForm: React.FC<AssignRepairFormProps> = ({
       <Button
         type="submit"
         loading={isSaving}
+        disabled={writesLocked}
         className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
       >
         Assign

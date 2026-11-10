@@ -6,7 +6,9 @@ import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
 
 import { COLORS } from "@/constants";
+import { useWritesLocked } from "@/hooks";
 
+import WritesLockedNote from "../../shared/WritesLockedNote/WritesLockedNote";
 import BrandMark from "../../ui/BrandMark/BrandMark";
 import OwnerSidebar, { type OwnerNavId } from "../OwnerSidebar/OwnerSidebar";
 
@@ -37,6 +39,7 @@ const OwnerAppShell: React.FC<OwnerAppShellProps> = ({
   children,
 }) => {
   const pathname = usePathname();
+  const writesLocked = useWritesLocked();
   const [opened, { toggle, close }] = useDisclosure();
 
   useEffect(() => {
@@ -83,6 +86,7 @@ const OwnerAppShell: React.FC<OwnerAppShellProps> = ({
         />
       </AppShell.Navbar>
       <AppShell.Main className="animate-fadeIn bg-sidebar">
+        {writesLocked ? <WritesLockedNote /> : null}
         {children}
       </AppShell.Main>
     </AppShell>

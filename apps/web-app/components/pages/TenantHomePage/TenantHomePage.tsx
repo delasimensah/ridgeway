@@ -10,6 +10,7 @@ import type {
   WorkOrderStatus,
 } from "shared";
 
+import { useWritesLocked } from "@/hooks";
 import { formatRepairDate } from "@/utils";
 
 import NextRentCard from "../../rent/NextRentCard/NextRentCard";
@@ -61,6 +62,8 @@ const TenantHomePage: React.FC<TenantHomePageProps> = ({
   loadState = "ready",
   onRetry,
 }) => {
+  const writesLocked = useWritesLocked();
+
   return (
     <Box className="mx-auto w-full max-w-[800px] px-4 py-8 sm:px-6 sm:py-12">
       <Heading
@@ -71,9 +74,22 @@ const TenantHomePage: React.FC<TenantHomePageProps> = ({
       </Heading>
       <Text className="mb-8 text-lg text-grey sm:mb-12">{address}</Text>
       <Group gap="md" className="mb-8">
-        <Button component={Link} href="/repairs/new" className={PRIMARY_BUTTON}>
-          File a repair
-        </Button>
+        {writesLocked ? (
+          <Button
+            disabled
+            className={`${PRIMARY_BUTTON} cursor-not-allowed opacity-50`}
+          >
+            File a repair
+          </Button>
+        ) : (
+          <Button
+            component={Link}
+            href="/repairs/new"
+            className={PRIMARY_BUTTON}
+          >
+            File a repair
+          </Button>
+        )}
         <Button component={Link} href="/rent" className={SECONDARY_BUTTON}>
           Rent
         </Button>

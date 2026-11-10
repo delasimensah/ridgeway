@@ -1,5 +1,6 @@
 import { screen } from "@testing-library/react";
 
+import { WritesLockedProvider } from "@/hooks";
 import { render } from "@/test-utils";
 
 import StaffAppShell from "./StaffAppShell";
@@ -26,6 +27,21 @@ describe("StaffAppShell", () => {
     expect(
       screen.getByRole("button", { name: "Toggle navigation" })
     ).toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows the demo lock on the page", () => {
+    render(
+      <WritesLockedProvider locked>
+        <StaffAppShell displayName="Ama Boateng" onSignOut={jest.fn()}>
+          <p>Buildings page</p>
+        </StaffAppShell>
+      </WritesLockedProvider>
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "This demo can't save changes."
+    );
   });
 
   it("keeps the sidebar when the main area is loading", () => {

@@ -1,5 +1,14 @@
 import "@testing-library/jest-dom";
 
+jest.mock("@convex-dev/auth/react", () => ({
+  useConvexAuth: () => ({ isAuthenticated: false, isLoading: false }),
+  useAuthActions: () => ({
+    signIn: jest.fn(),
+    signOut: jest.fn(),
+  }),
+  ConvexAuthProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 class ResizeObserverMock {
   observe() {}
   unobserve() {}

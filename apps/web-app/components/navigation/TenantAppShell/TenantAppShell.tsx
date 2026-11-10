@@ -3,6 +3,9 @@
 import { Box, Button } from "@mantine/core";
 import React from "react";
 
+import { useWritesLocked } from "@/hooks";
+
+import WritesLockedNote from "../../shared/WritesLockedNote/WritesLockedNote";
 import BrandMark from "../../ui/BrandMark/BrandMark";
 import PersonAvatar from "../../ui/PersonAvatar/PersonAvatar";
 import Text from "../../ui/Text/Text";
@@ -20,6 +23,8 @@ const TenantAppShell: React.FC<TenantAppShellProps> = ({
   isSigningOut = false,
   children,
 }) => {
+  const writesLocked = useWritesLocked();
+
   return (
     <Box className="flex min-h-screen flex-col bg-white">
       <Box
@@ -49,6 +54,11 @@ const TenantAppShell: React.FC<TenantAppShellProps> = ({
         </Box>
       </Box>
       <Box component="main" className="w-full flex-1">
+        {writesLocked ? (
+          <Box className="px-4 pt-6 sm:px-8">
+            <WritesLockedNote />
+          </Box>
+        ) : null}
         {children}
       </Box>
     </Box>

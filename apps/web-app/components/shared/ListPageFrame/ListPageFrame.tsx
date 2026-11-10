@@ -5,6 +5,8 @@ import Link from "next/link";
 import React from "react";
 import type { ScreenLoadState } from "shared";
 
+import { useWritesLocked } from "@/hooks";
+
 import Heading from "../../ui/Heading/Heading";
 import ListTableSkeleton from "../ListTableSkeleton/ListTableSkeleton";
 import LoadFailed from "../LoadFailed/LoadFailed";
@@ -39,7 +41,8 @@ const ListPageFrame: React.FC<ListPageFrameProps> = ({
   empty,
   children,
 }) => {
-  const actionDisabled = loadState !== "ready";
+  const writesLocked = useWritesLocked();
+  const actionDisabled = loadState !== "ready" || writesLocked;
   const hasAction = actionHref !== undefined && actionLabel !== undefined;
 
   return (

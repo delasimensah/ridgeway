@@ -4,6 +4,7 @@ export const ERROR_CODES = {
   UNAUTHENTICATED: "UNAUTHENTICATED",
   NOT_PERMITTED: "NOT_PERMITTED",
   INVALID: "INVALID",
+  DEMO_LOCK: "DEMO_LOCK",
 } as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
