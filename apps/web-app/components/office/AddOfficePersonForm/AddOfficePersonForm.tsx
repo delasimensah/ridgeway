@@ -9,7 +9,9 @@ import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import { useWritesLocked } from "@/hooks";
 import {
+  blockDemoSave,
   getConvexErrorInfo,
   type OfficePersonFormValues,
   officePersonSchema,
@@ -45,6 +47,7 @@ const AddOfficePersonForm: React.FC<AddOfficePersonFormProps> = ({
   const setPassword = useAction(api.staff.setPassword);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const writesLocked = useWritesLocked();
 
   const form = useForm<OfficePersonFormValues>({
     initialValues: {
@@ -56,6 +59,9 @@ const AddOfficePersonForm: React.FC<AddOfficePersonFormProps> = ({
   });
 
   const handleSubmit = async (values: OfficePersonFormValues) => {
+    if (blockDemoSave(writesLocked, setError)) {
+      return;
+    }
     setError(null);
     setIsSubmitting(true);
     try {
@@ -140,6 +146,7 @@ const AddOfficePersonForm: React.FC<AddOfficePersonFormProps> = ({
         <Button
           type="submit"
           loading={isSubmitting}
+          disabled={writesLocked}
           className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
         >
           Save office person

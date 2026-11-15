@@ -17,6 +17,7 @@ import {
 } from "@/components";
 import { useStaffSession } from "@/hooks";
 import {
+  DEMO_LOCK_MESSAGE,
   getConvexErrorMessage,
   reloadWindow,
   showErrorNotification,
@@ -89,6 +90,10 @@ const RentRoute = () => {
           statusFilter={statusFilter}
           onStatusFilterChange={setStatusFilter}
           onSetStatus={(rentPeriodId, confirmedStatus, confirmedAmount) => {
+            if (session.writesLocked) {
+              showErrorNotification(DEMO_LOCK_MESSAGE);
+              return;
+            }
             void setConfirmedStatus({
               rentPeriodId: rentPeriodId as Id<"rentPeriods">,
               confirmedStatus,
@@ -133,6 +138,10 @@ const RentRoute = () => {
           serverNow={tenantRent.data?.serverNow ?? 0}
           reportingPeriodId={reportingPeriodId}
           onReport={(rentPeriodId) => {
+            if (session.writesLocked) {
+              showErrorNotification(DEMO_LOCK_MESSAGE);
+              return;
+            }
             setReportingPeriodId(rentPeriodId);
             void reportPayment({
               rentPeriodId: rentPeriodId as Id<"rentPeriods">,

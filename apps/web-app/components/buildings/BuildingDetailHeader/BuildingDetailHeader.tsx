@@ -4,6 +4,8 @@ import { Anchor, Box, Group } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
 
+import { useWritesLocked } from "@/hooks";
+
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
@@ -22,6 +24,8 @@ const BuildingDetailHeader: React.FC<BuildingDetailHeaderProps> = ({
   ownerId = null,
   ownerName = null,
 }) => {
+  const writesLocked = useWritesLocked();
+
   return (
     <Box className="mb-8 md:mb-12">
       <Group gap={8} className="mb-2 text-[14px] font-medium">
@@ -62,7 +66,15 @@ const BuildingDetailHeader: React.FC<BuildingDetailHeaderProps> = ({
           >
             Edit building
           </Anchor>
-          {ownerName === null ? (
+          {ownerName === null && writesLocked ? (
+            <Text
+              component="span"
+              className="text-[15px] font-semibold text-grey opacity-50"
+            >
+              Add owner
+            </Text>
+          ) : null}
+          {ownerName === null && !writesLocked ? (
             <Anchor
               component={Link}
               href={`/buildings/${buildingId}/owners/new`}
@@ -71,7 +83,8 @@ const BuildingDetailHeader: React.FC<BuildingDetailHeaderProps> = ({
             >
               Add owner
             </Anchor>
-          ) : ownerId !== null ? (
+          ) : null}
+          {ownerName !== null && ownerId !== null ? (
             <Anchor
               component={Link}
               href={`/owners/${ownerId}/edit`}

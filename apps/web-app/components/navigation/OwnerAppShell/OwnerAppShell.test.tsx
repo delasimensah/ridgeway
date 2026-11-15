@@ -1,5 +1,6 @@
 import { screen } from "@testing-library/react";
 
+import { WritesLockedProvider } from "@/hooks";
 import { render } from "@/test-utils";
 
 import OwnerAppShell from "./OwnerAppShell";
@@ -27,5 +28,20 @@ describe("OwnerAppShell", () => {
     expect(
       screen.getByRole("button", { name: "Toggle navigation" })
     ).toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows the demo lock on the page", () => {
+    render(
+      <WritesLockedProvider locked>
+        <OwnerAppShell displayName="Kwesi Mensah" onSignOut={jest.fn()}>
+          <p>Owner home</p>
+        </OwnerAppShell>
+      </WritesLockedProvider>
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "This demo can't save changes."
+    );
   });
 });

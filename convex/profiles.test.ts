@@ -19,7 +19,26 @@ describe("profiles", () => {
       isStaff: true,
       isField: false,
       ownerId: null,
+      writesLocked: false,
     });
+  });
+
+  it("reports writes locked when the demo lock is on", async () => {
+    process.env.RIDGEWAY_DEMO_LOCK = "on";
+    try {
+      const t = makeBackend();
+      const { userId } = await insertPerson(t, {
+        email: "ama.boateng@ridgeway.gh",
+        displayName: "Ama Boateng",
+        role: "staff",
+      });
+
+      const viewer = await asUser(t, userId).query(api.profiles.getCurrent, {});
+
+      expect(viewer.writesLocked).toBe(true);
+    } finally {
+      delete process.env.RIDGEWAY_DEMO_LOCK;
+    }
   });
 
   it("refuses getCurrent when nobody is signed in", async () => {

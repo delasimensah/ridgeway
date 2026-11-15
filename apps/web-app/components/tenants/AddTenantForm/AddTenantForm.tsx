@@ -19,9 +19,11 @@ import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import { useWritesLocked } from "@/hooks";
 import {
   type AddTenantFormValues,
   addTenantSchema,
+  blockDemoSave,
   getConvexErrorInfo,
   isExistingTenantChoice,
   leaseRentMutationArgs,
@@ -136,6 +138,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
   const updateTenant = useMutation(api.leases.updateTenant);
   const grantLogin = useAction(api.leases.grantLogin);
   const setPassword = useAction(api.leases.setPassword);
+  const writesLocked = useWritesLocked();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const doneHref = returnHref ?? `/buildings/${buildingId}`;
@@ -162,6 +165,9 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
   });
 
   const handleSubmit = async (values: AddTenantFormValues) => {
+    if (blockDemoSave(writesLocked, setError)) {
+      return;
+    }
     setError(null);
     setIsSubmitting(true);
     try {
@@ -408,6 +414,7 @@ const AddTenantForm: React.FC<AddTenantFormProps> = ({
         <Button
           type="submit"
           loading={isSubmitting}
+          disabled={writesLocked}
           className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
         >
           Save tenant

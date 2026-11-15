@@ -6,7 +6,9 @@ import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
 
 import { COLORS } from "@/constants";
+import { useWritesLocked } from "@/hooks";
 
+import WritesLockedNote from "../../shared/WritesLockedNote/WritesLockedNote";
 import BrandMark from "../../ui/BrandMark/BrandMark";
 import StaffSidebar, { type StaffNavId } from "../StaffSidebar/StaffSidebar";
 
@@ -48,6 +50,7 @@ const StaffAppShell: React.FC<StaffAppShellProps> = ({
   children,
 }) => {
   const pathname = usePathname();
+  const writesLocked = useWritesLocked();
   const [opened, { toggle, close }] = useDisclosure();
 
   useEffect(() => {
@@ -94,6 +97,7 @@ const StaffAppShell: React.FC<StaffAppShellProps> = ({
         />
       </AppShell.Navbar>
       <AppShell.Main className="animate-fadeIn bg-sidebar">
+        {writesLocked ? <WritesLockedNote /> : null}
         {children}
       </AppShell.Main>
     </AppShell>

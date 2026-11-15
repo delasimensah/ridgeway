@@ -5,6 +5,8 @@ import { IconInbox } from "@tabler/icons-react";
 import Link from "next/link";
 import React from "react";
 
+import { useWritesLocked } from "@/hooks";
+
 import Heading from "../../ui/Heading/Heading";
 import Text from "../../ui/Text/Text";
 
@@ -24,6 +26,8 @@ const ListEmpty: React.FC<ListEmptyProps> = ({
   actionHref,
   actionLabel,
 }) => {
+  const writesLocked = useWritesLocked();
+
   return (
     <Box className="flex min-h-[240px] flex-col items-center justify-center rounded-[8px] border border-dashed border-border bg-white p-6 text-center sm:min-h-[320px] sm:p-10 md:min-h-[400px] md:p-12">
       <Stack align="center" gap="md">
@@ -33,9 +37,19 @@ const ListEmpty: React.FC<ListEmptyProps> = ({
         </Heading>
         <Text className="max-w-[320px] text-grey">{description}</Text>
         {actionHref !== undefined && actionLabel !== undefined ? (
-          <Button component={Link} href={actionHref} className={PRIMARY_BUTTON}>
-            {actionLabel}
-          </Button>
+          writesLocked ? (
+            <Button disabled className={`${PRIMARY_BUTTON} opacity-50`}>
+              {actionLabel}
+            </Button>
+          ) : (
+            <Button
+              component={Link}
+              href={actionHref}
+              className={PRIMARY_BUTTON}
+            >
+              {actionLabel}
+            </Button>
+          )
         ) : null}
       </Stack>
     </Box>

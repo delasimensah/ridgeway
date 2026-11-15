@@ -10,7 +10,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import { useWritesLocked } from "@/hooks";
 import {
+  blockDemoSave,
   type FileRepairFormValues,
   fileRepairSchema,
   getConvexErrorInfo,
@@ -56,6 +58,7 @@ const FileRepairForm: React.FC<FileRepairFormProps> = ({
   const [photo, setPhoto] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const writesLocked = useWritesLocked();
 
   const form = useForm<FileRepairFormValues>({
     initialValues: {
@@ -66,6 +69,9 @@ const FileRepairForm: React.FC<FileRepairFormProps> = ({
   });
 
   const handleSubmit = form.onSubmit(async (values) => {
+    if (blockDemoSave(writesLocked, setError)) {
+      return;
+    }
     setError(null);
     setIsSubmitting(true);
     try {
@@ -122,7 +128,12 @@ const FileRepairForm: React.FC<FileRepairFormProps> = ({
       </Group>
       <RepairPhotoDropzone value={photo} onChange={setPhoto} />
       <Group gap="sm" className="border-t border-border pt-4">
-        <Button type="submit" loading={isSubmitting} className={PRIMARY_BUTTON}>
+        <Button
+          type="submit"
+          loading={isSubmitting}
+          disabled={writesLocked}
+          className={PRIMARY_BUTTON}
+        >
           Submit repair
         </Button>
         <Button

@@ -4,7 +4,7 @@ import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation } from "./_generated/server";
 import { ERROR_CODES, raise } from "./lib/errors";
-import { authedQuery } from "./lib/functions";
+import { authedQuery, isDemoLockOn } from "./lib/functions";
 import { isLeaseCurrent, latestEndedLease, utcToday } from "./lib/viewer";
 
 const currentLeaseValidator = v.object({
@@ -31,6 +31,7 @@ const currentViewerValidator = v.object({
   ownerId: v.union(v.id("owners"), v.null()),
   currentLease: v.union(currentLeaseValidator, v.null()),
   endedLease: v.union(endedLeaseValidator, v.null()),
+  writesLocked: v.boolean(),
 });
 
 export const getCurrent = authedQuery({
@@ -93,6 +94,7 @@ export const getCurrent = authedQuery({
       ownerId: ctx.viewer.ownerId,
       currentLease,
       endedLease,
+      writesLocked: isDemoLockOn(),
     };
   },
 });

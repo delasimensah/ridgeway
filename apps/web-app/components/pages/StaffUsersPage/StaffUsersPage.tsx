@@ -5,6 +5,8 @@ import Link from "next/link";
 import React from "react";
 import type { ScreenLoadState } from "shared";
 
+import { useWritesLocked } from "@/hooks";
+
 import FieldListTable, {
   type FieldListItem,
 } from "../../field/FieldListTable/FieldListTable";
@@ -31,6 +33,8 @@ interface StaffUsersPageProps {
 
 const ADD_BUTTON =
   "h-auto rounded-[8px] bg-primary px-6 py-2.5 text-[15px] font-semibold text-white hover:bg-primaryHover";
+const ADD_BUTTON_DISABLED =
+  "h-auto cursor-not-allowed rounded-[8px] bg-primary px-6 py-2.5 text-[15px] font-semibold text-white opacity-50";
 
 const StaffUsersPage: React.FC<StaffUsersPageProps> = ({
   owners,
@@ -128,7 +132,9 @@ const UserSection: React.FC<UserSectionProps> = ({
   actionLabel,
   children,
 }) => {
+  const writesLocked = useWritesLocked();
   const hasAction = actionHref !== undefined && actionLabel !== undefined;
+  const showAction = hasAction && loadState === "ready";
 
   return (
     <Box component="section" className="mb-12 last:mb-0">
@@ -148,7 +154,15 @@ const UserSection: React.FC<UserSectionProps> = ({
           </Heading>
           <Text className="text-sm text-grey">{description}</Text>
         </Box>
-        {hasAction && loadState === "ready" ? (
+        {showAction && writesLocked ? (
+          <Button
+            disabled
+            className={`${ADD_BUTTON_DISABLED} w-full sm:w-auto`}
+          >
+            {actionLabel}
+          </Button>
+        ) : null}
+        {showAction && !writesLocked ? (
           <Button
             component={Link}
             href={actionHref}

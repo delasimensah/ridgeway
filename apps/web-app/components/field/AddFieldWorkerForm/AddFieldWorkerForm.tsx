@@ -9,7 +9,9 @@ import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import { useWritesLocked } from "@/hooks";
 import {
+  blockDemoSave,
   type FieldWorkerFormValues,
   fieldWorkerSchema,
   getConvexErrorInfo,
@@ -45,6 +47,7 @@ const AddFieldWorkerForm: React.FC<AddFieldWorkerFormProps> = ({
   const setPassword = useAction(api.field.setPassword);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const writesLocked = useWritesLocked();
 
   const form = useForm<FieldWorkerFormValues>({
     initialValues: {
@@ -56,6 +59,9 @@ const AddFieldWorkerForm: React.FC<AddFieldWorkerFormProps> = ({
   });
 
   const handleSubmit = async (values: FieldWorkerFormValues) => {
+    if (blockDemoSave(writesLocked, setError)) {
+      return;
+    }
     setError(null);
     setIsSubmitting(true);
     try {
@@ -140,6 +146,7 @@ const AddFieldWorkerForm: React.FC<AddFieldWorkerFormProps> = ({
         <Button
           type="submit"
           loading={isSubmitting}
+          disabled={writesLocked}
           className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
         >
           Save field worker

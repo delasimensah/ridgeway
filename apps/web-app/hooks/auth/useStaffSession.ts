@@ -14,6 +14,8 @@ import {
   useState,
 } from "react";
 
+import { WritesLockedProvider } from "./writesLocked";
+
 export type StaffSessionLease = {
   leaseId: Id<"leases">;
   unitId: Id<"units">;
@@ -36,6 +38,7 @@ export type StaffSession = {
   currentLease: StaffSessionLease | null;
   endedLease: StaffSessionEndedLease | null;
   displayName: string;
+  writesLocked: boolean;
   isSigningOut: boolean;
   handleSignOut: () => Promise<void>;
 };
@@ -103,6 +106,7 @@ function useStaffSessionState(): StaffSession {
     currentLease: viewer?.currentLease ?? null,
     endedLease: viewer?.endedLease ?? null,
     displayName: viewer?.displayName ?? "",
+    writesLocked: viewer?.writesLocked === true,
     isSigningOut,
     handleSignOut,
   };
@@ -113,7 +117,11 @@ export function StaffSessionProvider({ children }: { children: ReactNode }) {
   return createElement(
     StaffSessionContext.Provider,
     { value: session },
-    children
+    createElement(
+      WritesLockedProvider,
+      { locked: session.writesLocked },
+      children
+    )
   );
 }
 

@@ -49,6 +49,13 @@ export {
   type FieldWorkerFormValues,
 } from "./fieldWorkerSchema";
 export { getConvexErrorInfo, getConvexErrorMessage } from "./convexError";
+export {
+  blockDemoSave,
+  DEMO_LOCK_MESSAGE,
+  demoSignInAccounts,
+  isPublicDemo,
+} from "./demoSignIn";
+export type { DemoSignInAccount } from "./demoSignIn";
 export { reloadWindow } from "./reloadWindow";
 export {
   fileRepairSchema,

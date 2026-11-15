@@ -15,10 +15,12 @@ import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import { useWritesLocked } from "@/hooks";
 import {
   ACCRA_CITY,
   type AddBuildingFormValues,
   addBuildingSchema,
+  blockDemoSave,
   getConvexErrorInfo,
   NEW_OWNER_CHOICE,
 } from "@/utils";
@@ -66,6 +68,7 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
   const grantLogin = useAction(api.owners.grantLogin);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const writesLocked = useWritesLocked();
 
   const form = useForm<AddBuildingFormValues>({
     initialValues: {
@@ -80,6 +83,9 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
   const formHasLogin = selectedOwner?.hasLogin === true;
 
   const handleSubmit = async (values: AddBuildingFormValues) => {
+    if (blockDemoSave(writesLocked, setError)) {
+      return;
+    }
     setError(null);
     setIsSubmitting(true);
     try {
@@ -249,6 +255,7 @@ const AddBuildingForm: React.FC<AddBuildingFormProps> = ({
         <Button
           type="submit"
           loading={isSubmitting}
+          disabled={writesLocked}
           className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
         >
           Save building

@@ -5,6 +5,8 @@ import Link from "next/link";
 import React from "react";
 import type { ScreenLoadState, WorkOrderStatus } from "shared";
 
+import { useWritesLocked } from "@/hooks";
+
 import BuildingDetailHeader from "../../buildings/BuildingDetailHeader/BuildingDetailHeader";
 import OpenRepairCard from "../../repairs/OpenRepairCard/OpenRepairCard";
 import ListTableSkeleton from "../../shared/ListTableSkeleton/ListTableSkeleton";
@@ -52,6 +54,7 @@ const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
   loadState = "ready",
   onRetry,
 }) => {
+  const writesLocked = useWritesLocked();
   const isEmpty = units.length === 0;
   const hasVacantUnit = units.some((unit) => unit.leaseId == null);
 
@@ -79,14 +82,31 @@ const BuildingDetailPage: React.FC<BuildingDetailPageProps> = ({
             Units
           </Heading>
           <Group gap="sm" className="w-full sm:w-auto">
-            <Button
-              component={Link}
-              href={`/buildings/${buildingId}/units/new`}
-              className={`${SECONDARY_BUTTON} w-full sm:w-auto`}
-            >
-              Add unit
-            </Button>
-            {hasVacantUnit ? (
+            {writesLocked ? (
+              <Button
+                disabled
+                className={`${SECONDARY_BUTTON} w-full cursor-not-allowed opacity-50 sm:w-auto`}
+              >
+                Add unit
+              </Button>
+            ) : (
+              <Button
+                component={Link}
+                href={`/buildings/${buildingId}/units/new`}
+                className={`${SECONDARY_BUTTON} w-full sm:w-auto`}
+              >
+                Add unit
+              </Button>
+            )}
+            {hasVacantUnit && writesLocked ? (
+              <Button
+                disabled
+                className={`${PRIMARY_BUTTON} w-full cursor-not-allowed opacity-50 sm:w-auto`}
+              >
+                Add tenant
+              </Button>
+            ) : null}
+            {hasVacantUnit && !writesLocked ? (
               <Button
                 component={Link}
                 href={`/buildings/${buildingId}/tenants/new`}

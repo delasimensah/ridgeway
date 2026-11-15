@@ -52,6 +52,24 @@ npx convex run auth:setPassword '{"email":"ama.boateng@ridgeway.gh","password":"
 
 Only someone with Convex access can run this. Do not put the new password in Git, `STATUS.md`, `ACCESS-LIST.md`, or a chat. The website cannot call this action.
 
+## Public demo lock
+
+The public site and this laptop share the dev deployment. Visitors can sign in as Ama Boateng, Naa Densua Lamptey, or Aba Gyamfi and open the screens those roles already have. While `RIDGEWAY_DEMO_LOCK` is `on`, a save is refused with "This demo can't save changes." Lists and record pages still load. Sign-in and sign-out still work. The monthly rent job still runs, and `npx convex run seed:run` can still reload the demo.
+
+From the `ridgeway` repo root, after Convex has pushed:
+
+```bash
+npx convex env set RIDGEWAY_DEMO_LOCK=on
+```
+
+Turn saves back on when you are building the next change, then turn the lock on again before you send someone the link:
+
+```bash
+npx convex env remove RIDGEWAY_DEMO_LOCK
+```
+
+The website shows the three demo buttons only when `NEXT_PUBLIC_DEMO_LOCK` is `on` in `apps/web-app/.env.local` and the three demo passwords are set there too. Those names are listed in `apps/web-app/.env.example`. Restart `yarn dev:web` after you change them. The buttons are a shortcut. The lock above is what stops a save.
+
 ## Production
 
 Production is a different deployment. The live website uses it. Preview links stay on the dev deployment, so the demo data stays on preview. The steps are in `docs/convex-production.md`.

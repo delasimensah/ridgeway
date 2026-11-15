@@ -11,8 +11,9 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": ["node"]
   },
   "include": ["./**/*"],
-  "exclude": ["./_generated", "./**/*.test.ts", "./test.setup.ts"]
+  "exclude": ["./_generated"]
 }

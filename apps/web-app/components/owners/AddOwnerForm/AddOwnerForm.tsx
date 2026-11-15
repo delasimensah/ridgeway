@@ -9,9 +9,11 @@ import { zod4Resolver } from "mantine-form-zod-resolver";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import { useWritesLocked } from "@/hooks";
 import {
   type AddOwnerFormValues,
   addOwnerSchema,
+  blockDemoSave,
   getConvexErrorInfo,
   NEW_OWNER_CHOICE,
 } from "@/utils";
@@ -57,6 +59,7 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
   const setPassword = useAction(api.owners.setPassword);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const writesLocked = useWritesLocked();
   const cancelHref =
     buildingId !== undefined
       ? `/buildings/${buildingId}`
@@ -100,6 +103,9 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
   const handleSubmit = async (
     values: AddOwnerFormValues & { ownerChoice: string }
   ) => {
+    if (blockDemoSave(writesLocked, setError)) {
+      return;
+    }
     setError(null);
     setIsSubmitting(true);
     try {
@@ -262,6 +268,7 @@ const AddOwnerForm: React.FC<AddOwnerFormProps> = ({
         <Button
           type="submit"
           loading={isSubmitting}
+          disabled={writesLocked}
           className={`${PRIMARY_BUTTON} w-full sm:w-auto`}
         >
           Save owner

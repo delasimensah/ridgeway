@@ -9,7 +9,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-import { type AddTenantFormValues, getConvexErrorInfo } from "@/utils";
+import { useWritesLocked } from "@/hooks";
+import {
+  type AddTenantFormValues,
+  blockDemoSave,
+  getConvexErrorInfo,
+} from "@/utils";
 
 import AddTenantForm, {
   type TenantUnitOption,
@@ -46,6 +51,7 @@ const AddTenantPage: React.FC<AddTenantPageProps> = ({
   const [opened, { open, close }] = useDisclosure(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const writesLocked = useWritesLocked();
   const fromTenantsList = returnHref === "/tenants";
   const backHref = fromTenantsList ? "/tenants" : `/buildings/${buildingId}`;
   const backLabel = fromTenantsList ? "Tenants" : buildingName;
@@ -59,7 +65,7 @@ const AddTenantPage: React.FC<AddTenantPageProps> = ({
   const doneHref = returnHref ?? `/buildings/${buildingId}`;
 
   const handleConfirm = async () => {
-    if (leaseId === undefined) {
+    if (leaseId === undefined || blockDemoSave(writesLocked, setErrorMessage)) {
       return;
     }
     setIsSubmitting(true);
@@ -124,6 +130,7 @@ const AddTenantPage: React.FC<AddTenantPageProps> = ({
             type="button"
             variant="subtle"
             onClick={open}
+            disabled={writesLocked}
             className="h-auto px-0 text-[15px] font-semibold text-danger hover:bg-transparent hover:text-dangerHover"
           >
             End lease
